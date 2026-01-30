@@ -6,7 +6,11 @@ class ChatCubit extends Cubit<void> {
 
   ChatCubit(this._chatService) : super(null);
 
-  void sendMessage(String chatId, String text, String senderId) {
-    _chatService.sendMessage(chatId, text, senderId);
+  void sendMessage(String chatId, String text, String senderId, String receiverId) {
+    _chatService.sendMessage(chatId, text, senderId, receiverId: receiverId);
+  }
+
+  void markMessagesAsRead(String chatId, String currentUserId) {
+    _chatService.markMessagesAsRead(chatId, currentUserId);
   }
 }

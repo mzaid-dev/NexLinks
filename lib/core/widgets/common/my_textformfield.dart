@@ -17,8 +17,8 @@ class MyTextFormField extends StatelessWidget {
     required this.hintText,
     this.obscureText = false,
     required this.keyboardType ,
-    required this.prefixIcon,
-    required this.validator,
+    this.prefixIcon,
+    this.validator,
     this.suffixIcon,
     this.onSuffixIconPressed,
   });

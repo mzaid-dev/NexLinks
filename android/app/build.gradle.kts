@@ -13,9 +13,13 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
-    compileOptions {
+   compileOptions {
+        // Keep your existing lines
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        
+        // ADD THIS LINE:
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -40,6 +44,11 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    dependencies {
+    // This is the tool required to fix the error
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
 }
 
 flutter {

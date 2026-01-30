@@ -1,4 +1,4 @@
-import 'package:chat_app/features/auth/data/model/user_model.dart';
+import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -111,6 +111,10 @@ class AuthService {
 
   Future<UserModel?> getUserFromFirestore(String uid) async {
     return await _firestoreService.getUser(uid);
+  }
+
+  Future<String?> getPersistedUid() async {
+    return await _storage.read(key: 'uid');
   }
 }
 

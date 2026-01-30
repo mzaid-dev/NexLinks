@@ -10,7 +10,7 @@ class MySnackBar {
     bool isError = false,
     Color? backgroundColor,
     Color? textColor,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(seconds: 4),
     FlushbarPosition position = FlushbarPosition.TOP,
   }) {
     Flushbar(
@@ -41,7 +41,7 @@ class MySnackBar {
       shouldIconPulse: true,
       boxShadows: [
         BoxShadow(
-          color: Colors.grey.withValues(alpha: 0.15),
+          color: Colors.grey.withOpacity(0.15),
           blurRadius: 20,
           offset: const Offset(0, 3),
         ),

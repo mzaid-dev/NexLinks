@@ -1,8 +1,16 @@
-import 'package:chat_app/features/auth/data/model/user_model.dart';
+import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 class FirestoreService{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> updateUser(UserModel user) async {
+    try {
+      await _firestore.collection('users').doc(user.id).update(user.toMap());
+    } catch (e) {
+      throw Exception("Failed to update user: $e");
+    }
+  }
 
   Future<void> createUser (UserModel user) async{
     try{
@@ -12,15 +20,15 @@ class FirestoreService{
     }
   }
 
-  Future<UserModel?> getUser (String userId) async{
-    try{
+  Future<UserModel?> getUser(String userId) async {
+    try {
       DocumentSnapshot doc = await _firestore.collection('users').doc(userId).get();
-      if(doc.exists){
-        return UserModel.fromMap(doc.data() as Map<String , dynamic>);
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }
       return null;
-    }catch(e){
-      throw Exception("Failed to Create User : ${e.toString()}");
+    } catch (e) {
+      throw Exception("Failed to Get User: ${e.toString()}");
     }
   }
 
@@ -28,7 +36,7 @@ class FirestoreService{
     try {
       await _firestore.collection('users').doc(userId).update({
         'isOnline': isOnline,
-        'lastSeen': Timestamp.now(), // Use Timestamp instead of milliseconds
+        'lastSeen': FieldValue.serverTimestamp(), 
       });
     } catch (e) {
       throw Exception("Failed to Update User Online Status : ${e.toString()}");
@@ -72,6 +80,137 @@ class FirestoreService{
       return snapshot.docs.map((doc) {
         return UserModel.fromMap(doc.data());
       }).toList();
+    });
+  }
+
+  Future<QuerySnapshot> getPaginatedUsers(int limit, {DocumentSnapshot? lastDocument}) async {
+    Query query = _firestore.collection('users').orderBy('createdAt', descending: true).limit(limit);
+    
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+    
+    return await query.get();
+  }
+  // --- Friend Request Logic ---
+
+  Future<void> sendFriendRequest(String currentUserId, String viewedUserId) async {
+    try {
+      // Deterministic ID logic
+      List<String> ids = [currentUserId, viewedUserId];
+      ids.sort();
+      String requestId = ids.join("_");
+
+      final docRef = _firestore.collection('friend_requests').doc(requestId);
+      final doc = await docRef.get();
+
+      if (doc.exists) {
+        final status = doc.get('status');
+        // If already pending or accepted, do nothing
+        if (status == 'pending' || status == 'accepted') return;
+      }
+
+      // Create or Update to pending
+      await docRef.set({
+        'from': currentUserId,
+        'to': viewedUserId,
+        'status': 'pending',
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception("Failed to send friend request: $e");
+    }
+  }
+
+  Future<void> acceptFriendRequest(String requestId, String currentUserId, String viewedUserId) async {
+    try {
+      final batch = _firestore.batch();
+      
+      // 1. Update Request Status
+      final requestRef = _firestore.collection('friend_requests').doc(requestId);
+      batch.update(requestRef, {'status': 'accepted'});
+
+      // 2. Add to Current User's Friend List
+      final currentUserRef = _firestore.collection('users').doc(currentUserId);
+      batch.update(currentUserRef, {
+        'friends': FieldValue.arrayUnion([viewedUserId])
+      });
+
+      // 3. Add to Viewed User's Friend List
+      final viewedUserRef = _firestore.collection('users').doc(viewedUserId);
+      batch.update(viewedUserRef, {
+        'friends': FieldValue.arrayUnion([currentUserId])
+      });
+      
+      // 4. Create Chat Room
+      List<String> ids = [currentUserId, viewedUserId];
+      ids.sort();
+      String chatId = ids.join("_");
+      final chatRef = _firestore.collection('chats').doc(chatId);
+      batch.set(chatRef, {
+        'participants': ids,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastMessage': null,
+        'lastMessageTime': null
+      }, SetOptions(merge: true));
+
+      await batch.commit();
+    } catch (e) {
+      throw Exception("Failed to accept friend request: $e");
+    }
+  }
+
+  // Stream of the specific request between two users (Deterministic Doc)
+  Stream<DocumentSnapshot> getFriendRequestStream(String currentUserId, String viewedUserId) {
+    List<String> ids = [currentUserId, viewedUserId];
+    ids.sort();
+    String requestId = ids.join("_");
+    return _firestore.collection('friend_requests').doc(requestId).snapshots();
+  }
+
+  Stream<QuerySnapshot> getIncomingRequestsStream(String userId) {
+    return _firestore.collection('friend_requests')
+        .where('to', isEqualTo: userId)
+        .where('status', isEqualTo: 'pending')
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getSentRequestsStream(String userId) {
+    return _firestore.collection('friend_requests')
+        .where('from', isEqualTo: userId)
+        .where('status', isEqualTo: 'pending')
+        .snapshots();
+  }
+
+  Future<void> rejectFriendRequest(String requestId) async {
+      try {
+        await _firestore.collection('friend_requests').doc(requestId).update({'status': 'rejected'});
+      } catch (e) {
+        throw Exception("Failed to reject request: $e");
+      }
+   }
+
+  Future<void> cancelFriendRequest(String requestId) async {
+      try {
+        await _firestore.collection('friend_requests').doc(requestId).delete();
+      } catch (e) {
+        throw Exception("Failed to cancel request: $e");
+      }
+   }
+
+  Stream<UserModel> getUserStream(String userId) {
+    return _firestore.collection('users').doc(userId).snapshots().map((doc) {
+       final data = doc.data();
+       if (data == null) {
+         return UserModel(
+           id: userId, 
+           email: '', 
+           username: 'Unknown User',
+           lastSeen: Timestamp.now(),
+           createdAt: Timestamp.now(),
+         );
+       }
+       return UserModel.fromMap(data);
     });
   }
 }

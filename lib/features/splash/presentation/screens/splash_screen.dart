@@ -1,5 +1,5 @@
-import 'package:chat_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,8 +40,9 @@ class _SplashViewState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFF2E8AF6),
       body: Center(
         child: AnimatedBuilder(
           animation: _animationController,
@@ -61,16 +62,19 @@ class _SplashViewState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha:0.1),
+                            color: Colors.black.withOpacity(0.1),
                             blurRadius: 20,
-                            offset: Offset(0, 10),
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.chat_bubble_rounded,
-                        size: 60,
-                        color: AppTheme.primaryColor,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/branding/logo.png',
+                          width: 80,
+                          height: 80,
+                          errorBuilder: (context, error, stackTrace) => Icon(Icons.chat_bubble_rounded, size: 60, color: Theme.of(context).colorScheme.primary),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -86,7 +90,7 @@ class _SplashViewState extends State<SplashScreen>
                     Text(
                       "Connect with Friends & Family",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
                     const SizedBox(height: 64),

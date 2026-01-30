@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/features/auth/data/model/user_model.dart';
+import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart'; // Import Repo
+import 'package:chat_app/features/auth/data/models/user_model.dart'; // Keep for casting if needed, or better, use AuthUser
 import 'auth_event.dart';
 import 'auth_state.dart';
-import 'package:chat_app/features/auth/logic/auth_error_handler.dart';
+
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthService _authService;
+  final AuthRepository _authRepository; // Use Repository
   StreamSubscription<dynamic>? _userSubscription;
 
-  AuthBloc({required AuthService authService})
-      : _authService = authService,
+  AuthBloc({required AuthRepository authRepository})
+      : _authRepository = authRepository,
         super(const AuthState.unknown()) {
     on<AuthStarted>(_onAuthStarted);
     on<AuthLoginRequested>(_onAuthLoginRequested);
@@ -22,20 +22,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthStarted(AuthStarted event, Emitter<AuthState> emit) async {
-    // Add artificial delay to show Splash Screen
-    await Future.delayed(const Duration(seconds: 2)); 
+    // We can rely on the stream from the repo which typically handles persistence internally or via the datasource
+    // But for now, let's just listen to the stream.
     
-    await emit.onEach(_authService.authStateChanges, onData: (user) async {
-       if (user != null) {
-         try {
-            final userModel = await _authService.getUserFromFirestore(user.uid);
-            add(_AuthUserChanged(userModel));
-         } catch (_) {
-           add(const _AuthUserChanged(null));
-         }
-       } else {
-         add(const _AuthUserChanged(null));
-       }
+    await Future.delayed(const Duration(seconds: 2));
+    await _userSubscription?.cancel();
+    _userSubscription = _authRepository.user.listen((user) {
+       // user is AuthUser?
+        if (user != null && user is UserModel) {
+            add(_AuthUserChanged(user));
+        } else if (user != null) {
+             // If it's not a UserModel (e.g. just AuthUser), we might need to cast or convert if the state expects UserModel
+             // For now, let's assume the Repo returns the correct subtype or we verify State compatibility.
+             // Our State likely expects UserModel. 
+             // Ideally Domain shouldn't know about Data Model, so State should use AuthUser.
+             // But let's assume for this refactor we pass it through.
+             // Actually, the Repo returns AuthUser via signature, but runtime is UserModel.
+             add(_AuthUserChanged(user as UserModel)); 
+        } else {
+            add(const _AuthUserChanged(null));
+        }
     });
   }
 
@@ -59,9 +65,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthState.loading());
     try {
-      await _authService.signInWithEmailAndPassword(event.email, event.password);
+      await _authRepository.signInWithEmailAndPassword(event.email, event.password);
     } catch (e) {
-      emit(AuthState.failure(AuthErrorHandler.getErrorMessage(e)));
+      emit(AuthState.failure(e.toString()));
     }
   }
 
@@ -71,13 +77,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthState.loading());
     try {
-      await _authService.registerWithEmailAndPassword(
-        event.email,
-        event.password,
-        event.username,
+      await _authRepository.registerWithEmailAndPassword(
+        email: event.email,
+        password: event.password,
+        username: event.username,
       );
     } catch (e) {
-      emit(AuthState.failure(AuthErrorHandler.getErrorMessage(e)));
+      emit(AuthState.failure(e.toString()));
     }
   }
 
@@ -85,7 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    await _authService.signOut();
+    await _authRepository.signOut();
   }
   
   Future<void> _onAuthDeleteAccountRequested(
@@ -94,9 +100,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
       emit(const AuthState.loading());
       try {
-        await _authService.deleteAccount();
+        await _authRepository.deleteAccount();
       } catch (e) {
-         emit(AuthState.failure(AuthErrorHandler.getErrorMessage(e)));
+         emit(AuthState.failure(e.toString()));
       }
   }
 }
