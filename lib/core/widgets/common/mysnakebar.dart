@@ -41,7 +41,7 @@ class MySnackBar {
       shouldIconPulse: true,
       boxShadows: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.15),
+          color: Colors.grey.withValues(alpha: 0.15),
           blurRadius: 20,
           offset: const Offset(0, 3),
         ),

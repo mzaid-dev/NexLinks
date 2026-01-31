@@ -9,7 +9,7 @@ class NoInternetBanner extends StatelessWidget {
     return FadeInDown(
       duration: const Duration(milliseconds: 300),
       child: Material(
-        color: Colors.redAccent.withOpacity(0.9),
+        color: Colors.redAccent.withValues(alpha: 0.9),
         child: SafeArea(
           bottom: false,
           child: Container(

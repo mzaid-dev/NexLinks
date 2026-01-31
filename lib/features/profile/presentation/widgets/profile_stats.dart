@@ -21,9 +21,9 @@ class ProfileStats extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildStatItem(context, "SESSIONS", "$sessions+"),
-          Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
+          Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
           _buildStatItem(context, "SUCCESS", "$successRate%"),
-           Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
+           Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
           _buildStatItem(context, "EXPERIENCE", "$experienceYears Years"),
         ],
       ),
@@ -35,7 +35,7 @@ class ProfileStats extends StatelessWidget {
       children: [
         Text(label,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 10,
                 letterSpacing: 1.2,
                 fontWeight: FontWeight.w600)),

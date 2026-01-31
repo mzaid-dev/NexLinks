@@ -9,9 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
+import 'package:chat_app/core/widgets/common/skeleton_shimmer.dart';
+import 'package:chat_app/core/widgets/common/glass_container.dart';
+import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
 import 'package:chat_app/core/widgets/common/app_empty_state.dart';
 import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
-import 'package:chat_app/features/home/presentation/widgets/people_grid_shimmer.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 
 class ExploreView extends StatefulWidget {
@@ -107,9 +110,12 @@ class _ExploreViewState extends State<ExploreView> {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 50,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: GlassContainer(
+                borderRadius: BorderRadius.circular(30),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: SizedBox(
+                height: 54,
                 child: Stack(
                   alignment: Alignment.centerRight,
                   children: [
@@ -119,13 +125,19 @@ class _ExploreViewState extends State<ExploreView> {
                       opacity: _isSearchExpanded ? 0.0 : 1.0,
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Explore People", 
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface, 
-                            fontSize: 24, 
-                            fontWeight: FontWeight.bold
-                          )
+                        child: AnimatedTextKit(
+                          animatedTexts: [
+                            TyperAnimatedText(
+                              "Explore People",
+                              textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1.0,
+                                color: Colors.white,
+                              ),
+                              speed: const Duration(milliseconds: 100),
+                            ),
+                          ],
+                          totalRepeatCount: 1,
                         ),
                       ),
                     ),
@@ -134,12 +146,12 @@ class _ExploreViewState extends State<ExploreView> {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeOutBack, 
-                      width: _isSearchExpanded ? MediaQuery.of(context).size.width - 40 : 48,
+                      width: _isSearchExpanded ? MediaQuery.of(context).size.width - 72 : 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1))
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05))
                       ),
                       child: _isSearchExpanded 
                         ? Stack( 
@@ -157,7 +169,7 @@ class _ExploreViewState extends State<ExploreView> {
                                     style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                     decoration: InputDecoration(
                                       hintText: "Search people...", 
-                                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.38)),
+                                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)),
                                       border: InputBorder.none,
                                       focusedBorder : InputBorder.none,
                                       enabledBorder : InputBorder.none,
@@ -170,7 +182,7 @@ class _ExploreViewState extends State<ExploreView> {
                               ),
                               Positioned(
                                 right: 0,
-                                child: GestureDetector(
+                                child: TactileFeedback(
                                   onTap: () {
                                     setState(() {
                                       _isSearchExpanded = false;
@@ -179,13 +191,13 @@ class _ExploreViewState extends State<ExploreView> {
                                   },
                                   child: SizedBox(
                                     width: 48, height: 48,
-                                  child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), size: 22),
+                                  child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
                                   ),
                                 ),
                               )
                             ],
                           )
-                        : GestureDetector(
+                        : TactileFeedback(
                             onTap: () {
                               setState(() {
                                 _isSearchExpanded = true;
@@ -194,17 +206,18 @@ class _ExploreViewState extends State<ExploreView> {
                             child: Container(
                               width: 48, height: 48,
                               decoration: const BoxDecoration(color: Colors.transparent),
-                              child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), size: 22),
+                              child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
                             ),
                           ),
                     )
                   ],
                 ),
               ),
+              ),
             ),
           ),
           
-          if (_isLoading)
+          if (_isLoading && _users.isEmpty)
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverGrid(
@@ -215,8 +228,12 @@ class _ExploreViewState extends State<ExploreView> {
                   childAspectRatio: MediaQuery.of(context).size.width < 380 ? 0.7 : 0.75,
                 ),
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => const PeopleGridShimmer(),
-                  childCount: 4,
+                  (context, index) => const SkeletonShimmer(
+                    width: double.infinity,
+                    height: double.infinity,
+                    borderRadius: 32,
+                  ),
+                  childCount: 6,
                 ),
               ),
             )

@@ -3,6 +3,7 @@ import 'package:chat_app/features/home/presentation/widgets/profile_connect_butt
 import 'package:chat_app/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserModel displayUser;
@@ -40,7 +41,7 @@ class ProfileHeader extends StatelessWidget {
                         end: Alignment.bottomCenter),
                     boxShadow: [
                       BoxShadow(
-                          color: const Color(0xFF2979FF).withOpacity(0.4),
+                          color: const Color(0xFF2979FF).withValues(alpha: 0.4),
                           blurRadius: 20,
                           spreadRadius: 1)
                     ]),
@@ -80,11 +81,19 @@ class ProfileHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text(displayUser.fullName ?? displayUser.username,
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 24, // Larger
-                fontWeight: FontWeight.bold)),
+        AnimatedTextKit(
+          animatedTexts: [
+            TyperAnimatedText(
+              displayUser.fullName ?? displayUser.username,
+              textStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+              speed: const Duration(milliseconds: 100),
+            ),
+          ],
+          totalRepeatCount: 1,
+        ),
         const SizedBox(height: 4),
         Text(displayUser.role, // "Cybersecurity Expert"
             style: const TextStyle(
@@ -110,10 +119,10 @@ class ProfileHeader extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2979FF).withOpacity(0.2), 
+                  color: const Color(0xFF2979FF).withValues(alpha: 0.2), 
                   borderRadius: BorderRadius.circular(20),
                   border:
-                      Border.all(color: const Color(0xFF2979FF).withOpacity(0.5)),
+                      Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.5)),
                 ),
                 child: const Text("Edit Profile",
                     style: TextStyle(

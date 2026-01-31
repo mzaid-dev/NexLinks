@@ -6,13 +6,13 @@ import 'package:chat_app/core/widgets/common/mysnakebar.dart';
 import 'package:chat_app/features/profile/presentation/widgets/edit_profile_avatar.dart';
 import 'package:chat_app/features/profile/presentation/widgets/edit_profile_form.dart';
 import 'package:chat_app/features/profile/presentation/widgets/edit_profile_header.dart';
-import 'package:chat_app/core/services/storage_service.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:chat_app/features/profile/presentation/widgets/avatar_selector_sheet.dart';
+import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
+import 'package:chat_app/core/widgets/common/my_textformfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
-import 'dart:io';
+import 'package:go_router/go_router.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -31,8 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   
   List<String> _expertise = [];
   bool _isLoading = false;
-  XFile? _imageFile;
-  final ImagePicker _picker = ImagePicker();
+  String? _selectedAvatarUrl;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -43,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController = TextEditingController(text: widget.user.bio);
     _experienceController = TextEditingController(text: widget.user.experienceYears.toString());
     _expertise = List.from(widget.user.expertise);
+    _selectedAvatarUrl = widget.user.photoURL;
   }
 
   @override
@@ -54,24 +54,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 256,   // Extremely optimized for instant avatars
-        maxHeight: 256,
-        imageQuality: 50, // Minimum viable quality for speed
-      );
+  Future<void> _selectAvatar() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => const AvatarSelectorSheet(),
+    );
 
-      if (pickedFile != null) {
-        setState(() {
-          _imageFile = pickedFile;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        MySnackBar.show(context: context, message: "Error picking image: $e", isError: true);
-      }
+    if (result != null) {
+      setState(() {
+        _selectedAvatarUrl = result;
+      });
     }
   }
 
@@ -84,32 +78,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     try {
-      String? photoURL = widget.user.photoURL;
-
-      // 1. Handle Image Upload if new image selected
-      if (_imageFile != null) {
-        final storageService = context.read<StorageService>();
-        // Upload with security checks (defined in service)
-        photoURL = await storageService.uploadProfileImage(
-          widget.user.id, 
-          _imageFile!
-        );
-      }
-
       final updatedUser = widget.user.copyWith(
         fullName: _fullNameController.text.trim(),
         username: _usernameController.text.trim(),
         bio: _bioController.text.trim(),
         experienceYears: int.tryParse(_experienceController.text.trim()) ?? 0,
         expertise: _expertise,
-        photoURL: photoURL,
+        photoURL: _selectedAvatarUrl,
       );
 
       await context.read<FirestoreService>().updateUser(updatedUser);
 
       if (mounted) {
         MySnackBar.show(context: context, message: "Profile updated!", isError: false);
-        // Small delay to allow snackbar animation to start and be seen before moving back
         Future.delayed(const Duration(milliseconds: 1200), () {
           if (mounted) context.pop();
         });
@@ -154,9 +135,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               margin: const EdgeInsets.only(bottom: 24),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF22D3EE).withOpacity(0.1),
+                                color: const Color(0xFF22D3EE).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFF22D3EE).withOpacity(0.3)),
+                                border: Border.all(color: const Color(0xFF22D3EE).withValues(alpha: 0.3)),
                               ),
                               child: Row(
                                 children: [
@@ -167,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text("Complete your profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
-                                        Text("Adding a photo and bio helps people get to know you better.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
+                                        Text("Adding a photo and bio helps people get to know you better.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
                                       ],
                                     ),
                                   ),
@@ -177,21 +158,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
 
                        // Avatar
-                       EditProfileAvatar(
-                         user: widget.user,
-                         localImage: _imageFile,
-                         onTap: _pickImage,
+                       TactileFeedback(
+                         onTap: _selectAvatar,
+                         child: EditProfileAvatar(
+                           user: widget.user,
+                           selectedAvatarUrl: _selectedAvatarUrl,
+                         ),
                        ),
 
                        const SizedBox(height: 16),
                        Text(
                          widget.user.fullName?.isNotEmpty == true ? widget.user.fullName! : widget.user.username, 
-                         style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold)
+                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                           fontWeight: FontWeight.w900,
+                           letterSpacing: -1.0,
+                         ),
                        ),
                        const SizedBox(height: 4),
                        Text(
                          widget.user.role.isNotEmpty ? widget.user.role : "Flutter Enthusiast", 
-                         style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w600)
+                         style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w700)
                        ),
                        
                        const SizedBox(height: 32),
@@ -213,14 +199,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                        const SizedBox(height: 40),
                        
                        // Save Button
-                        GestureDetector(
+                        TactileFeedback(
                           onTap: _isLoading ? null : _saveProfile,
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             width: double.infinity,
-                            height: 56,
+                            height: 60,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(30),
                               gradient: const LinearGradient(
                                 colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
                                 begin: Alignment.centerLeft,
@@ -228,8 +214,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF2563EB).withOpacity(0.3),
-                                  blurRadius: 15,
+                                  color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+                                  blurRadius: 20,
                                   offset: const Offset(0, 8)
                                 )
                               ]
@@ -237,7 +223,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             child: Center(
                               child: _isLoading 
                                ? const AppLoadingIndicator(size: 24, color: Colors.white, isFullScreen: false, showTimeoutMessage: false)
-                               : const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                               : const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                             ),
                           ),
                         ),
@@ -256,37 +242,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 
   Widget _buildAboutSection() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.05), 
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1))
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("About", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _bioController, 
-            maxLines: 4,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8), height: 1.5),
-            decoration: InputDecoration(
-              hintText: "Write a short bio about yourself...",
-              hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3)),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10, left: 4),
+          child: Text(
+            "About",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
             ),
           ),
-        ],
-      ),
+        ),
+        MyTextFormField(
+          controller: _bioController,
+          hintText: "Write a short bio about yourself...",
+          keyboardType: TextInputType.multiline,
+          maxLines: 4,
+        ),
+      ],
     );
   }
 }

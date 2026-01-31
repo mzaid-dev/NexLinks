@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
 import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 
 class ChatListView extends StatelessWidget {
@@ -36,13 +37,20 @@ class ChatListView extends StatelessWidget {
             children: [
               FadeInDown(
                 duration: const Duration(milliseconds: 600),
-                child: Text(
-                  "Messages",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Messages",
+                      textStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
+                      speed: const Duration(milliseconds: 100),
+                    ),
+                  ],
+                  totalRepeatCount: 1,
                 ),
               ),
               const SizedBox(height: 20),
@@ -61,11 +69,11 @@ class ChatListView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error_outline_rounded, color: Colors.red.withOpacity(0.5), size: 48),
+                              Icon(Icons.error_outline_rounded, color: Colors.red.withValues(alpha: 0.5), size: 48),
                               const SizedBox(height: 16),
                               Text(
                                 "Something went wrong",
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                               ),
                               const SizedBox(height: 16),
                               TextButton.icon(
@@ -105,12 +113,12 @@ class ChatListView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.chat_bubble_outline_rounded, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), size: 64),
+                              Icon(Icons.chat_bubble_outline_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1), size: 64),
                               const SizedBox(height: 16),
                               Text(
                                 "No connections yet.\nAccepted requests will appear here.",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), height: 1.5),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), height: 1.5),
                               ),
                             ],
                           ),
@@ -156,25 +164,51 @@ class ChatUserTile extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(1.5),
-                  decoration: const BoxDecoration(
+                user.photoURL != null && user.photoURL!.isNotEmpty
+                ? Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                    )
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2979FF).withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      )
+                    ]
                   ),
                   child: CircleAvatar(
                     radius: 24,
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    backgroundImage: NetworkImage(user.photoURL!),
+                  ),
+                )
+                : Container(
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    alignment: Alignment.center,
                     child: Text(
                       user.username.isNotEmpty ? user.username[0].toUpperCase() : '?',
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                ),
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
                   builder: (context, snapshot) {
@@ -209,7 +243,7 @@ class ChatUserTile extends StatelessWidget {
                     if (unreadSnapshot.hasData && unreadSnapshot.data! > 0) {
                       return Text("${unreadSnapshot.data} new messages", style: const TextStyle(color: Color(0xFFFF3B30), fontSize: 12, fontWeight: FontWeight.bold));
                     }
-                    return Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? const Color(0xFF00FF94) : Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12));
+                    return Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? const Color(0xFF00FF94) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12));
                   },
                 ),
               ],
@@ -217,8 +251,8 @@ class ChatUserTile extends StatelessWidget {
             const Spacer(),
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05), shape: BoxShape.circle),
-              child: Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), size: 14),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05), shape: BoxShape.circle),
+              child: Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 14),
             ),
           ],
         ),

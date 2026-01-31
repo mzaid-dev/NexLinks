@@ -11,6 +11,7 @@ import 'package:chat_app/core/widgets/common/app_base_view.dart';
 import 'package:chat_app/core/widgets/common/app_empty_state.dart';
 import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -39,11 +40,17 @@ class HomeView extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Good Morning,", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 16)),
+                              Text("Good Morning,", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16)),
                               const SizedBox(height: 4),
-                              Text(
-                                user?.username ?? "User",
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold),
+                              AnimatedTextKit(
+                                animatedTexts: [
+                                  TyperAnimatedText(
+                                    user?.username ?? "User",
+                                    textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold),
+                                    speed: const Duration(milliseconds: 100),
+                                  ),
+                                ],
+                                totalRepeatCount: 1,
                               ),
                             ],
                           ),
@@ -90,12 +97,12 @@ class HomeView extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF2979FF).withOpacity(0.15),
-                                  const Color(0xFF00FF94).withOpacity(0.15),
+                                  const Color(0xFF2979FF).withValues(alpha: 0.15),
+                                  const Color(0xFF00FF94).withValues(alpha: 0.15),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: const Color(0xFF2979FF).withOpacity(0.3)),
+                              border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.3)),
                             ),
                             child: Column(
                               children: [
@@ -104,7 +111,7 @@ class HomeView extends StatelessWidget {
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF2979FF).withOpacity(0.2),
+                                        color: const Color(0xFF2979FF).withValues(alpha: 0.2),
                                         shape: BoxShape.circle,
                                       ),
                                       child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF2979FF)),
@@ -115,7 +122,7 @@ class HomeView extends StatelessWidget {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text("Complete your profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
-                                          Text("Help others find you by adding a bio and your skills.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 13)),
+                                          Text("Help others find you by adding a bio and your skills.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13)),
                                         ],
                                       ),
                                     ),
@@ -144,7 +151,16 @@ class HomeView extends StatelessWidget {
             // Header for recommended users
             Align(
               alignment: Alignment.centerLeft,
-              child: Text("People you may know", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  TyperAnimatedText(
+                    "People you may know",
+                    textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+                    speed: const Duration(milliseconds: 100),
+                  ),
+                ],
+                totalRepeatCount: 1,
+              ),
             ),
             const SizedBox(height: 16),
             const UserListSection(onlyFriends: false),
@@ -238,37 +254,69 @@ class UserTile extends StatelessWidget {
         onTap: () => context.push(AppRoutes.profile, extra: user),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(1.5),
-              decoration: const BoxDecoration(
+            user.photoURL != null && user.photoURL!.isNotEmpty 
+            ? Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                )
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2979FF).withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  )
+                ]
               ),
               child: Hero(
                 tag: 'avatar_${user.id}',
                 child: CircleAvatar(
                   radius: 24,
-                  backgroundColor: Colors.transparent,
-                  child: Text(user.username.isNotEmpty ? user.username[0].toUpperCase() : '?', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  backgroundImage: NetworkImage(user.photoURL!),
                 ),
               ),
-            ),
+            )
+            : Hero(
+                tag: 'avatar_${user.id}',
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    user.username.isNotEmpty ? user.username[0].toUpperCase() : '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(user.username, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                  Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? Colors.green : Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                  Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? Colors.green : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
                 ],
               ),
             ),
             const Spacer(),
-            Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), size: 14),
+            Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 14),
           ],
         ),
       ),

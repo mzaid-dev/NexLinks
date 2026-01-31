@@ -24,12 +24,12 @@ class ProfileExpertise extends StatelessWidget {
           children: expertise.map((tag) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF2979FF).withOpacity(0.2)),
+              border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.2)),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2979FF).withOpacity(0.1),
+                  color: const Color(0xFF2979FF).withValues(alpha: 0.1),
                   blurRadius: 8
                 )
               ]

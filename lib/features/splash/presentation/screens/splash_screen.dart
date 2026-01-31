@@ -1,6 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,108 +9,372 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
+class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin {
+  String _phase = 'logo'; // logo, text, loading, exit
+  double _progress = 0;
+  late Timer _phaseTimer1;
+  late Timer _phaseTimer2;
+  late Timer _progressTimer;
+  
+  // For the scanline effect
+  late AnimationController _scanlineController;
+  
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+    
+    _scanlineController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
-    );
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
-    );
-    _animationController.forward();
-    // No need for manual navigation call, auth listener in router handles redirection.
+      duration: const Duration(seconds: 4),
+    )..repeat();
+
+    // Sequence Phasing
+    _phaseTimer1 = Timer(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _phase = 'text');
+    });
+    
+    _phaseTimer2 = Timer(const Duration(milliseconds: 1400), () {
+      if (mounted) setState(() => _phase = 'loading');
+    });
+
+    // Organic Progress Simulation
+    _progressTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (!mounted) return;
+      if (_phase == 'loading') {
+        setState(() {
+          if (_progress >= 100) {
+            _progress = 100;
+            _phase = 'exit';
+            timer.cancel();
+          } else {
+            _progress += math.Random().nextDouble() * 15;
+            if (_progress > 100) _progress = 100;
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _phaseTimer1.cancel();
+    _phaseTimer2.cancel();
+    _progressTimer.cancel();
+    _scanlineController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isExit = _phase == 'exit';
+    
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF121212),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF2563EB).withOpacity(0.2),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+      body: AnimatedOpacity(
+        duration: const Duration(milliseconds: 800),
+        opacity: isExit ? 0.0 : 1.0,
+        child: AnimatedScale(
+          duration: const Duration(milliseconds: 800),
+          scale: isExit ? 1.1 : 1.0,
+          curve: Curves.easeOutQuart,
+          child: Stack(
+            children: [
+              // 1. Ambient Background Glow
+              Center(
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2979FF).withValues(alpha: 0.12),
+                        blurRadius: 100,
+                        spreadRadius: 50,
                       ),
-                      child: Center(
-                        child: Image.asset(
-                          'assets/branding/logo.png',
-                          width: 80,
-                          height: 80,
-                          errorBuilder: (context, error, stackTrace) => Icon(Icons.hub_rounded, size: 60, color: Theme.of(context).colorScheme.primary),
+                    ],
+                  ),
+                ),
+              ),
+
+              // 2. Scanline Effect
+              AnimatedBuilder(
+                animation: _scanlineController,
+                builder: (context, child) {
+                  return Positioned(
+                    top: MediaQuery.sizeOf(context).height * _scanlineController.value,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 1,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            const Color(0xFF2979FF).withValues(alpha: 0.1),
+                            Colors.transparent,
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ).createShader(bounds),
-                      child: Text(
-                        "NexLinks",
-                        style: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
+                  );
+                },
+              ),
+
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo Container
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 1000),
+                      curve: const Cubic(0.2, 0.8, 0.2, 1.0),
+                      width: 120,
+                      height: 120,
+                      transform: Matrix4.translationValues(
+                        0, 
+                        _phase == 'logo' ? 40 : 0, 
+                        0
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0D0D0D),
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF2979FF).withValues(alpha: 0.2),
+                            blurRadius: 50,
+                            offset: const Offset(0, 20),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(32),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Internal Pulsing Glow
+                            const _PulseGlow(),
+                            
+                            // Logo Image
+                            Opacity(
+                              opacity: _phase == 'logo' ? 0.0 : 1.0,
+                              child: Image.asset(
+                                'assets/branding/logo.png',
+                                width: 70,
+                                height: 70,
+                                errorBuilder: (c, e, s) => const Icon(
+                                  Icons.hub_rounded, 
+                                  size: 60, 
+                                  color: Colors.white
+                                ),
+                              ),
                             ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      "Connecting Minds, Syncing Worlds",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withOpacity(0.6),
-                        letterSpacing: 0.5,
+                    const SizedBox(height: 40),
+
+                    // App Name & Tagline
+                    ClipRect(
+                      child: AnimatedTitle(
+                        visible: _phase == 'text' || _phase == 'loading',
+                        title: "NexLinks",
+                        tagline: "CONNECT WITH FUTURE",
                       ),
                     ),
-                    const SizedBox(height: 64),
-                    LoadingAnimationWidget.staggeredDotsWave(color: const Color(0xFF22D3EE), size: 40)
                   ],
                 ),
               ),
-            );
-          },
+
+              // 3. Loading Bar Section
+              Positioned(
+                bottom: 100,
+                left: 0,
+                right: 0,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 700),
+                  opacity: _phase == 'loading' ? 1.0 : 0.0,
+                  child: Center(
+                    child: SizedBox(
+                      width: 260,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "INITIALISING SYNC",
+                                style: TextStyle(
+                                  color: Colors.white24,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              Text(
+                                "${_progress.toInt()}%",
+                                style: const TextStyle(
+                                  color: Color(0xFF2979FF),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            height: 3,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: FractionallySizedBox(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: _progress / 100,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF2979FF), Color(0xFF00F2FE)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF2979FF).withValues(alpha: 0.5),
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            "NEURAL PROTOCOL V3.0.42",
+                            style: TextStyle(
+                              color: Colors.white10,
+                              fontSize: 7,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _PulseGlow extends StatefulWidget {
+  const _PulseGlow();
+
+  @override
+  State<_PulseGlow> createState() => _PulseGlowState();
+}
+
+class _PulseGlowState extends State<_PulseGlow> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0.1, end: 0.3).animate(_controller),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            colors: [Color(0xFF2979FF), Colors.transparent],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedTitle extends StatelessWidget {
+  final bool visible;
+  final String title;
+  final String tagline;
+
+  const AnimatedTitle({
+    super.key,
+    required this.visible,
+    required this.title,
+    required this.tagline,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeOutCubic,
+          transform: Matrix4.translationValues(0, visible ? 0 : 20, 0),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 700),
+            opacity: visible ? 1.0 : 0.0,
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [Colors.white, Color(0xFFAAAAAA)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ).createShader(bounds),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 42,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1.5,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeOutCubic,
+          transform: Matrix4.translationValues(0, visible ? 0 : 10, 0),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 700),
+            opacity: visible ? 1.0 : 0.0,
+            child: Text(
+              tagline,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.3),
+                fontSize: 9,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 4,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

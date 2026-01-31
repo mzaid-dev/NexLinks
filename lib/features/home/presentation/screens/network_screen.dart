@@ -7,6 +7,7 @@ import 'package:chat_app/features/home/presentation/widgets/network_request_card
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class NetworkScreen extends StatelessWidget {
   const NetworkScreen({super.key});
@@ -24,14 +25,23 @@ class NetworkScreen extends StatelessWidget {
             icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).colorScheme.onSurface, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text("Network", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 22)),
+          title: AnimatedTextKit(
+            animatedTexts: [
+              TyperAnimatedText(
+                "Network",
+                textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 22),
+                speed: const Duration(milliseconds: 100),
+              ),
+            ],
+            totalRepeatCount: 1,
+          ),
           centerTitle: false,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)))
+                border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)))
               ),
               child: const TabBar(
                 labelColor: Color(0xFF2979FF),
@@ -79,9 +89,9 @@ class _ReceivedRequestsTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.inbox_outlined, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2), size: 64),
+                Icon(Icons.inbox_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), size: 64),
                 const SizedBox(height: 16),
-                Text("No pending requests", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                Text("No pending requests", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5))),
               ],
             ),
           );
@@ -140,9 +150,9 @@ class _SentRequestsTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.send_outlined, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2), size: 64),
+                Icon(Icons.send_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), size: 64),
                 const SizedBox(height: 16),
-                Text("No sent requests", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                Text("No sent requests", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5))),
               ],
             ),
           );

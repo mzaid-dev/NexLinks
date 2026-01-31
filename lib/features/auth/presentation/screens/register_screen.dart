@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/router/route_names.dart';
 import 'package:go_router/go_router.dart';
 import 'package:chat_app/core/theme/app_theme.dart';
@@ -28,8 +28,6 @@ class _RegisterViewState extends State<RegisterView> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _obsecurePassword = true;
-  bool _obsecureConfirmPassword = true;
   bool _isCheckingUsername = false;
 
   @override
@@ -41,8 +39,7 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
-  void _togglePasswordVisibility() => setState(() => _obsecurePassword = !_obsecurePassword);
-  void _toggleConfirmPasswordVisibility() => setState(() => _obsecureConfirmPassword = !_obsecureConfirmPassword);
+
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
@@ -96,68 +93,73 @@ class _RegisterViewState extends State<RegisterView> {
                       children: [
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
-                          child: Text("Create Account", style: Theme.of(context).textTheme.headlineLarge),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                "Create Account",
+                                textStyle: Theme.of(context).textTheme.headlineLarge!,
+                                speed: const Duration(milliseconds: 80),
+                              ),
+                            ],
+                            totalRepeatCount: 1,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
-                          child: Text("Fill in your details to get started", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
+                          child: Text("Fill in your details to get started", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                         ),
                         const SizedBox(height: 40),
+                        _buildLabel("Username"),
                         FadeInUp(
                            duration: const Duration(milliseconds: 800),
                            delay: const Duration(milliseconds: 100),
                           child: MyTextFormField(
                             controller: _usernameController,
-                            labelText: 'Username',
                             hintText: 'Enter your unique username',
                             keyboardType: TextInputType.text,
                             prefixIcon: const Icon(Icons.person_outline),
                              validator: AppValidators.validateUsername,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
+                        _buildLabel("Email"),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
                           delay: const Duration(milliseconds: 200),
                           child: MyTextFormField(
                             controller: _emailController,
-                            labelText: 'Email',
                             hintText: 'Enter your email',
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: const Icon(Icons.email_outlined),
                              validator: AppValidators.validateEmail,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
+                        _buildLabel("Password"),
                         FadeInUp(
                            duration: const Duration(milliseconds: 800),
                            delay: const Duration(milliseconds: 300),
                           child: MyTextFormField(
                             controller: _passwordController,
-                            labelText: 'Password',
                             hintText: 'Enter your password',
                             keyboardType: TextInputType.text,
                             prefixIcon: const Icon(Icons.lock_outline),
-                            obscureText: _obsecurePassword,
-                            suffixIcon: Icon(_obsecurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                            onSuffixIconPressed: _togglePasswordVisibility,
+                            obscureText: true,
                              validator: AppValidators.validatePassword,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
+                        _buildLabel("Confirm Password"),
                         FadeInUp(
                            duration: const Duration(milliseconds: 800),
                            delay: const Duration(milliseconds: 400),
                           child: MyTextFormField(
                             controller: _confirmPasswordController,
-                            labelText: 'Confirm Password',
                             hintText: 'Confirm your password',
                             keyboardType: TextInputType.text,
                             prefixIcon: const Icon(Icons.lock_outline),
-                            obscureText: _obsecureConfirmPassword,
-                            suffixIcon: Icon(_obsecureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                            onSuffixIconPressed: _toggleConfirmPasswordVisibility,
+                            obscureText: true,
                             validator: (value) {
                               if (value?.isEmpty ?? true) return "Please enter your confirm password";
                               if (value != _passwordController.text) return 'Passwords do not match';
@@ -216,6 +218,24 @@ class _RegisterViewState extends State<RegisterView> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return FadeInUp(
+      duration: const Duration(milliseconds: 800),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, left: 4.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            letterSpacing: 0.2,
+          ),
+        ),
       ),
     );
   }

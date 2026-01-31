@@ -24,7 +24,7 @@ class ProfileAbout extends StatelessWidget {
           Text(
             bio!,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontSize: 14,
                 height: 1.5),
           ),

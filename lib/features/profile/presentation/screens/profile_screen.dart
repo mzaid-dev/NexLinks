@@ -7,12 +7,12 @@ import 'package:chat_app/features/profile/presentation/widgets/profile_expertise
 import 'package:chat_app/features/profile/presentation/widgets/profile_header.dart';
 import 'package:chat_app/features/profile/presentation/widgets/profile_stats.dart';
 import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
 import 'package:chat_app/features/auth/logic/auth_bloc.dart';
 import 'package:chat_app/features/auth/logic/auth_event.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel? user;
@@ -111,10 +111,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           else
             const SizedBox(width: 40), // Spacer to keep title centered
           
-          Text("Profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+          AnimatedTextKit(
+            animatedTexts: [
+              TyperAnimatedText(
+                "Profile",
+                textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+                speed: const Duration(milliseconds: 100),
+              ),
+            ],
+            totalRepeatCount: 1,
+          ),
           
           _buildIconBtn(
             icon: widget.isMe ? Icons.logout_rounded : Icons.more_vert_rounded,
+            iconColor: widget.isMe ? Colors.redAccent : null,
             onTap: () {
               if (widget.isMe) {
                  context.read<AuthBloc>().add(AuthLogoutRequested());
@@ -126,18 +136,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap, Color? iconColor}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
         ),
-        child: Icon(icon, color: Theme.of(context).colorScheme.onSurface, size: 20),
+        child: Icon(icon, color: iconColor ?? Theme.of(context).colorScheme.onSurface, size: 20),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
 import 'package:chat_app/core/services/auth_service.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
@@ -21,7 +20,7 @@ class NotificationPanel extends StatelessWidget {
       decoration: BoxDecoration(
          color: Theme.of(context).scaffoldBackgroundColor,
          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-         border: Border(top: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), width: 1))
+         border: Border(top: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1), width: 1))
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
@@ -32,7 +31,7 @@ class NotificationPanel extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               width: 40, height: 4,
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
             ),
           ),
           
@@ -50,7 +49,7 @@ class NotificationPanel extends StatelessWidget {
                                   final requests = snapshot.data?.docs ?? [];
 
                   if (requests.isEmpty) {
-                    return Center(child: Text("No new notifications", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))));
+                    return Center(child: Text("No new notifications", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5))));
                   }
 
                   // Deduplication for legacy records
@@ -95,9 +94,9 @@ class NotificationPanel extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05))
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05))
       ),
       child: Row(
         children: [
@@ -124,7 +123,7 @@ class NotificationPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(user.username, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600)),
-                Text("Sent you a friend request", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                Text("Sent you a friend request", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
               ],
             ),
           ),
@@ -143,7 +142,7 @@ class NotificationPanel extends StatelessWidget {
              },
              child: Container(
                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-               decoration: BoxDecoration(color: const Color(0xFF00FF94).withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+               decoration: BoxDecoration(color: const Color(0xFF00FF94).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
                child: const Text("Accept", style: TextStyle(color: Color(0xFF00FF94), fontSize: 12, fontWeight: FontWeight.bold)),
              ),
            ),
@@ -164,7 +163,7 @@ class NotificationPanel extends StatelessWidget {
             },
             child: Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
               child: const Icon(Icons.close, color: Colors.red, size: 16),
             ),
           ),

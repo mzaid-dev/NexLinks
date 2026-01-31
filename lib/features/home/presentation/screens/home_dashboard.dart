@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
-                    colors: [const Color(0xFF2E8AF6).withOpacity(0.15), Colors.transparent],
+                    colors: [const Color(0xFF2E8AF6).withValues(alpha: 0.15), Colors.transparent],
                   ),
                 ),
               ),
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
-                    colors: [const Color(0xFF00F0FF).withOpacity(0.1), Colors.transparent],
+                    colors: [const Color(0xFF00F0FF).withValues(alpha: 0.1), Colors.transparent],
                   ),
                 ),
               ),

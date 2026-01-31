@@ -1,4 +1,3 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,7 +55,7 @@ class ProfileConnectButton extends StatelessWidget {
             if (isLoading && !requestSnapshot.hasData) {
                return Container(
                  height: 48, width: 48,
-                 decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                 decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
                  child: const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))),
                );
             }
@@ -123,15 +122,15 @@ class ProfileConnectButton extends StatelessWidget {
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 24),
         decoration: BoxDecoration(
-          color: isOutlined ? Colors.transparent : color.withOpacity(0.2),
+          color: isOutlined ? Colors.transparent : color.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: isOutlined ? Colors.grey.withOpacity(0.5) : color.withOpacity(0.5),
+            color: isOutlined ? Colors.grey.withValues(alpha: 0.5) : color.withValues(alpha: 0.5),
             width: 1.5,
           ),
           boxShadow: isOutlined ? [] : [
             BoxShadow(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4)
             )

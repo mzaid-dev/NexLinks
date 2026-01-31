@@ -10,6 +10,7 @@ import 'package:chat_app/features/chat/presentation/widgets/chat_message_bubble.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
+import 'package:chat_app/core/services/firestoreservice.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -46,7 +47,7 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthService>().currentUserId!;
-    _chatId = _chatService.getChatRoomId(_currentUserId, targetUser.id);
+    _chatId = _chatService.getChatRoomId(_currentUserId, widget.targetUser.id);
     
     // Initial mark as read
     context.read<ChatCubit>().markMessagesAsRead(_chatId, _currentUserId);
@@ -59,7 +60,7 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
-  UserModel get targetUser => widget.targetUser;
+  UserModel get initialTargetUser => widget.targetUser;
 
   @override
   void dispose() {
@@ -83,7 +84,7 @@ class _ChatViewState extends State<ChatView> {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
 
-    context.read<ChatCubit>().sendMessage(_chatId, text, _currentUserId, targetUser.id);
+    context.read<ChatCubit>().sendMessage(_chatId, text, _currentUserId, widget.targetUser.id);
     _messageController.clear();
     _scrollToBottom();
   }
@@ -137,81 +138,106 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Widget _buildChatHeader(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
-                ),
-                child: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).colorScheme.onSurface, size: 18),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.all(1.2),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              ),
-              child: Hero(
-                tag: 'avatar_${targetUser.id}',
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.transparent,
-                  child: Text(
-                    targetUser.username.isNotEmpty ? targetUser.username[0].toUpperCase() : '?', 
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.bold)
+    return StreamBuilder<UserModel>(
+      stream: context.read<FirestoreService>().getUserStream(widget.targetUser.id),
+      builder: (context, snapshot) {
+        final user = snapshot.data ?? widget.targetUser;
+        return SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(targetUser.username, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 6, height: 6,
-                      decoration: BoxDecoration(
-                        color: targetUser.isOnline ? const Color(0xFF00F0FF) : Colors.grey,
+                const SizedBox(width: 12),
+                user.photoURL != null && user.photoURL!.isNotEmpty
+                ? Container(
+                  padding: const EdgeInsets.all(1.5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2979FF).withValues(alpha: 0.3),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      )
+                    ]
+                  ),
+                  child: Hero(
+                    tag: 'avatar_${user.id}',
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      backgroundImage: NetworkImage(user.photoURL!),
+                    ),
+                  ),
+                )
+                : Hero(
+                    tag: 'avatar_${user.id}',
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.username.isNotEmpty ? user.username[0].toUpperCase() : '?', 
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Text(targetUser.isOnline ? "Online" : "Offline", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 11)),
+                  ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Container(
+                          width: 6, height: 6,
+                          decoration: BoxDecoration(
+                            color: user.isOnline ? const Color(0xFF00F0FF) : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(user.isOnline ? "Online" : "Offline", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11)),
+                      ],
+                    ),
                   ],
                 ),
+                const Spacer(),
               ],
             ),
-            const Spacer(),
-            // Container(
-            //   padding: const EdgeInsets.all(10),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white.withOpacity(0.05),
-            //     shape: BoxShape.circle,
-            //     border: Border.all(color: Colors.white.withOpacity(0.1)),
-            //   ),
-            //   child: const Icon(Icons.search, color: Colors.white, size: 20),
-            // ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }

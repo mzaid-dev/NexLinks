@@ -67,9 +67,9 @@ class _EditProfileFormState extends State<EditProfileForm> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1))),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -98,7 +98,9 @@ class _EditProfileFormState extends State<EditProfileForm> {
           const SizedBox(height: 24),
           Text("Expertise",
               style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.w600)),
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           
           // Chips
@@ -107,9 +109,9 @@ class _EditProfileFormState extends State<EditProfileForm> {
             runSpacing: 8,
             children: widget.expertise.map((tag) => Chip(
               label: Text(tag, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
-              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               side: BorderSide.none,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
               onDeleted: () => _removeExpertise(tag),
             )).toList(),
@@ -117,64 +119,14 @@ class _EditProfileFormState extends State<EditProfileForm> {
           
           if (widget.expertise.isNotEmpty) const SizedBox(height: 16),
           
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 48,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _isInputEmpty ? Colors.transparent : const Color(0xFF2979FF).withOpacity(0.3),
-                    ),
-                  ),
-                  child: TextField(
-                    controller: _expertiseInputController,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-                    decoration: InputDecoration(
-                      hintText: "Add skill (e.g. Flutter)",
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2), fontSize: 14),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    onSubmitted: (_) => _addExpertise(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: _isInputEmpty ? null : _addExpertise,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _isInputEmpty 
-                      ? Colors.white.withOpacity(0.1) 
-                      : const Color(0xFF2979FF),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: _isInputEmpty ? [] : [
-                      BoxShadow(
-                        color: const Color(0xFF2979FF).withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4)
-                      )
-                    ]
-                  ),
-                  child: Icon(
-                    Icons.add_rounded, 
-                    color: _isInputEmpty ? Theme.of(context).colorScheme.onSurface.withOpacity(0.3) : Colors.white,
-                  ),
-                ),
-              )
-            ],
-          )
+          const SizedBox(height: 24),
+          _buildRegularTextField(
+            "Add Expertise",
+            "Add skill (e.g. Flutter)",
+            _expertiseInputController,
+            suffixIcon: const Icon(Icons.add_rounded),
+            onSuffixIconPressed: _addExpertise,
+          ),
 
         ],
       ),
@@ -184,13 +136,33 @@ class _EditProfileFormState extends State<EditProfileForm> {
   Widget _buildRegularTextField(
       String label, String placeholder, TextEditingController controller,
       {TextInputType keyboardType = TextInputType.text,
-      String? Function(String?)? validator}) {
-    return MyTextFormField(
-      controller: controller,
-      labelText: label,
-      hintText: placeholder,
-      keyboardType: keyboardType,
-      validator: validator,
+      String? Function(String?)? validator,
+      Widget? suffixIcon,
+      void Function()? onSuffixIconPressed}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10, left: 4),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+        MyTextFormField(
+          controller: controller,
+          hintText: placeholder,
+          keyboardType: keyboardType,
+          validator: validator,
+          suffixIcon: suffixIcon,
+          onSuffixIconPressed: onSuffixIconPressed,
+        ),
+      ],
     );
   }
 }

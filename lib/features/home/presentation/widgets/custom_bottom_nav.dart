@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
 
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -36,19 +37,19 @@ class CustomBottomNavBar extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardTheme.color!.withOpacity(0.7),
+              color: Theme.of(context).cardTheme.color!.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(52),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.white.withOpacity(0.4),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.white.withValues(alpha: 0.4),
                 width: 1.5,
               ),
                boxShadow: [
                   BoxShadow(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.black.withOpacity(0.5)
-                        : const Color(0xFFA3B1C6).withOpacity(0.3),
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
                     blurRadius: 24,
                     offset: const Offset(0, 10),
                   )
@@ -108,9 +109,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TactileFeedback(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 500),
         curve: Curves.fastOutSlowIn,
@@ -120,9 +120,9 @@ class _NavItem extends StatelessWidget {
         ),
         decoration: isSelected
             ? BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                color: const Color(0xFF2563EB).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: const Color(0xFF2E8AF6).withOpacity(0.3))
+                border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.2))
               )
             : const BoxDecoration(
                 color: Colors.transparent,
@@ -130,34 +130,28 @@ class _NavItem extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 1.0, end: isSelected ? 1.0 : 1.0),
-              duration: const Duration(milliseconds: 300),
-              builder: (context, scale, child) {
-                 return Stack(
-                   clipBehavior: Clip.none,
-                   children: [
-                     Icon(
-                       icon,
-                       color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-                       size: 24,
-                     ),
-                     if (badgeCount > 0)
-                       Positioned(
-                         top: -2,
-                         right: -2,
-                         child: Container(
-                           padding: const EdgeInsets.all(4),
-                           decoration: const BoxDecoration(
-                             color: Color(0xFFFF3B30),
-                             shape: BoxShape.circle,
-                           ),
-                           constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
-                         ),
-                       )
-                   ],
-                 );
-              }
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  color: isSelected ? const Color(0xFF2563EB) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                  size: 24,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFF3B30),
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                    ),
+                  )
+              ],
             ),
             AnimatedSize(
               duration: const Duration(milliseconds: 300),
@@ -170,8 +164,9 @@ class _NavItem extends StatelessWidget {
                     child: Text(
                       label,
                       style: const TextStyle(
-                        color: Color(0xFF2E8AF6),
-                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2563EB),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.2,
                         fontSize: 14,
                       ),
                       overflow: TextOverflow.clip,

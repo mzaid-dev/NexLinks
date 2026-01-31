@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:chat_app/router/route_names.dart';
 import 'package:go_router/go_router.dart';
@@ -24,17 +25,12 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obsecurePassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() => _obsecurePassword = !_obsecurePassword);
   }
 
   void _login() {
@@ -99,23 +95,32 @@ class _LoginViewState extends State<LoginView> {
                         const SizedBox(height: 32),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
-                          child: Text("Welcome Back !", style: Theme.of(context).textTheme.headlineLarge),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                "Welcome Back !",
+                                textStyle: Theme.of(context).textTheme.headlineLarge!,
+                                speed: const Duration(milliseconds: 80),
+                              ),
+                            ],
+                            totalRepeatCount: 1,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
                           child: Text(
                             "Sign In to continue chatting with friends & family",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                           ),
                         ),
                         const SizedBox(height: 40),
+                        _buildLabel("Email"),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
                           delay: const Duration(milliseconds: 100),
                           child: MyTextFormField(
                             controller: _emailController,
-                            labelText: 'Email',
                             hintText: 'Enter your email',
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: const Icon(Icons.email_outlined),
@@ -126,19 +131,17 @@ class _LoginViewState extends State<LoginView> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
+                        _buildLabel("Password"),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
                           delay: const Duration(milliseconds: 200),
                           child: MyTextFormField(
                             controller: _passwordController,
-                            labelText: 'Password',
                             hintText: 'Enter your password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             keyboardType: TextInputType.text,
-                            obscureText: _obsecurePassword,
-                            suffixIcon: Icon(_obsecurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                            onSuffixIconPressed: _togglePasswordVisibility,
+                            obscureText: true,
                             validator: (value) {
                               if (value?.isEmpty ?? true) return 'Please enter your password';
                               if (value!.length < 6) return 'Password must be at least 6 characters';
@@ -146,17 +149,17 @@ class _LoginViewState extends State<LoginView> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        FadeInUp(
-                           duration: const Duration(milliseconds: 800),
-                           delay: const Duration(milliseconds: 300),
-                           child: Center(
-                            child: TextButton(
-                              onPressed: () => context.push(AppRoutes.forgotPassword),
-                              child: const Text("Forgot Password?", style: TextStyle(color: AppTheme.primaryColor)),
-                            ),
-                          ),
-                        ),
+                        // const SizedBox(height: 16),
+                        // FadeInUp(
+                        //    duration: const Duration(milliseconds: 800),
+                        //    delay: const Duration(milliseconds: 300),
+                        //    child: Center(
+                        //     child: TextButton(
+                        //       onPressed: () => context.push(AppRoutes.forgotPassword),
+                        //       child: const Text("Forgot Password?", style: TextStyle(color: AppTheme.primaryColor)),
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 24),
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
@@ -175,31 +178,31 @@ class _LoginViewState extends State<LoginView> {
                           delay: const Duration(milliseconds: 500),
                           child: Row(
                             children: [
+                                const Expanded(child: Divider()),
+                               const Padding(
+                                 padding: EdgeInsets.symmetric(horizontal: 16),
+                                 child: Text("OR", style: TextStyle(fontSize: 12)),
+                               ),
                                const Expanded(child: Divider()),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text("OR", style: Theme.of(context).textTheme.bodySmall),
-                              ),
-                              const Expanded(child: Divider()),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 800),
-                          delay: const Duration(milliseconds: 600),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("Don't have an account?", style: Theme.of(context).textTheme.bodyMedium),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () => context.go(AppRoutes.register),
-                                child: Text("Sign Up", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
-                              )
-                            ],
-                          ),
-                        )
+                             ],
+                           ),
+                         ),
+                         const SizedBox(height: 32),
+                         FadeInUp(
+                           duration: const Duration(milliseconds: 800),
+                           delay: const Duration(milliseconds: 600),
+                           child: Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: [
+                               const Text("Don't have an account?", style: TextStyle(fontSize: 14)),
+                               const SizedBox(width: 8),
+                               GestureDetector(
+                                 onTap: () => context.go(AppRoutes.register),
+                                 child: const Text("Sign Up", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+                               )
+                             ],
+                           ),
+                         )
                       ],
                     ),
                   ),
@@ -208,6 +211,24 @@ class _LoginViewState extends State<LoginView> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return FadeInUp(
+      duration: const Duration(milliseconds: 800),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, left: 4.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            letterSpacing: 0.2,
+          ),
+        ),
       ),
     );
   }

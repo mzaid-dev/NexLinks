@@ -22,10 +22,10 @@ class NetworkRequestCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color, // Theme-aware card bg
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08)),
         boxShadow: [
            BoxShadow(
-             color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.1),
+             color: Colors.black.withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.1),
              blurRadius: 10, offset: const Offset(0, 4)
            )
         ]
@@ -69,7 +69,7 @@ class NetworkRequestCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     isSent ? "Pending acceptance" : "Wants to connect",
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12),
                   ),
                 ],
               ),
@@ -86,7 +86,7 @@ class NetworkRequestCard extends StatelessWidget {
                     color: const Color(0xFF2979FF),
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
-                      BoxShadow(color: const Color(0xFF2979FF).withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 2))
+                      BoxShadow(color: const Color(0xFF2979FF).withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 2))
                     ]
                   ),
                   child: Text("Accept", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 12, fontWeight: FontWeight.w600)),
@@ -99,7 +99,7 @@ class NetworkRequestCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                    border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Icon(Icons.close, color: Colors.grey, size: 18),
@@ -112,10 +112,10 @@ class NetworkRequestCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
+                    border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                  child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
                 ),
               )
             ]

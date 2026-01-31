@@ -1,5 +1,4 @@
 import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:chat_app/core/theme/app_theme.dart';
 import 'package:chat_app/core/widgets/common/my_textformfield.dart';
 import 'package:chat_app/core/widgets/common/mysnakebar.dart';
 import 'package:email_validator/email_validator.dart';
@@ -72,7 +71,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     duration: const Duration(milliseconds: 800),
                     child: Text(
                       "Enter your email to receive a password reset link.",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                     ),
                   ),
                   const SizedBox(height: 32),
