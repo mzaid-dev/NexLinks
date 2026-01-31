@@ -1,4 +1,5 @@
 import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:chat_app/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileAvatar extends StatelessWidget {
@@ -13,64 +14,76 @@ class EditProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty) 
+        ? selectedAvatarUrl 
+        : user.photoURL;
+
     return Center(
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Reference: Blue/Cyan Gradient Ring
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                    colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter),
-                boxShadow: [
-                  BoxShadow(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.5),
-                      blurRadius: 30,
-                      spreadRadius: 2)
-                ]),
-          ),
-          // spacer for ring effect
+          // Premium Profile Ring
           Container(
             width: 114,
             height: 114,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+          ),
+          // Inner Spacer
+          Container(
+            width: 108,
+            height: 108,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
               color: Theme.of(context).scaffoldBackgroundColor,
             ),
           ),
-          // Avatar Image
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.transparent,
-            backgroundImage: _getAvatarImage(),
-            child: _getAvatarChild(context),
+          // App Avatar Image
+          AppAvatar(
+            imageUrl: avatarUrl,
+            customSize: 100,
+            initials: user.username.isNotEmpty ? user.username[0] : '?',
+          ),
+          // Edit Icon Overlay
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.camera_alt_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  ImageProvider? _getAvatarImage() {
-    if (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty) {
-      return NetworkImage(selectedAvatarUrl!);
-    }
-    return null;
-  }
-
-  Widget? _getAvatarChild(BuildContext context) {
-    if (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty) return null;
-
-    return Text(
-      user.username.isNotEmpty ? user.username[0].toUpperCase() : '?',
-      style: TextStyle(
-          fontSize: 40,
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold),
     );
   }
 }

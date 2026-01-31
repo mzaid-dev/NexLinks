@@ -4,6 +4,7 @@ import 'package:chat_app/core/widgets/common/mysnakebar.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
 
@@ -75,12 +76,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                   ),
                   const SizedBox(height: 32),
+                  _buildLabel("Email Address"),
                   FadeInUp(
                     duration: const Duration(milliseconds: 800),
                     delay: const Duration(milliseconds: 100),
                     child: MyTextFormField(
                       controller: _emailController,
-                      labelText: 'Email',
                       hintText: 'Enter your email',
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: const Icon(Icons.email_outlined),
@@ -95,17 +96,34 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   FadeInUp(
                     duration: const Duration(milliseconds: 800),
                     delay: const Duration(milliseconds: 200),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _resetPassword,
-                        child: const Text("Send Reset Link"),
-                      ),
+                    child: AppButton(
+                      text: "Send Reset Link",
+                      onPressed: _isLoading ? null : _resetPassword,
+                      isLoading: _isLoading,
+                      style: AppButtonStyle.primary,
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return FadeInUp(
+      duration: const Duration(milliseconds: 800),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, left: 4.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            letterSpacing: 0.2,
           ),
         ),
       ),

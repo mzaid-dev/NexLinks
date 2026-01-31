@@ -1,3 +1,4 @@
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,7 +38,6 @@ class ProfileConnectButton extends StatelessWidget {
           return _buildButton(
             context: context,
             label: "Message",
-            color: const Color(0xFF2E8AF6), // Primary Blue
             icon: Icons.chat_bubble_outline_rounded,
             onTap: () {
               if (viewedUser != null) {
@@ -72,7 +72,6 @@ class ProfileConnectButton extends StatelessWidget {
                   return _buildButton(
                     context: context,
                     label: "Pending",
-                    color: Colors.grey,
                     icon: Icons.hourglass_empty_rounded,
                     isOutlined: true,
                     onTap: () {}, // No action
@@ -82,7 +81,6 @@ class ProfileConnectButton extends StatelessWidget {
                   return _buildButton(
                     context: context,
                     label: "Accept Request",
-                    color: const Color(0xFF00FF94), // Green
                     icon: Icons.check_rounded,
                     onTap: () async {
                       await firestoreService.acceptFriendRequest(requestDoc.id, currentUserId, viewedUserId);
@@ -96,7 +94,6 @@ class ProfileConnectButton extends StatelessWidget {
             return _buildButton(
               context: context,
               label: "Connect",
-              color: const Color(0xFF2E8AF6),
               icon: Icons.person_add_rounded,
               onTap: () async {
                 await firestoreService.sendFriendRequest(currentUserId, viewedUserId);
@@ -111,48 +108,17 @@ class ProfileConnectButton extends StatelessWidget {
   Widget _buildButton({
     required BuildContext context,
     required String label,
-    required Color color,
     required IconData icon,
     required VoidCallback onTap,
     bool isOutlined = false,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        decoration: BoxDecoration(
-          color: isOutlined ? Colors.transparent : color.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: isOutlined ? Colors.grey.withValues(alpha: 0.5) : color.withValues(alpha: 0.5),
-            width: 1.5,
-          ),
-          boxShadow: isOutlined ? [] : [
-            BoxShadow(
-              color: color.withValues(alpha: 0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 4)
-            )
-          ]
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: isOutlined ? Colors.grey : color, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isOutlined ? Colors.grey : Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+    return AppButton(
+      text: label,
+      onPressed: onTap,
+      style: isOutlined ? AppButtonStyle.outlined : (label == "Accept Request" ? AppButtonStyle.secondary : AppButtonStyle.primary),
+      icon: icon,
+      width: 160,
+      height: 48,
     );
   }
 }

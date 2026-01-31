@@ -10,6 +10,7 @@ import 'package:chat_app/core/widgets/common/mysnakebar.dart';
 import 'package:chat_app/features/auth/logic/auth_bloc.dart';
 import 'package:chat_app/features/auth/logic/auth_event.dart';
 import 'package:chat_app/features/auth/logic/auth_state.dart';
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
 import 'package:chat_app/core/utils/app_validators.dart';
 import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
@@ -171,12 +172,11 @@ class _RegisterViewState extends State<RegisterView> {
                         FadeInUp(
                            duration: const Duration(milliseconds: 800),
                            delay: const Duration(milliseconds: 500),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: (state.status == AuthStatus.loading || _isCheckingUsername) ? null : _register,
-                              child: const Text("Create Account"),
-                            ),
+                          child: AppButton(
+                            text: "Create Account",
+                            onPressed: _register,
+                            isLoading: state.status == AuthStatus.loading || _isCheckingUsername,
+                            style: AppButtonStyle.primary,
                           ),
                         ),
                         const SizedBox(height: 32),

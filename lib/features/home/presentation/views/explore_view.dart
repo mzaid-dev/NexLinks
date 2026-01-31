@@ -1,3 +1,4 @@
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:chat_app/core/services/auth_service.dart';
@@ -285,13 +286,16 @@ class _ExploreViewState extends State<ExploreView> {
             if (_hasMore && !_isSearchExpanded)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                   child: _isLoadingMore 
                     ? AppLoadingIndicator(size: 30, isFullScreen: false)
                     : Center(
-                        child: TextButton(
+                        child: AppButton(
+                          text: "Load More People",
                           onPressed: _fetchUsers,
-                          child: Text("Load More People", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                          style: AppButtonStyle.primary,
+                          width: 220,
+                          height: 48,
                         ),
                       ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:email_validator/email_validator.dart';
@@ -164,12 +165,11 @@ class _LoginViewState extends State<LoginView> {
                         FadeInUp(
                           duration: const Duration(milliseconds: 800),
                           delay: const Duration(milliseconds: 400),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: state.status == AuthStatus.loading ? null : _login,
-                              child: const Text("Sign In"),
-                            ),
+                          child: AppButton(
+                            text: "Sign In",
+                            onPressed: _login,
+                            isLoading: state.status == AuthStatus.loading,
+                            style: AppButtonStyle.primary,
                           ),
                         ),
                         const SizedBox(height: 32),

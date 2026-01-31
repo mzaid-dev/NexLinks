@@ -1,3 +1,4 @@
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -77,47 +78,36 @@ class NetworkRequestCard extends StatelessWidget {
             
             // Actions
             if (!isSent) ...[
-              // ACCEPT (Neo Blue Pill)
-              InkWell(
-                onTap: onAccept,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2979FF),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(color: const Color(0xFF2979FF).withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 2))
-                    ]
-                  ),
-                  child: Text("Accept", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 12, fontWeight: FontWeight.w600)),
-                ),
+              // ACCEPT
+              AppButton(
+                text: "Accept",
+                onPressed: onAccept,
+                style: AppButtonStyle.secondary,
+                width: 100,
+                height: 40,
+                borderRadius: 20,
               ),
-              const SizedBox(width: 12),
-              // DECLINE (Outlined)
-              InkWell(
-                onTap: onDecline,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: const Icon(Icons.close, color: Colors.grey, size: 18),
-                ),
-              )
+              const SizedBox(width: 8),
+              // DECLINE
+              AppButton(
+                text: "",
+                onPressed: onDecline,
+                style: AppButtonStyle.outlined,
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                icon: Icons.close,
+              ),
             ] else ...[
-               // CANCEL (Outlined)
-               InkWell(
-                onTap: onDecline, // Reuse decline as cancel
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
-                ),
-              )
+               // CANCEL
+               AppButton(
+                 text: "Cancel",
+                 onPressed: onDecline,
+                 style: AppButtonStyle.outlined,
+                 width: 100,
+                 height: 40,
+                 borderRadius: 20,
+               ),
             ]
           ],
         ),

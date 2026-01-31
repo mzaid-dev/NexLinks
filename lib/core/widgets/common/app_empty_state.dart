@@ -1,3 +1,4 @@
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -62,15 +63,12 @@ class AppEmptyState extends StatelessWidget {
               ),
               if (onAction != null && actionLabel != null) ...[
                 const SizedBox(height: 32),
-                ElevatedButton(
+                AppButton(
+                  text: actionLabel!,
                   onPressed: onAction,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  ),
-                  child: Text(actionLabel!),
+                  width: 200,
+                  style: AppButtonStyle.primary,
+                  height: 48,
                 ),
               ],
             ],

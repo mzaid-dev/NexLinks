@@ -6,30 +6,42 @@ class NoInternetBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FadeInDown(
-      duration: const Duration(milliseconds: 300),
-      child: Material(
-        color: Colors.redAccent.withValues(alpha: 0.9),
-        child: SafeArea(
-          bottom: false,
+    return Positioned(
+      top: 10,
+      left: 0,
+      right: 0,
+      child: FadeInDown(
+        duration: const Duration(milliseconds: 600),
+        child: Center(
           child: Container(
-            width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.white10, width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
                   Icons.wifi_off_rounded,
-                  color: Colors.white,
+                  color: Colors.redAccent,
                   size: 16,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Text(
-                  'No Internet Connection',
+                  'No internet connection',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
                       ),
                 ),
               ],

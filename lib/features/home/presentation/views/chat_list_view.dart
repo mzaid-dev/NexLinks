@@ -1,5 +1,6 @@
 import 'package:chat_app/core/services/auth_service.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
+import 'package:chat_app/core/widgets/common/app_avatar.dart';
 import 'package:chat_app/features/home/presentation/widgets/glass_card.dart';
 import 'package:chat_app/router/route_names.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
@@ -164,51 +165,11 @@ class ChatUserTile extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                user.photoURL != null && user.photoURL!.isNotEmpty
-                ? Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF2979FF).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                      )
-                    ]
-                  ),
-                  child: CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    backgroundImage: NetworkImage(user.photoURL!),
-                  ),
-                )
-                : Container(
-                    width: 48,
-                    height: 48,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      user.username.isNotEmpty ? user.username[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
+                AppAvatar(
+                  imageUrl: user.photoURL,
+                  customSize: 48,
+                  initials: user.username.isNotEmpty ? user.username[0] : '?',
+                ),
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
                   builder: (context, snapshot) {

@@ -1,4 +1,4 @@
-import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
+import 'package:chiclet/chiclet.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputArea extends StatelessWidget {
@@ -56,17 +56,13 @@ class ChatInputArea extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          TactileFeedback(
-            onTap: onSend,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                    colors: [Color(0xFF2563EB), Color(0xFF22D3EE)]),
-              ),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
-            ),
+          ChicletAnimatedButton(
+            onPressed: onSend,
+            backgroundColor: const Color(0xFF2563EB),
+            buttonHeight: 4,
+            borderRadius: 30,
+            padding: const EdgeInsets.all(12),
+            child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
           ),
           const SizedBox(width: 8),
         ],

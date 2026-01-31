@@ -1,6 +1,8 @@
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:chat_app/core/services/auth_service.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
+import 'package:chat_app/core/widgets/common/app_avatar.dart';
 import 'package:chat_app/features/home/presentation/widgets/glass_card.dart';
 import 'package:chat_app/router/route_names.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -129,14 +131,11 @@ class HomeView extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 16),
-                                ElevatedButton(
+                                AppButton(
+                                  text: "Edit Profile Now",
                                   onPressed: () => context.push(AppRoutes.profile, extra: user),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF2979FF),
-                                    minimumSize: const Size(double.infinity, 48),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  ),
-                                  child: const Text("Edit Profile Now"),
+                                  style: AppButtonStyle.primary,
+                                  height: 48,
                                 ),
                               ],
                             ),
@@ -254,57 +253,14 @@ class UserTile extends StatelessWidget {
         onTap: () => context.push(AppRoutes.profile, extra: user),
         child: Row(
           children: [
-            user.photoURL != null && user.photoURL!.isNotEmpty 
-            ? Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF2979FF).withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  )
-                ]
+            Hero(
+              tag: 'avatar_${user.id}',
+              child: AppAvatar(
+                imageUrl: user.photoURL,
+                customSize: 48,
+                initials: user.username.isNotEmpty ? user.username[0] : '?',
               ),
-              child: Hero(
-                tag: 'avatar_${user.id}',
-                child: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  backgroundImage: NetworkImage(user.photoURL!),
-                ),
-              ),
-            )
-            : Hero(
-                tag: 'avatar_${user.id}',
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    user.username.isNotEmpty ? user.username[0].toUpperCase() : '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(

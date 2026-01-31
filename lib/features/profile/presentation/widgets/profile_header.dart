@@ -1,6 +1,7 @@
 import 'package:chat_app/features/auth/data/models/user_model.dart';
 import 'package:chat_app/features/home/presentation/widgets/profile_connect_button.dart';
 import 'package:chat_app/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:chat_app/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -58,23 +59,10 @@ class ProfileHeader extends StatelessWidget {
               // 3. Avatar Image
               Hero(
                 tag: 'avatar_${displayUser.id}',
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: (displayUser.photoURL != null && displayUser.photoURL!.isNotEmpty) 
-                      ? NetworkImage(displayUser.photoURL!) 
-                      : null,
-                  child: (displayUser.photoURL == null || displayUser.photoURL!.isEmpty)
-                      ? Text(
-                          displayUser.username.isNotEmpty
-                              ? displayUser.username[0].toUpperCase()
-                              : '?',
-                          style: TextStyle(
-                              fontSize: 40,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold),
-                        )
-                      : null,
+                child: AppAvatar(
+                  imageUrl: displayUser.photoURL,
+                  customSize: 100,
+                  initials: displayUser.username.isNotEmpty ? displayUser.username[0] : '?',
                 ),
               ),
             ],

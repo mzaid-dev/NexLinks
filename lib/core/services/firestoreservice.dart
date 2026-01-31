@@ -213,4 +213,10 @@ class FirestoreService{
        return UserModel.fromMap(data);
     });
   }
+
+  Stream<List<String>> getAvatars() {
+    return _firestore.collection('avatars').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc.get('url') as String).toList();
+    });
+  }
 }

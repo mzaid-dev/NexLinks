@@ -1,7 +1,6 @@
 import 'package:chat_app/core/widgets/common/app_base_view.dart';
 import 'package:chat_app/core/services/firestoreservice.dart';
 import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
 import 'package:chat_app/core/widgets/common/mysnakebar.dart';
 import 'package:chat_app/features/profile/presentation/widgets/edit_profile_avatar.dart';
 import 'package:chat_app/features/profile/presentation/widgets/edit_profile_form.dart';
@@ -12,6 +11,7 @@ import 'package:chat_app/core/widgets/common/my_textformfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:chat_app/core/widgets/common/app_button.dart';
 import 'package:go_router/go_router.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -28,6 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _usernameController;
   late TextEditingController _bioController;
   late TextEditingController _experienceController;
+  late TextEditingController _roleController;
   
   List<String> _expertise = [];
   bool _isLoading = false;
@@ -41,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _usernameController = TextEditingController(text: widget.user.username);
     _bioController = TextEditingController(text: widget.user.bio);
     _experienceController = TextEditingController(text: widget.user.experienceYears.toString());
+    _roleController = TextEditingController(text: widget.user.role);
     _expertise = List.from(widget.user.expertise);
     _selectedAvatarUrl = widget.user.photoURL;
   }
@@ -51,6 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _usernameController.dispose();
     _bioController.dispose();
     _experienceController.dispose();
+    _roleController.dispose();
     super.dispose();
   }
 
@@ -82,6 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         fullName: _fullNameController.text.trim(),
         username: _usernameController.text.trim(),
         bio: _bioController.text.trim(),
+        role: _roleController.text.trim(),
         experienceYears: int.tryParse(_experienceController.text.trim()) ?? 0,
         expertise: _expertise,
         photoURL: _selectedAvatarUrl,
@@ -182,51 +186,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                        
                        const SizedBox(height: 32),
 
-                       // "About" Section
+                       // 1. Identity Section
+                       _buildSectionHeader("Identity"),
+                       _buildIdentitySection(),
+
+                       const SizedBox(height: 32),
+
+                       // 2. "About" Section
+                       _buildSectionHeader("About"),
                        _buildAboutSection(),
 
-                       const SizedBox(height: 20),
-
-                       // Form Fields
-                       EditProfileForm(
-                         fullNameController: _fullNameController,
-                         usernameController: _usernameController,
-                         experienceController: _experienceController,
-                         expertise: _expertise,
-                         onExpertiseChanged: (newList) => setState(() => _expertise = newList),
-                       ),
 
                        const SizedBox(height: 40),
                        
                        // Save Button
-                        TactileFeedback(
-                          onTap: _isLoading ? null : _saveProfile,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: double.infinity,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF2563EB).withValues(alpha: 0.3),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 8)
-                                )
-                              ]
-                            ),
-                            child: Center(
-                              child: _isLoading 
-                               ? const AppLoadingIndicator(size: 24, color: Colors.white, isFullScreen: false, showTimeoutMessage: false)
-                               : const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                            ),
-                          ),
-                        ),
+                       AppButton(
+                         text: "Save Changes",
+                         onPressed: _isLoading ? null : _saveProfile,
+                         isLoading: _isLoading,
+                         style: AppButtonStyle.primary,
+                       ),
                         const SizedBox(height: 40),
                       ],
                     ),
@@ -241,28 +220,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
 
+  Widget _buildIdentitySection() {
+    return EditProfileForm(
+      fullNameController: _fullNameController,
+      usernameController: _usernameController,
+      roleController: _roleController,
+      experienceController: _experienceController,
+      expertise: _expertise,
+      onExpertiseChanged: (newList) => setState(() => _expertise = newList),
+    );
+  }
+
   Widget _buildAboutSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10, left: 4),
-          child: Text(
-            "About",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))),
+      child: MyTextFormField(
+        controller: _bioController,
+        hintText: "Write a short bio about yourself...",
+        keyboardType: TextInputType.multiline,
+        maxLines: 4,
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16, left: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-        ),
-        MyTextFormField(
-          controller: _bioController,
-          hintText: "Write a short bio about yourself...",
-          keyboardType: TextInputType.multiline,
-          maxLines: 4,
-        ),
-      ],
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w900,
+              fontSize: 18,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

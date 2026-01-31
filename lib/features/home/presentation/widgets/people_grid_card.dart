@@ -1,4 +1,5 @@
 import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:chat_app/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -87,21 +88,10 @@ class PeopleGridCard extends StatelessWidget {
                                 // 3. Avatar Image
                                 Hero(
                                   tag: 'avatar_${user.id}',
-                                  child: CircleAvatar(
-                                    radius: avatarRadius.clamp(20.0, 48.0), 
-                                    backgroundColor: Colors.transparent,
-                                    backgroundImage: (user.photoURL != null && user.photoURL!.isNotEmpty) ? NetworkImage(user.photoURL!) : null,
-                                    child: (user.photoURL == null || user.photoURL!.isEmpty) 
-                                      ? Text(
-                                          user.username.isNotEmpty ? user.username[0].toUpperCase() : '?', 
-                                          style: TextStyle(
-                                            fontSize: (avatarRadius * 0.8).clamp(14.0, 32.0), 
-                                            color: Theme.of(context).colorScheme.primary, 
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: -0.5,
-                                          )
-                                        )
-                                      : null,
+                                  child: AppAvatar(
+                                    imageUrl: user.photoURL,
+                                    customSize: avatarRadius * 2,
+                                    initials: user.username.isNotEmpty ? user.username[0] : '?',
                                   ),
                                 ),
                                 // 4. Online Status Indicator
