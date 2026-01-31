@@ -19,7 +19,7 @@ class PeopleGridCard extends StatelessWidget {
           boxShadow: [
              // subtle glow
              BoxShadow(
-               color: const Color(0xFF2E8AF6).withOpacity(0.1),
+               color: const Color(0xFF2563EB).withOpacity(0.1),
                blurRadius: 10,
                offset: const Offset(0, 4),
              )
@@ -77,13 +77,13 @@ class PeopleGridCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                                    colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF2979FF).withOpacity(0.4),
+                                      color: const Color(0xFF2563EB).withOpacity(0.6),
                                       blurRadius: 20,
                                       spreadRadius: 1
                                     )

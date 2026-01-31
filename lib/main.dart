@@ -91,7 +91,7 @@ class _AppViewState extends State<AppView> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         behavior: HitTestBehavior.opaque,
         child: MaterialApp.router(
-          title: 'Chat App',
+          title: 'NexLinks',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.darkTheme,
           darkTheme: AppTheme.darkTheme,

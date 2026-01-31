@@ -42,7 +42,7 @@ class _SplashViewState extends State<SplashScreen>
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFF2E8AF6),
+      backgroundColor: Colors.black,
       body: Center(
         child: AnimatedBuilder(
           animation: _animationController,
@@ -58,12 +58,12 @@ class _SplashViewState extends State<SplashScreen>
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: const Color(0xFF121212),
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20,
+                            color: const Color(0xFF2563EB).withOpacity(0.2),
+                            blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
                         ],
@@ -73,28 +73,37 @@ class _SplashViewState extends State<SplashScreen>
                           'assets/branding/logo.png',
                           width: 80,
                           height: 80,
-                          errorBuilder: (context, error, stackTrace) => Icon(Icons.chat_bubble_rounded, size: 60, color: Theme.of(context).colorScheme.primary),
+                          errorBuilder: (context, error, stackTrace) => Icon(Icons.hub_rounded, size: 60, color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Text(
-                      "ChatApp",
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        "NexLinks",
+                        style: Theme.of(context).textTheme.headlineLarge
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                      ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     Text(
-                      "Connect with Friends & Family",
+                      "Connecting Minds, Syncing Worlds",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withOpacity(0.6),
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(height: 64),
-                    LoadingAnimationWidget.staggeredDotsWave(color: Colors.white, size: 62)
+                    LoadingAnimationWidget.staggeredDotsWave(color: const Color(0xFF22D3EE), size: 40)
                   ],
                 ),
               ),

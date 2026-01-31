@@ -154,13 +154,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               margin: const EdgeInsets.only(bottom: 24),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF00FF94).withOpacity(0.1),
+                                color: const Color(0xFF22D3EE).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFF00FF94).withOpacity(0.3)),
+                                border: Border.all(color: const Color(0xFF22D3EE).withOpacity(0.3)),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.rocket_launch_rounded, color: Color(0xFF00FF94)),
+                                  const Icon(Icons.rocket_launch_rounded, color: Color(0xFF22D3EE)),
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
@@ -222,13 +222,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(28),
                               gradient: const LinearGradient(
-                                colors: [Color(0xFF2979FF), Color(0xFF00B0FF)],
+                                colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF2979FF).withOpacity(0.3),
+                                  color: const Color(0xFF2563EB).withOpacity(0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8)
                                 )

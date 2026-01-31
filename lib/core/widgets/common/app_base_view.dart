@@ -38,11 +38,11 @@ class AppBaseView extends StatelessWidget {
             if (showGlows) ...[
               _buildGlow(
                 top: -100, right: -100, 
-                color: const Color(0xFF2979FF).withOpacity(0.12)
+                color: const Color(0xFF2563EB).withOpacity(0.12)
               ),
               _buildGlow(
                 bottom: -100, left: -100, 
-                color: const Color(0xFF00FF94).withOpacity(0.08)
+                color: const Color(0xFF22D3EE).withOpacity(0.08)
               ),
             ],
             AppStatusWrapper(

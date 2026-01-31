@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF2979FF); // Reverted to Vivid Blue
-  static const Color secondaryColor = Color(0xFF74B9FF);
-  static const Color accentColor = Color(0xFFFD79A8);
-  static const Color lightBgColor = Color(0xFF0D1117); // Premium Deep Midnight-Slate
-  static const Color darkBgColor = Color(0xFF030303); // Deep Midnight
-  static const Color textPrimaryLight = Color(0xFFFFFFFF); // High Contrast White
-  static const Color textOnDarkBg = Color(0xFFFFFFFF);    // High Contrast White
+  static const Color primaryColor = Color(0xFF2563EB); // NexLink Blue
+  static const Color secondaryColor = Color(0xFF22D3EE); // NexLink Cyan
+  static const Color accentColor = Color(0xFF22D3EE);
+  static const Color darkBgColor = Color(0xFF000000); // Pure Black
+  static const Color surfaceColor = Color(0xFF0A0A0A); // Near Black Surface
+  static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color errorColor = Color(0xFFE17055);
+
+  static const LinearGradient nexLinkGradient = LinearGradient(
+    colors: [primaryColor, secondaryColor],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
@@ -17,16 +22,16 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       primary: primaryColor,
       secondary: secondaryColor,
-      surface: Color(0xFF121212),
+      surface: surfaceColor,
       onPrimary: Colors.white,          
       onSecondary: Colors.white,
       error: errorColor,
-      onSurface: textOnDarkBg,
+      onSurface: textPrimary,
     ),
 
     textTheme: GoogleFonts.poppinsTextTheme().apply(
-       bodyColor: textOnDarkBg,
-       displayColor: textOnDarkBg,
+       bodyColor: textPrimary,
+       displayColor: textPrimary,
     ),
 
     appBarTheme: const AppBarTheme(
@@ -36,9 +41,9 @@ class AppTheme {
       titleTextStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: textOnDarkBg,
+        color: textPrimary,
       ),
-      iconTheme: IconThemeData(color: textOnDarkBg),
+      iconTheme: IconThemeData(color: textPrimary),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
