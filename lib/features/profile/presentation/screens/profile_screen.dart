@@ -1,17 +1,17 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_about.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_expertise.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_header.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_stats.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_about.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_expertise.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_header.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_stats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/features/auth/logic/auth_bloc.dart';
-import 'package:chat_app/features/auth/logic/auth_event.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_event.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class ProfileScreen extends StatefulWidget {

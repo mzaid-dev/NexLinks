@@ -1,6 +1,6 @@
-import 'package:chat_app/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:chat_app/features/auth/domain/entities/auth_user.dart';
-import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:nexlinks/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:nexlinks/features/auth/domain/entities/auth_user.dart';
+import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -38,5 +38,15 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<bool> checkUsernameUnique(String username) async {
     return await remoteDataSource.checkUsernameUnique(username);
+  }
+
+  @override
+  Future<AuthUser?> signInWithGoogle() async {
+    return await remoteDataSource.signInWithGoogle();
+  }
+
+  @override
+  Future<AuthUser?> signInWithFacebook() async {
+    return await remoteDataSource.signInWithFacebook();
   }
 }

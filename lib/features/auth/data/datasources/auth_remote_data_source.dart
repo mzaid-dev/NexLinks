@@ -1,4 +1,4 @@
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,6 +11,8 @@ abstract class AuthRemoteDataSource {
   Future<void> sendPasswordResetEmail(String email);
   Future<void> deleteAccount();
   Future<bool> checkUsernameUnique(String username);
+  Future<UserModel?> signInWithGoogle();
+  Future<UserModel?> signInWithFacebook();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -73,12 +75,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           email: email,
           username: username,
           lastSeen: Timestamp.now(), 
+          role: 'user', // Explicitly set role
           isOnline: true,
           photoURL: '',
           createdAt: Timestamp.now(),
         );
 
-        await _firestore.collection('users').doc(user.uid).set(userModel.toMap());
+        await _firestore.collection('users').doc(user.uid).set(userModel.toMap(), SetOptions(merge: true));
         return userModel;
       }
       return null;
@@ -137,6 +140,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return result.docs.isEmpty;
     } catch (e) {
       throw Exception("Failed to check username uniqueness: $e");
+    }
+  }
+
+  @override
+  Future<UserModel?> signInWithGoogle() async {
+    try {
+      throw Exception("Google Sign-In configuration pending in Firebase Console.");
+    } catch (e) {
+      throw Exception("Google Sign-In Failed: $e");
+    }
+  }
+
+  @override
+  Future<UserModel?> signInWithFacebook() async {
+    try {
+      throw Exception("Facebook Sign-In configuration pending in Facebook Developer Portal.");
+    } catch (e) {
+      throw Exception("Facebook Sign-In Failed: $e");
     }
   }
 }

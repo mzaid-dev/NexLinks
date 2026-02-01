@@ -1,5 +1,5 @@
-import 'package:chat_app/core/utils/date_parser.dart';
-import 'package:chat_app/features/auth/domain/entities/auth_user.dart';
+import 'package:nexlinks/core/utils/date_parser.dart';
+import 'package:nexlinks/features/auth/domain/entities/auth_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel extends AuthUser {

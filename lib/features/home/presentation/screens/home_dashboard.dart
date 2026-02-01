@@ -1,11 +1,11 @@
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/features/chat/data/chat_service.dart';
-import 'package:chat_app/features/profile/presentation/screens/profile_screen.dart';
-import 'package:chat_app/features/home/presentation/widgets/custom_bottom_nav.dart';
-import 'package:chat_app/features/home/presentation/widgets/notification_wrapper.dart';
-import 'package:chat_app/features/home/presentation/views/home_view.dart';
-import 'package:chat_app/features/home/presentation/views/explore_view.dart';
-import 'package:chat_app/features/home/presentation/views/chat_list_view.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/features/chat/data/chat_service.dart';
+import 'package:nexlinks/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nexlinks/features/home/presentation/widgets/custom_bottom_nav.dart';
+import 'package:nexlinks/features/home/presentation/widgets/notification_wrapper.dart';
+import 'package:nexlinks/features/home/presentation/views/home_view.dart';
+import 'package:nexlinks/features/home/presentation/views/explore_view.dart';
+import 'package:nexlinks/features/home/presentation/views/chat_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

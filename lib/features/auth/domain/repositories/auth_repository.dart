@@ -1,4 +1,4 @@
-import 'package:chat_app/features/auth/domain/entities/auth_user.dart';
+import 'package:nexlinks/features/auth/domain/entities/auth_user.dart';
 
 abstract class AuthRepository {
   Stream<AuthUser?> get user;
@@ -18,4 +18,8 @@ abstract class AuthRepository {
   Future<void> deleteAccount();
   
   Future<bool> checkUsernameUnique(String username);
+
+  Future<AuthUser?> signInWithGoogle();
+  
+  Future<AuthUser?> signInWithFacebook();
 }

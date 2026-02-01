@@ -1,16 +1,16 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'dart:async';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/chat/data/chat_service.dart';
-import 'package:chat_app/features/chat/data/models/chat_message.dart';
-import 'package:chat_app/features/chat/logic/chat_cubit.dart';
-import 'package:chat_app/features/chat/presentation/widgets/chat_input_area.dart';
-import 'package:chat_app/features/chat/presentation/widgets/chat_message_bubble.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/chat/data/chat_service.dart';
+import 'package:nexlinks/features/chat/data/models/chat_message.dart';
+import 'package:nexlinks/features/chat/logic/chat_cubit.dart';
+import 'package:nexlinks/features/chat/presentation/widgets/chat_input_area.dart';
+import 'package:nexlinks/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;

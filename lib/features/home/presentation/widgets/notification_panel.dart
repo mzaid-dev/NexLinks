@@ -1,7 +1,7 @@
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

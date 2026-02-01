@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:chat_app/router/route_names.dart';
+import 'package:nexlinks/router/route_names.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/core/theme/app_theme.dart';
-import 'package:chat_app/core/widgets/common/my_textformfield.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
-import 'package:chat_app/features/auth/logic/auth_bloc.dart';
-import 'package:chat_app/features/auth/logic/auth_event.dart';
-import 'package:chat_app/features/auth/logic/auth_state.dart';
-import 'package:chat_app/core/widgets/common/app_button.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/core/utils/app_validators.dart';
-import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:nexlinks/core/theme/app_theme.dart';
+import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_event.dart';
+import 'package:nexlinks/features/auth/logic/auth_state.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/utils/app_validators.dart';
+import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
+import 'package:nexlinks/features/auth/presentation/widgets/social_login_buttons.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -193,6 +194,11 @@ class _RegisterViewState extends State<RegisterView> {
                               const Expanded(child: Divider()),
                             ],
                           ),
+                        ),
+                        const SizedBox(height: 32),
+                        SocialLoginButtons(
+                          onGooglePressed: () => context.read<AuthBloc>().add(AuthGoogleLoginRequested()),
+                          onFacebookPressed: () => context.read<AuthBloc>().add(AuthFacebookLoginRequested()),
                         ),
                         const SizedBox(height: 32),
                         FadeInUp(

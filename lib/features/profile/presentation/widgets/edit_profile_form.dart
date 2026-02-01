@@ -1,5 +1,5 @@
-import 'package:chat_app/core/utils/app_validators.dart';
-import 'package:chat_app/core/widgets/common/my_textformfield.dart';
+import 'package:nexlinks/core/utils/app_validators.dart';
+import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileForm extends StatefulWidget {

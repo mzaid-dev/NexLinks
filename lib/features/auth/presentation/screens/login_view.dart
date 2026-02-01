@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:chat_app/router/route_names.dart';
+
+import 'package:nexlinks/router/route_names.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/core/theme/app_theme.dart';
-import 'package:chat_app/core/widgets/common/my_textformfield.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
-import 'package:chat_app/features/auth/logic/auth_bloc.dart';
-import 'package:chat_app/features/auth/logic/auth_event.dart';
-import 'package:chat_app/features/auth/logic/auth_state.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/theme/app_theme.dart';
+import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_event.dart';
+import 'package:nexlinks/features/auth/logic/auth_state.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/utils/app_validators.dart';
+import 'package:nexlinks/features/auth/presentation/widgets/social_login_buttons.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -125,11 +127,7 @@ class _LoginViewState extends State<LoginView> {
                             hintText: 'Enter your email',
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: const Icon(Icons.email_outlined),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) return 'Please enter your email';
-                              if (!EmailValidator.validate(value!)) return 'Please enter a valid email';
-                              return null;
-                            },
+                            validator: AppValidators.validateEmail,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -143,11 +141,7 @@ class _LoginViewState extends State<LoginView> {
                             prefixIcon: const Icon(Icons.lock_outline),
                             keyboardType: TextInputType.text,
                             obscureText: true,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) return 'Please enter your password';
-                              if (value!.length < 6) return 'Password must be at least 6 characters';
-                              return null;
-                            },
+                            validator: AppValidators.validatePassword,
                           ),
                         ),
                         // const SizedBox(height: 16),
@@ -186,6 +180,11 @@ class _LoginViewState extends State<LoginView> {
                                const Expanded(child: Divider()),
                              ],
                            ),
+                         ),
+                         const SizedBox(height: 32),
+                         SocialLoginButtons(
+                           onGooglePressed: () => context.read<AuthBloc>().add(AuthGoogleLoginRequested()),
+                           onFacebookPressed: () => context.read<AuthBloc>().add(AuthFacebookLoginRequested()),
                          ),
                          const SizedBox(height: 32),
                          FadeInUp(

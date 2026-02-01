@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:chat_app/features/chat/data/models/chat_message.dart';
+import 'package:nexlinks/features/chat/data/models/chat_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,5 @@
-import 'package:chat_app/core/widgets/common/app_button.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class NetworkRequestCard extends StatelessWidget {

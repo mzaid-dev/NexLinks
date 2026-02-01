@@ -1,4 +1,4 @@
-import 'package:chat_app/features/home/presentation/widgets/glass_card.dart';
+import 'package:nexlinks/features/home/presentation/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAbout extends StatelessWidget {

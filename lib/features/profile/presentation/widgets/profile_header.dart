@@ -1,7 +1,7 @@
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/home/presentation/widgets/profile_connect_button.dart';
-import 'package:chat_app/features/profile/presentation/screens/edit_profile_screen.dart';
-import 'package:chat_app/core/widgets/common/app_avatar.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/home/presentation/widgets/profile_connect_button.dart';
+import 'package:nexlinks/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';

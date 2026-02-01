@@ -1,12 +1,12 @@
-import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:chat_app/core/widgets/common/my_textformfield.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
+import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
+import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});

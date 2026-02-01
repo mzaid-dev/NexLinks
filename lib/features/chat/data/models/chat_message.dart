@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:chat_app/core/utils/date_parser.dart';
+import 'package:nexlinks/core/utils/date_parser.dart';
 
 enum MessageStatus { pending, sent, error }
 

@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
+import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 
 
 class CustomBottomNavBar extends StatelessWidget {

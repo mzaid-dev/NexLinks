@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:chat_app/core/services/logger_service.dart';
+import 'package:nexlinks/core/services/logger_service.dart';
 import 'dart:io';
 
 class ErrorHandler {

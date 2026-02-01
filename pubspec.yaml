@@ -1,4 +1,4 @@
-name: chat_app
+name: nexlinks
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -59,6 +59,8 @@ dependencies:
   logger: ^2.6.2
   animated_text_kit: ^4.3.0
   chiclet: ^1.2.0
+  google_sign_in: ^6.2.1
+  flutter_facebook_auth: ^7.1.0
 #  glass_kit: ^4.0.2
 
 dev_dependencies:

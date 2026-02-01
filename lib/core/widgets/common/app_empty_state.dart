@@ -1,4 +1,4 @@
-import 'package:chat_app/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 

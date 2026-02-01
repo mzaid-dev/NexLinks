@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/features/auth/logic/auth_bloc.dart';
-import 'package:chat_app/features/auth/logic/auth_state.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_state.dart';
 import 'dart:async';
 
 
-import 'package:chat_app/features/home/presentation/screens/home_dashboard.dart';
-import 'package:chat_app/features/chat/presentation/screens/chat_screen.dart';
-import 'package:chat_app/features/splash/presentation/screens/splash_screen.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/home/presentation/screens/home_dashboard.dart';
+import 'package:nexlinks/features/chat/presentation/screens/chat_screen.dart';
+import 'package:nexlinks/features/splash/presentation/screens/splash_screen.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import '../features/auth/presentation/screens/forgotpassword_view.dart';
 import '../features/auth/presentation/screens/login_view.dart';
-import 'package:chat_app/features/profile/presentation/screens/profile_screen.dart';
-import 'package:chat_app/features/home/presentation/screens/network_screen.dart';
+import 'package:nexlinks/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nexlinks/features/home/presentation/screens/network_screen.dart';
 
 import '../features/auth/presentation/screens/register_screen.dart';
 import 'route_names.dart';

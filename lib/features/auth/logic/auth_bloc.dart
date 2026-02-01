@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart'; // Import Repo
-import 'package:chat_app/features/auth/data/models/user_model.dart'; // Keep for casting if needed, or better, use AuthUser
+import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart'; // Import Repo
+import 'package:nexlinks/features/auth/data/models/user_model.dart'; // Keep for casting if needed, or better, use AuthUser
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -18,6 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterRequested>(_onAuthRegisterRequested);
     on<AuthLogoutRequested>(_onAuthLogoutRequested);
     on<AuthDeleteAccountRequested>(_onAuthDeleteAccountRequested);
+    on<AuthGoogleLoginRequested>(_onAuthGoogleLoginRequested);
+    on<AuthFacebookLoginRequested>(_onAuthFacebookLoginRequested);
     on<_AuthUserChanged>(_onAuthUserChanged);
   }
 
@@ -25,7 +27,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // We can rely on the stream from the repo which typically handles persistence internally or via the datasource
     // But for now, let's just listen to the stream.
     
-    await Future.delayed(const Duration(seconds: 2));
     await _userSubscription?.cancel();
     _userSubscription = _authRepository.user.listen((user) {
        // user is AuthUser?
@@ -77,11 +78,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthState.loading());
     try {
-      await _authRepository.registerWithEmailAndPassword(
+      final user = await _authRepository.registerWithEmailAndPassword(
         email: event.email,
         password: event.password,
         username: event.username,
       );
+      if (user != null) {
+        emit(AuthState.authenticated(user as UserModel));
+      }
     } catch (e) {
       emit(AuthState.failure(e.toString()));
     }
@@ -104,6 +108,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
          emit(AuthState.failure(e.toString()));
       }
+  }
+
+  Future<void> _onAuthGoogleLoginRequested(
+    AuthGoogleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    try {
+      final user = await _authRepository.signInWithGoogle();
+      if (user != null) {
+        emit(AuthState.authenticated(user as UserModel));
+      }
+    } catch (e) {
+      emit(AuthState.failure(e.toString()));
+    }
+  }
+
+  Future<void> _onAuthFacebookLoginRequested(
+    AuthFacebookLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    try {
+      final user = await _authRepository.signInWithFacebook();
+      if (user != null) {
+        emit(AuthState.authenticated(user as UserModel));
+      }
+    } catch (e) {
+      emit(AuthState.failure(e.toString()));
+    }
   }
 }
 

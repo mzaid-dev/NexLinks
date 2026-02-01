@@ -1,11 +1,11 @@
-import 'package:chat_app/core/widgets/common/app_button.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/router/route_names.dart';
+import 'package:nexlinks/router/route_names.dart';
 
 class ProfileConnectButton extends StatelessWidget {
   final String currentUserId;

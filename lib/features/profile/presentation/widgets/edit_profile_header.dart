@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
+import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class EditProfileHeader extends StatelessWidget {

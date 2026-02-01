@@ -1,9 +1,9 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/home/presentation/widgets/network_request_card.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/home/presentation/widgets/network_request_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

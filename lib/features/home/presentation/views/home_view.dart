@@ -1,18 +1,18 @@
-import 'package:chat_app/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/core/widgets/common/app_avatar.dart';
-import 'package:chat_app/features/home/presentation/widgets/glass_card.dart';
-import 'package:chat_app/router/route_names.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
+import 'package:nexlinks/features/home/presentation/widgets/glass_card.dart';
+import 'package:nexlinks/router/route_names.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/core/widgets/common/app_empty_state.dart';
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/widgets/common/app_empty_state.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class HomeView extends StatelessWidget {

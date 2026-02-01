@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:chat_app/core/services/error_handler.dart';
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/services/error_handler.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 
 class AppStatusWrapper extends StatelessWidget {
   final bool isLoading;

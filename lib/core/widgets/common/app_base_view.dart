@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:chat_app/core/widgets/common/slide_animation.dart';
-import 'package:chat_app/core/widgets/common/app_status_wrapper.dart';
-import 'package:chat_app/core/services/connectivity_service.dart';
-import 'package:chat_app/core/widgets/common/no_internet_banner.dart';
+import 'package:nexlinks/core/widgets/common/slide_animation.dart';
+import 'package:nexlinks/core/widgets/common/app_status_wrapper.dart';
+import 'package:nexlinks/core/services/connectivity_service.dart';
+import 'package:nexlinks/core/widgets/common/no_internet_banner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppBaseView extends StatelessWidget {
@@ -30,9 +30,11 @@ class AppBaseView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bgColor = backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
-    return SlideAnimation(
-      child: Container(
-        color: bgColor,
+    return Material(
+      color: Colors.transparent,
+      child: SlideAnimation(
+        child: Container(
+          color: bgColor,
         child: Stack(
           children: [
             if (showGlows) ...[
@@ -63,6 +65,7 @@ class AppBaseView extends StatelessWidget {
               },
             ),
           ],
+          ),
         ),
       ),
     );

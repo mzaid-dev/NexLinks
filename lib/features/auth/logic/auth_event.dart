@@ -37,3 +37,7 @@ class AuthRegisterRequested extends AuthEvent {
 class AuthLogoutRequested extends AuthEvent {}
 
 class AuthDeleteAccountRequested extends AuthEvent {}
+
+class AuthGoogleLoginRequested extends AuthEvent {}
+
+class AuthFacebookLoginRequested extends AuthEvent {}
