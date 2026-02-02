@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -212,9 +213,12 @@ class _ChatViewState extends State<ChatView> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      user.username,
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    Hero(
+                      tag: 'name_hero_${user.id}',
+                      child: AppGradientText(
+                        user.username,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Row(

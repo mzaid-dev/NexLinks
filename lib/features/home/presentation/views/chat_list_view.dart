@@ -12,6 +12,7 @@ import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 
 
 class ChatListView extends StatelessWidget {
@@ -196,7 +197,16 @@ class ChatUserTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.username, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600, fontSize: 16)),
+                Hero(
+                  tag: 'name_hero_${user.id}',
+                  child: AppGradientText(
+                    user.username, 
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600, 
+                      fontSize: 16
+                    )
+                  ),
+                ),
                 const SizedBox(height: 4),
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),

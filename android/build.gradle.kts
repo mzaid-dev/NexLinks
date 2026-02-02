@@ -15,9 +15,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
-subprojects {
-    project.evaluationDependsOn(":app")
-}
+// Removed evaluationDependsOn which was causing premature project evaluation
 
 subprojects {
     afterEvaluate {
@@ -26,6 +24,13 @@ subprojects {
             android.compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_11
                 targetCompatibility = JavaVersion.VERSION_11
+            }
+        }
+        
+        // Force Kotlin tasks to use JVM 11
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions {
+                jvmTarget = "11"
             }
         }
     }

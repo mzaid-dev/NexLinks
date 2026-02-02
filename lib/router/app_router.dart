@@ -12,6 +12,7 @@ import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import '../features/auth/presentation/screens/forgotpassword_view.dart';
 import '../features/auth/presentation/screens/login_view.dart';
 import 'package:nexlinks/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nexlinks/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:nexlinks/features/home/presentation/screens/network_screen.dart';
 
 import '../features/auth/presentation/screens/register_screen.dart';
@@ -79,7 +80,10 @@ class AppRouter {
           final user = state.extra as UserModel?;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: ProfileScreen(user: user, isMe: user == null),
+            child: ProfileScreen(
+              user: user, 
+              isMe: user == null || user.id == authBloc.state.user?.id
+            ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
@@ -96,7 +100,13 @@ class AppRouter {
           );
         },
       ),
-
+      GoRoute(
+        path: AppRoutes.editProfile,
+        builder: (context, state) {
+          final user = state.extra as UserModel;
+          return EditProfileScreen(user: user);
+        },
+      ),
     ],
     redirect: (context, state) {
       final authState = authBloc.state;
@@ -116,15 +126,11 @@ class AppRouter {
           if (!isLoggingIn && !isRegistering && !isRecoveringPassword && !isSplash) {
              return AppRoutes.login;
           }
-          // If on splash and unauthenticated, go to login
-          if(isSplash){
-            return AppRoutes.login;
-          }
       }
 
       if (isAuth) {
         // If authenticated and on auth pages, go to home (Chat)
-        if (isLoggingIn || isRegistering || isRecoveringPassword || isSplash) {
+        if (isLoggingIn || isRegistering || isRecoveringPassword) {
           return AppRoutes.home;
         }
       }

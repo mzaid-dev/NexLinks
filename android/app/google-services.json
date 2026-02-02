@@ -9,10 +9,23 @@
       "client_info": {
         "mobilesdk_app_id": "1:322014483549:android:7ab6bb1021520e8fef29b4",
         "android_client_info": {
-          "package_name": "com.nexlinks.app"
+          "package_name": "com.example.chat_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "322014483549-e7eju43oaga0h3ottf8e7rooerbn0n7s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chat_app",
+            "certificate_hash": "649899eb58fc9288d333ec9f62c61867ba7a55ac"
+          }
+        },
+        {
+          "client_id": "322014483549-d9jpm2oms5gb6sqmuie1b8b81g5d8u3u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyALYvMUsM_jLyTCFPZdbGDoZxg8__YmOGY"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322014483549-d9jpm2oms5gb6sqmuie1b8b81g5d8u3u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

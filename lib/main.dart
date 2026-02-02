@@ -1,3 +1,4 @@
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:nexlinks/features/auth/logic/auth_event.dart';
 import 'package:nexlinks/firebase_options.dart';
 import 'package:nexlinks/router/app_router.dart';
@@ -13,6 +14,7 @@ import 'package:nexlinks/core/services/storage_service.dart';
 import 'package:nexlinks/core/services/notification_service.dart';
 import 'package:nexlinks/core/services/connectivity_service.dart';
 import 'package:nexlinks/core/widgets/status_manager.dart';
+import 'package:nexlinks/core/widgets/connectivity_overlay.dart';
 import 'package:nexlinks/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:nexlinks/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
@@ -21,18 +23,45 @@ import 'package:flutter/services.dart';
 
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationService().init();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  try {
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+    
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    
+    // Force dark system UI immediately to prevent flicker
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
 
-  runApp( DevicePreview(
-    enabled: !kReleaseMode && (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)),
-    builder: (context) => MyApp(),
-  ));
+    // Initialize services with individual error handling
+    try {
+      await NotificationService().init();
+    } catch (e) {
+      debugPrint("Notification Service Error: $e");
+    }
+
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    runApp(DevicePreview(
+      enabled: !kReleaseMode && (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)),
+      builder: (context) => const MyApp(),
+    ));
+  } catch (e) {
+    debugPrint("CRITICAL INITIALIZATION ERROR: $e");
+    // Fallback runner if Firebase or root setup fails
+    runApp(MaterialApp(
+      home: Scaffold(
+        body: Center(child: Text("Startup Error: $e")),
+      ),
+    ));
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -86,19 +115,24 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    return StatusManager(
-      child: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        behavior: HitTestBehavior.opaque,
-        child: MaterialApp.router(
-          title: 'NexLinks',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.darkTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.dark,
-          routerConfig: _appRouter.router,
-        ),
-      ),
+    return MaterialApp.router(
+      title: 'NexLinks',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
+      routerConfig: _appRouter.router,
+      builder: (context, child) {
+        return StatusManager(
+          child: ConnectivityOverlay(
+            child: GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: child!,
+            ),
+          ),
+        );
+      },
     );
   }
 }

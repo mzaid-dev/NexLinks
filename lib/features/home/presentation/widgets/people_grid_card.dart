@@ -5,6 +5,7 @@ import 'package:animate_do/animate_do.dart';
 
 import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 import 'package:nexlinks/core/widgets/common/pulsing_status.dart';
+import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 
 class PeopleGridCard extends StatelessWidget {
   final UserModel user;
@@ -108,17 +109,19 @@ class PeopleGridCard extends StatelessWidget {
                         SizedBox(height: cardWidth * 0.1),
                         
                         // Name
-                        Text(
-                          user.username, 
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface, 
-                            fontWeight: FontWeight.w800, 
-                            fontSize: nameFontSize.clamp(12.0, 18.0),
-                            letterSpacing: -0.5,
-                          ), 
-                          textAlign: TextAlign.center, 
-                          maxLines: 1, 
-                          overflow: TextOverflow.ellipsis
+                        Hero(
+                          tag: 'name_hero_${user.id}',
+                          child: AppGradientText(
+                            user.username, 
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800, 
+                              fontSize: nameFontSize.clamp(12.0, 18.0),
+                              letterSpacing: -0.5,
+                            ), 
+                            textAlign: TextAlign.center, 
+                            maxLines: 1, 
+                            overflow: TextOverflow.ellipsis
+                          ),
                         ),
                         
                         SizedBox(height: 4),

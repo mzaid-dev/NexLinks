@@ -2,6 +2,7 @@ import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get user;
@@ -146,7 +147,47 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel?> signInWithGoogle() async {
     try {
-      throw Exception("Google Sign-In configuration pending in Firebase Console.");
+      final googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential result = await _auth.signInWithCredential(credential);
+      final User? user = result.user;
+
+      if (user != null) {
+        await _storage.write(key: 'uid', value: user.uid);
+        
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          // Create new user if first time
+          final userModel = UserModel(
+            id: user.uid,
+            email: user.email ?? '',
+            username: user.displayName ?? 'Google User',
+            lastSeen: Timestamp.now(),
+            role: 'user',
+            isOnline: true,
+            photoURL: user.photoURL ?? '',
+            createdAt: Timestamp.now(),
+          );
+          await _firestore.collection('users').doc(user.uid).set(userModel.toMap());
+          return userModel;
+        } else {
+          // Update online status for existing user
+          await _firestore.collection('users').doc(user.uid).update({
+            'isOnline': true,
+            'lastSeen': FieldValue.serverTimestamp(),
+          });
+          return UserModel.fromMap(doc.data()!);
+        }
+      }
+      return null;
     } catch (e) {
       throw Exception("Google Sign-In Failed: $e");
     }

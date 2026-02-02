@@ -14,6 +14,7 @@ import 'package:nexlinks/core/widgets/common/app_empty_state.dart';
 import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -133,7 +134,7 @@ class HomeView extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 AppButton(
                                   text: "Edit Profile Now",
-                                  onPressed: () => context.push(AppRoutes.profile, extra: user),
+                                  onPressed: () => context.push(AppRoutes.editProfile, extra: user),
                                   style: AppButtonStyle.primary,
                                   height: 48,
                                 ),
@@ -266,7 +267,13 @@ class UserTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.username, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                  Hero(
+                    tag: 'name_hero_${user.id}',
+                    child: AppGradientText(
+                      user.username, 
+                      style: const TextStyle(fontWeight: FontWeight.bold)
+                    ),
+                  ),
                   Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? Colors.green : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
                 ],
               ),

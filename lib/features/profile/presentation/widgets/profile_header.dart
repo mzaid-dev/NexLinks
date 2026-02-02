@@ -1,10 +1,11 @@
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:nexlinks/features/home/presentation/widgets/profile_connect_button.dart';
-import 'package:nexlinks/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nexlinks/router/route_names.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserModel displayUser;
@@ -100,9 +101,9 @@ class ProfileHeader extends StatelessWidget {
           FadeInUp(
             duration: const Duration(milliseconds: 300),
             child: GestureDetector(
-              onTap: () {
-                 Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: displayUser)));
-              },
+                onTap: () {
+                  context.push(AppRoutes.editProfile, extra: displayUser);
+                },
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
