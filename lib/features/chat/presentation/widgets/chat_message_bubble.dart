@@ -61,9 +61,14 @@ class ChatMessageBubble extends StatelessWidget {
                   reaction
                 );
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.7),
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  constraints: BoxConstraints(
+                    minWidth: 70, // Prevent overflow for short messages with timestamp
+                    maxWidth: MediaQuery.sizeOf(context).width * 0.7
+                  ),
                 decoration: isMe 
                   ? BoxDecoration(
                       gradient: const LinearGradient(
@@ -89,6 +94,7 @@ class ChatMessageBubble extends StatelessWidget {
                       border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -98,6 +104,7 @@ class ChatMessageBubble extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                         letterSpacing: -0.1,
+                        decoration: TextDecoration.none, // Fix yellow underline
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -125,6 +132,7 @@ class ChatMessageBubble extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
             

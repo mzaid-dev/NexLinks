@@ -178,7 +178,17 @@ class ChatService {
         .where('receiverId', isEqualTo: currentUserId)
         .where('isRead', isEqualTo: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs.length)
+        .map((snapshot) {
+          // Double safety: Ensure we don't count messages WE sent, even if receiverId matches
+          // (This handles self-chat or potential data inconsistencies)
+          return snapshot.docs.where((doc) {
+             final data = doc.data(); // collectionGroup docs have data
+             if (data.containsKey('senderId')) {
+               return data['senderId'] != currentUserId;
+             }
+             return true;
+          }).length;
+        })
         .distinct()
         .handleError((error) {
            debugPrint("ChatService Error: getGlobalUnreadCountStream failed (Check if Index is needed). $error");
