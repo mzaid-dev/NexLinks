@@ -13,4 +13,8 @@ class ChatCubit extends Cubit<void> {
   void markMessagesAsRead(String chatId, String currentUserId) {
     _chatService.markMessagesAsRead(chatId, currentUserId);
   }
+
+  void toggleReaction(String chatId, String messageId, String userId, String emoji) {
+    _chatService.toggleReaction(chatId, messageId, userId, emoji);
+  }
 }

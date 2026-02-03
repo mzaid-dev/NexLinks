@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum AppAvatarSize { small, medium, large, xlarge }
@@ -73,19 +75,40 @@ class AppAvatar extends StatelessWidget {
 
   Widget _buildAvatarContent(BuildContext context, double rawSize) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return Image.network(
-        imageUrl!,
+      String url = imageUrl!;
+      
+      // Auto-fix DiceBear PNG to SVG (more reliable, higher quality, fixes EncodingError)
+      if (url.contains('dicebear.com') && url.contains('/png')) {
+        url = url.replaceAll('/png', '/svg');
+      }
+
+      final isSvg = url.toLowerCase().contains('.svg') || url.toLowerCase().contains('/svg');
+
+      if (isSvg) {
+        return _buildSvgImage(context, url, rawSize);
+      }
+
+      return CachedNetworkImage(
+        imageUrl: url,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return _buildShimmer(context, rawSize);
-        },
-        errorBuilder: (context, error, stackTrace) {
+        placeholder: (context, url) => _buildShimmer(context, rawSize),
+        errorWidget: (context, url, error) {
+          debugPrint("AppAvatar: Failed to load image from $url. Error: $error");
           return _buildFallback(context, rawSize, isError: true);
         },
       );
     }
     return _buildFallback(context, rawSize);
+  }
+
+  Widget _buildSvgImage(BuildContext context, String url, double rawSize) {
+    return SvgPicture.network(
+      url,
+      fit: BoxFit.cover,
+      width: rawSize,
+      height: rawSize,
+      placeholderBuilder: (context) => _buildShimmer(context, rawSize),
+    );
   }
 
   Widget _buildShimmer(BuildContext context, double rawSize) {
@@ -115,13 +138,16 @@ class AppAvatar extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text(
-            initials!.toUpperCase(),
-            style: TextStyle(
-              color: const Color(0xFF22D3EE), // Cyan text for contrast
-              fontWeight: FontWeight.w900,
-              fontSize: rawSize * 0.45,
-              letterSpacing: -1,
+          child: Material(
+            color: Colors.transparent,
+            child: Text(
+              initials!.toUpperCase(),
+              style: TextStyle(
+                color: const Color(0xFF22D3EE),
+                fontWeight: FontWeight.w900,
+                fontSize: rawSize * 0.45,
+                letterSpacing: -1,
+              ),
             ),
           ),
         ),

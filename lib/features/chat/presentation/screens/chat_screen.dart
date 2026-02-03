@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
+import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -40,6 +41,7 @@ class _ChatViewState extends State<ChatView> {
   final _messageController = TextEditingController();
   final _chatService = ChatService();
   final ScrollController _scrollController = ScrollController();
+  late final ReactionsController _reactionsController; // Required for flutter_chat_reactions
   late String _chatId;
   late String _currentUserId;
   StreamSubscription? _messageSubscription;
@@ -48,6 +50,7 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthService>().currentUserId!;
+    _reactionsController = ReactionsController(currentUserId: _currentUserId);
     _chatId = _chatService.getChatRoomId(_currentUserId, widget.targetUser.id);
     
     // Initial mark as read
@@ -120,7 +123,13 @@ class _ChatViewState extends State<ChatView> {
                     itemBuilder: (context, index) {
                       final message = messages[index];
                       final isMe = message.senderId == _currentUserId;
-                      return ChatMessageBubble(message: message, isMe: isMe);
+                      return ChatMessageBubble(
+                        message: message, 
+                        isMe: isMe,
+                        chatId: _chatId,
+                        currentUserId: _currentUserId,
+                        reactionsController: _reactionsController,
+                      );
                     },
                   );
                 },

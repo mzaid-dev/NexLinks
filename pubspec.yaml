@@ -41,7 +41,7 @@ dependencies:
   another_flushbar: ^1.12.32
   flutter_bloc: ^9.0.0
   equatable: ^2.0.7
-  animate_do: ^3.3.4
+  animate_do: ^4.2.0
   flutter_secure_storage: ^9.0.0
   firebase_core: ^4.2.0
   cloud_firestore: ^6.0.3
@@ -63,6 +63,8 @@ dependencies:
   flutter_facebook_auth: ^7.1.0
   flutter_native_splash: ^2.4.7
   flutter_pw_validator: ^1.6.0
+  cached_network_image: ^3.4.1
+  flutter_chat_reactions: ^0.2.7
 #  glass_kit: ^4.0.2
 
 dev_dependencies:

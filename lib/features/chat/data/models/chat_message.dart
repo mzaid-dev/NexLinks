@@ -11,6 +11,8 @@ class ChatMessage {
   final bool isRead;
   final MessageStatus status;
 
+  final Map<String, String> reactions;
+
   ChatMessage({
     required this.id,
     required this.senderId,
@@ -18,6 +20,7 @@ class ChatMessage {
     required this.timestamp,
     this.isRead = false,
     this.status = MessageStatus.sent,
+    this.reactions = const {},
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +29,7 @@ class ChatMessage {
       'text': text,
       'timestamp': timestamp,
       'isRead': isRead,
+      'reactions': reactions,
     };
   }
 
@@ -37,6 +41,7 @@ class ChatMessage {
       timestamp: parseTimestamp(map['timestamp']),
       isRead: map['isRead'] ?? false,
       status: status ?? MessageStatus.sent,
+      reactions: Map<String, String>.from(map['reactions'] ?? {}),
     );
   }
 
@@ -47,6 +52,7 @@ class ChatMessage {
     Timestamp? timestamp,
     bool? isRead,
     MessageStatus? status,
+    Map<String, String>? reactions,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -55,6 +61,7 @@ class ChatMessage {
       timestamp: timestamp ?? this.timestamp,
       isRead: isRead ?? this.isRead,
       status: status ?? this.status,
+      reactions: reactions ?? this.reactions,
     );
   }
 }

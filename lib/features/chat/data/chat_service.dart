@@ -118,7 +118,7 @@ class ChatService {
   //   If I add `receiverId` to the message, it becomes trivial.
   //   I will add `receiverId` to `sendMessage` arguments. The specific screen calling it usually knows the receiver.
   
-  // Revised sendMessage with receiverId
+  // Revised sendMessage with receiverId and reactions initialization
   Future<void> sendMessage(String chatId, String text, String senderId, {String? receiverId}) async {
     if (text.trim().isEmpty) return;
     
@@ -127,6 +127,7 @@ class ChatService {
       'text': text,
       'timestamp': FieldValue.serverTimestamp(),
       'isRead': false,
+      'reactions': {}, // Initialize empty reactions map
     };
     
     if (receiverId != null) {
@@ -144,6 +145,30 @@ class ChatService {
       'lastMessageTime': FieldValue.serverTimestamp(),
       'participants': FieldValue.arrayUnion([senderId]),
     });
+  }
+
+  // Toggle reaction on a message
+  Future<void> toggleReaction(String chatId, String messageId, String userId, String emoji) async {
+    final messageRef = _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
+    final doc = await messageRef.get();
+    if (!doc.exists) return;
+
+    final reactions = Map<String, String>.from(doc.data()?['reactions'] ?? {});
+    
+    if (reactions[userId] == emoji) {
+      // Remove if same emoji
+      reactions.remove(userId);
+    } else {
+      // Add or update to new emoji (WhatsApp style: one reaction per user)
+      reactions[userId] = emoji;
+    }
+
+    await messageRef.update({'reactions': reactions});
   }
 
   // Global Unread Count Stream (Requires receiverId on messages)

@@ -52,10 +52,13 @@ class EditProfileAvatar extends StatelessWidget {
             ),
           ),
           // App Avatar Image
-          AppAvatar(
-            imageUrl: avatarUrl,
-            customSize: 100,
-            initials: user.username.isNotEmpty ? user.username[0] : '?',
+          Hero(
+            tag: 'avatar_${user.id}',
+            child: AppAvatar(
+              imageUrl: avatarUrl,
+              customSize: 100,
+              initials: user.username.isNotEmpty ? user.username[0] : '?',
+            ),
           ),
           // Edit Icon Overlay
           Positioned(

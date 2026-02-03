@@ -23,7 +23,7 @@ class AppGradientText extends StatelessWidget {
       shaderCallback: (bounds) => const LinearGradient(
         colors: [
           Colors.white,
-          Color(0xFFFFD700), // Gold/Subtle Yellow
+          Color(0xFFE5E7EB), // Very subtle grey/off-white (Gray-200)
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,

@@ -9,26 +9,18 @@ class AvatarSelectorSheet extends StatelessWidget {
   const AvatarSelectorSheet({super.key});
 
   static const List<String> avatars = [
-    // Curated high-fidelity avatars (DiceBear styles)
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Felix',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Aneka',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Charlie',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Liam',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Mimi',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Toby',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Jack',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Sasha',
-    // 'https://api.dicebear.com/7.x/personas/png?seed=Leo',
-    // 'https://api.dicebear.com/7.x/personas/png?seed=Zoey',
-    // 'https://api.dicebear.com/7.x/personas/png?seed=Max',
-    // 'https://api.dicebear.com/7.x/personas/png?seed=Ava',
-    // 'https://api.dicebear.com/9.x/micah/svg?seed=Aidan',
-    // 'https://api.dicebear.com/9.x/notionists/svg?seed=Jocelyn',
-    // 'https://api.dicebear.com/9.x/notionists-neutral/svg?seed=Sarah',
-    // 'https://api.dicebear.com/9.x/thumbs/svg?seed=Nolan',
-    // 'https://api.dicebear.com/9.x/toon-head/svg?seed=Jessica',
-    // 'https://api.dicebear.com/7.x/toon-head/png?seed=Kimberly',
-    // 'https://api.dicebear.com/7.x/notionists/png?seed=Felix'
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Felix',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Aneka',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Charlie',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Liam',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Mimi',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Toby',
+    'https://api.dicebear.com/7.x/personas/svg?seed=Leo',
+    'https://api.dicebear.com/7.x/personas/svg?seed=Zoey',
+    'https://api.dicebear.com/7.x/personas/svg?seed=Max',
+    'https://api.dicebear.com/7.x/personas/svg?seed=Ava',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Jack',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Sasha',
   ];
 
   @override

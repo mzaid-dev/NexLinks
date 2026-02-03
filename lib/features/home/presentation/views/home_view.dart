@@ -163,7 +163,7 @@ class HomeView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const UserListSection(onlyFriends: false),
+            const UserListSection(onlyFriends: true),
             const SizedBox(height: 100), // Bottom Padding for Nav
           ],
         ),
@@ -210,6 +210,14 @@ class UserListSection extends StatelessWidget {
               if (onlyFriends) return myFriends.contains(u.id);
               return true;
             }).toList();
+
+            // Industry Polish: Randomize and limit to 7-8 people from friends
+            if (onlyFriends) {
+              users.shuffle();
+              if (users.length > 8) {
+                users.removeRange(8, users.length);
+              }
+            }
             
             if (users.isEmpty) {
               return AppEmptyState(
@@ -269,12 +277,23 @@ class UserTile extends StatelessWidget {
                 children: [
                   Hero(
                     tag: 'name_hero_${user.id}',
-                    child: AppGradientText(
-                      user.username, 
-                      style: const TextStyle(fontWeight: FontWeight.bold)
+                    child: Material(
+                      color: Colors.transparent,
+                      child: AppGradientText(
+                        user.username, 
+                        style: const TextStyle(fontWeight: FontWeight.bold)
+                      ),
                     ),
                   ),
-                  Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? Colors.green : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12)),
+                  Text(user.isOnline ? "Online Now" : "Offline", 
+                    style: TextStyle(
+                      color: user.isOnline 
+                        ? const Color(0xFF00FF94) 
+                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), 
+                      fontSize: 12,
+                      fontWeight: user.isOnline ? FontWeight.bold : FontWeight.normal,
+                    )
+                  ),
                 ],
               ),
             ),
