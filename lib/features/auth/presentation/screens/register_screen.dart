@@ -202,7 +202,7 @@ class _RegisterViewState extends State<RegisterView> {
                   hintText: 'Enter your full name',
                   keyboardType: TextInputType.name,
                   prefixIcon: const Icon(Icons.person_outline),
-                  validator: (value) => value?.isEmpty ?? true ? "Please enter your name" : null,
+                  validator: AppValidators.validateFullName,
                 ),
               ),
               const SizedBox(height: 20),

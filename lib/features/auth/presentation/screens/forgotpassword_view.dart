@@ -1,7 +1,7 @@
+import 'package:nexlinks/core/utils/app_validators.dart';
 import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
 import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
 import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_button.dart';
@@ -85,11 +85,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       hintText: 'Enter your email',
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: const Icon(Icons.email_outlined),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) return 'Please enter your email';
-                        if (!EmailValidator.validate(value!)) return 'Please enter a valid email';
-                        return null;
-                      },
+                      validator: AppValidators.validateEmail,
                     ),
                   ),
                   const SizedBox(height: 24),

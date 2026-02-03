@@ -88,13 +88,13 @@ class _EditProfileFormState extends State<EditProfileForm> {
               
               _buildRegularTextField(
                   "Current Role", "e.g. Flutter Developer", widget.roleController,
-                  validator: (value) => (value?.isEmpty ?? true) ? 'Please enter your professional role' : null),
+                  validator: AppValidators.validateRole),
               const SizedBox(height: 16),
 
               _buildRegularTextField(
                  "Experience (Years)", "8", widget.experienceController,
                  keyboardType: TextInputType.number,
-                 validator: (value) => (value?.isEmpty ?? true) ? 'Please enter years of experience' : null,
+                 validator: AppValidators.validateExperience,
               ),
             ],
           ),

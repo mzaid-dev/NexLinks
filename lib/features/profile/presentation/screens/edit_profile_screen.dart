@@ -1,3 +1,4 @@
+import 'package:nexlinks/core/utils/app_validators.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
@@ -243,6 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         hintText: "Write a short bio about yourself...",
         keyboardType: TextInputType.multiline,
         maxLines: 4,
+        validator: AppValidators.validateBio,
       ),
     );
   }
