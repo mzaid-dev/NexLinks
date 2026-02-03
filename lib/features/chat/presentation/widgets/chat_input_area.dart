@@ -35,7 +35,7 @@ class ChatInputArea extends StatelessWidget {
             child: TextField(
               controller: controller,
               minLines: 1,
-              maxLines: 10,
+              maxLines: 4,
               style: const TextStyle(color: Colors.white, fontSize: 16),
               cursorColor: const Color(0xFF2563EB),
               scrollPhysics: const BouncingScrollPhysics(),
@@ -50,7 +50,7 @@ class ChatInputArea extends StatelessWidget {
                 errorBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
                 isDense : false,
-                contentPadding : EdgeInsets.zero,
+                contentPadding : const EdgeInsets.symmetric(vertical: 12),
               ),
               textCapitalization: TextCapitalization.sentences,
             ),

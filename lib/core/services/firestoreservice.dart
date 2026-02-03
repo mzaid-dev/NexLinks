@@ -6,7 +6,7 @@ class FirestoreService{
 
   Future<void> updateUser(UserModel user) async {
     try {
-      await _firestore.collection('users').doc(user.id).update(user.toMap());
+      await _firestore.collection('users').doc(user.id).set(user.toMap(), SetOptions(merge: true));
     } catch (e) {
       throw Exception("Failed to update user: $e");
     }
@@ -34,10 +34,10 @@ class FirestoreService{
 
   Future<void> updateUserOnlineStatus(String userId, bool isOnline) async {
     try {
-      await _firestore.collection('users').doc(userId).update({
+      await _firestore.collection('users').doc(userId).set({
         'isOnline': isOnline,
         'lastSeen': FieldValue.serverTimestamp(), 
-      });
+      }, SetOptions(merge: true));
     } catch (e) {
       throw Exception("Failed to Update User Online Status : ${e.toString()}");
     }

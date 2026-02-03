@@ -75,7 +75,7 @@ class ProfileHeader extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: AppGradientText(
-              displayUser.fullName ?? displayUser.username,
+              displayUser.fullName?.isNotEmpty == true ? displayUser.fullName! : displayUser.username,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 24,
@@ -86,12 +86,14 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 4),
-        Text(displayUser.role, // "Cybersecurity Expert"
-            style: const TextStyle(
-                color: Color(0xFF2979FF), // Blue text
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
+        if (displayUser.role.isNotEmpty && displayUser.role.toLowerCase() != 'user') ...[
+          const SizedBox(height: 4),
+          Text(displayUser.role,
+              style: const TextStyle(
+                  color: Color(0xFF2979FF),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600)),
+        ],
 
         const SizedBox(height: 12),
         

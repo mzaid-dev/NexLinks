@@ -110,22 +110,32 @@ class ChatMessageBubble extends StatelessWidget {
                     const SizedBox(height: 2),
                     Row(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
                           _formatTime(message.timestamp),
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            fontSize: 9,
+                            // My messages: white, Friend's messages: cyan accent
+                            color: isMe 
+                                ? Colors.white.withValues(alpha: 0.8)
+                                : const Color(0xFF22D3EE).withValues(alpha: 0.7), // Cyan accent
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         if (isMe) ...[
                           const SizedBox(width: 4),
                           Icon(
                             message.status == MessageStatus.pending
-                                ? Icons.access_time_rounded
-                                : Icons.done_all_rounded,
-                            size: 10,
-                            color: Colors.white.withValues(alpha: 0.3),
+                                ? Icons.access_time_rounded  // Clock when pending
+                                : message.isRead 
+                                    ? Icons.done_all_rounded  // Double tick when read
+                                    : Icons.done_rounded,     // Single tick when sent
+                            size: 12,
+                            // Read: bright cyan, Sent: white
+                            color: message.isRead 
+                                ? const Color(0xFF22D3EE) // Bright cyan for read (matches gradient)
+                                : Colors.white.withValues(alpha: 0.8),
                           ),
                         ],
                       ],

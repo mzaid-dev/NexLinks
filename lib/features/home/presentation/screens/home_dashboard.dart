@@ -9,16 +9,10 @@ import 'package:nexlinks/features/home/presentation/views/explore_view.dart';
 import 'package:nexlinks/features/home/presentation/views/chat_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexlinks/features/home/logic/home_navigation_cubit.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
 
   List<Widget> get _pages => [
     const HomeView(),
@@ -29,83 +23,64 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Enable NotificationWrapper in second update
-    return Scaffold(
-        extendBody: true, // Allows body to scroll behind Nav Bar
-        backgroundColor: const Color(0xFF000000), 
-        body: Stack(
-          children: [
-            // 1. Background (glows disabled for cleaner look)
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF050505),
+    return BlocProvider(
+      create: (_) => HomeNavigationCubit(),
+      child: Builder(
+        builder: (context) {
+          final selectedIndex = context.select((HomeNavigationCubit cubit) => cubit.state);
+          
+          return Scaffold(
+              extendBody: true, // Allows body to scroll behind Nav Bar
+              backgroundColor: const Color(0xFF000000), 
+              body: Stack(
+                children: [
+                  // 1. Background (glows disabled for cleaner look)
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF050505),
+                    ),
+                  ),
+
+                  // 2. Main Content
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                       padding: const EdgeInsets.only(bottom: 0), // Removed bottom padding so it goes behind nav
+                       child: AnimatedSwitcher(
+                         duration: const Duration(milliseconds: 300), 
+                         switchInCurve: Curves.easeOut,
+                         switchOutCurve: Curves.easeIn,
+                         transitionBuilder: (Widget child, Animation<double> animation) {
+                           return FadeTransition(
+                             opacity: animation,
+                             child: child, 
+                           );
+                         },
+                         child: KeyedSubtree(
+                           key: ValueKey<int>(selectedIndex),
+                           child: _pages[selectedIndex],
+                         ),
+                       ),
+                    )
+                  ),
+                ],
               ),
-            ),
-            // Disabled for cleaner look
-            // Positioned(
-            //   top: -100, left: -100,
-            //   child: Container(
-            //     width: 400, height: 400,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       gradient: RadialGradient(
-            //         colors: [const Color(0xFF2E8AF6).withValues(alpha: 0.15), Colors.transparent],
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Positioned(
-            //   bottom: -100, right: -100,
-            //   child: Container(
-            //     width: 400, height: 400,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       gradient: RadialGradient(
-            //         colors: [const Color(0xFF00F0FF).withValues(alpha: 0.1), Colors.transparent],
-            //       ),
-            //     ),
-            //   ),
-            // ),
-  
-            // 2. Main Content
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                 padding: const EdgeInsets.only(bottom: 0), // Removed bottom padding so it goes behind nav
-                 child: AnimatedSwitcher(
-                   duration: const Duration(milliseconds: 300), // Reduced slightly for snappier feel
-                   switchInCurve: Curves.easeOut,
-                   switchOutCurve: Curves.easeIn,
-                   transitionBuilder: (Widget child, Animation<double> animation) {
-                     // FIX: Removed SlideTransition. 
-                     // Only use FadeTransition so inner animations (FadeInDown) don't glitch.
-                     return FadeTransition(
-                       opacity: animation,
-                       child: child, 
-                     );
-                   },
-                   child: KeyedSubtree(
-                     key: ValueKey<int>(_selectedIndex),
-                     child: _pages[_selectedIndex],
-                   ),
-                 ),
-              )
-            ),
-          ],
-        ),
-        bottomNavigationBar: StreamBuilder<int>(
-          stream: ChatService().getGlobalUnreadCountStream(context.read<AuthService>().currentUserId ?? ''),
-          builder: (context, snapshot) {
-            final unreadCount = snapshot.data ?? 0;
-            return CustomBottomNavBar(
-               selectedIndex: _selectedIndex,
-               onItemSelected: (index) {
-                 setState(() => _selectedIndex = index);
-               },
-               unreadChatCount: unreadCount,
-             );
-          }
-          ),
+              bottomNavigationBar: StreamBuilder<int>(
+                stream: ChatService().getGlobalUnreadCountStream(context.read<AuthService>().currentUserId ?? ''),
+                builder: (context, snapshot) {
+                  final unreadCount = snapshot.data ?? 0;
+                  return CustomBottomNavBar(
+                     selectedIndex: selectedIndex,
+                     onItemSelected: (index) {
+                       context.read<HomeNavigationCubit>().changeTab(index);
+                     },
+                     unreadChatCount: unreadCount,
+                   );
+                }
+                ),
+          );
+        }
+      ),
     );
   }
 }

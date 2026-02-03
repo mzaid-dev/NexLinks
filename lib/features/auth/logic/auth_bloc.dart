@@ -4,6 +4,7 @@ import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart'
 import 'package:nexlinks/features/auth/data/models/user_model.dart'; // Keep for casting if needed, or better, use AuthUser
 import 'auth_event.dart';
 import 'auth_state.dart';
+import 'package:nexlinks/core/services/error_handler.dart';
 
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -68,7 +69,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _authRepository.signInWithEmailAndPassword(event.email, event.password);
     } catch (e) {
-      emit(AuthState.failure(e.toString()));
+      emit(AuthState.failure(ErrorHandler.getMessage(e)));
     }
   }
 
@@ -82,12 +83,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
         username: event.username,
+        fullName: event.fullName,
       );
       if (user != null) {
         emit(AuthState.authenticated(user as UserModel));
       }
     } catch (e) {
-      emit(AuthState.failure(e.toString()));
+      emit(AuthState.failure(ErrorHandler.getMessage(e)));
     }
   }
 
@@ -106,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await _authRepository.deleteAccount();
       } catch (e) {
-         emit(AuthState.failure(e.toString()));
+         emit(AuthState.failure(ErrorHandler.getMessage(e)));
       }
   }
 
@@ -119,9 +121,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await _authRepository.signInWithGoogle();
       if (user != null) {
         emit(AuthState.authenticated(user as UserModel));
+      } else {
+        // User cancelled, standard flow wraps this in null return, 
+        // effectively do nothing or emit failure if we want to show "Cancelled"
+        emit(const AuthState.unauthenticated()); 
+        // Or specific message:
+        // emit(AuthState.failure("Sign in cancelled"));
       }
     } catch (e) {
-      emit(AuthState.failure(e.toString()));
+      emit(AuthState.failure(ErrorHandler.getMessage(e)));
     }
   }
 
@@ -136,7 +144,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthState.authenticated(user as UserModel));
       }
     } catch (e) {
-      emit(AuthState.failure(e.toString()));
+      emit(AuthState.failure(ErrorHandler.getMessage(e)));
     }
   }
 }

@@ -24,7 +24,7 @@ class ProfileStats extends StatelessWidget {
           Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
           _buildStatItem(context, "SUCCESS", successRate == 0 ? "—" : "$successRate%"),
            Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
-          _buildStatItem(context, "EXPERIENCE", "$experienceYears Years"),
+          _buildStatItem(context, "EXPERIENCE", experienceYears == 0 ? "—" : "$experienceYears Years"),
         ],
       ),
     );

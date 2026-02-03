@@ -20,4 +20,4 @@ We use your information solely to:
 We do not sell your personal data to third parties. Your profile information is visible to other users of the app for networking purposes.
 
 4. Contact Us
-If you have any questions about this Privacy Policy, please contact us at: [Insert Your Email Here]
+If you have any questions about this Privacy Policy, please contact us at: dev.mzaid@gmail.com

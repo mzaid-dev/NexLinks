@@ -50,7 +50,18 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.chat,
         pageBuilder: (context, state) {
-          final user = state.extra as UserModel;
+          final user = state.extra as UserModel?;
+          if (user == null) {
+            // Redirect to home if user is null
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const HomeScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 300),
+            );
+          }
           return CustomTransitionPage(
             key: state.pageKey,
             child: ChatScreen(targetUser: user),
@@ -103,7 +114,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.editProfile,
         builder: (context, state) {
-          final user = state.extra as UserModel;
+          final user = state.extra as UserModel?;
+          if (user == null) {
+            // Fallback to home if user is null
+            return const HomeScreen();
+          }
           return EditProfileScreen(user: user);
         },
       ),

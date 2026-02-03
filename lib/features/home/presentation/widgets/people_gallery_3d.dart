@@ -31,7 +31,8 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.users.isEmpty) {
+    // Gallery3D requires at least 3 items
+    if (widget.users.length < 3) {
       return const SizedBox.shrink();
     }
 
@@ -92,43 +93,57 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Avatar with Premium Gradient Ring
+              // Avatar with Premium Gradient Ring (matching PeopleGridCard style)
               SizedBox(
                 width: 90,
                 height: 90,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Gradient Ring
+                    // 1. Gradient Ring with glow
                     Container(
                       width: 86,
                       height: 86,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            const Color(0xFF22D3EE),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF2563EB).withValues(alpha: 0.6),
+                            blurRadius: 20,
+                            spreadRadius: 1,
+                          ),
+                        ],
                       ),
                     ),
-                    // Avatar
+                    // 2. Spacer (Background) to separate ring from avatar
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF1A1A1A), // Match card bg
+                      ),
+                    ),
+                    // 3. Avatar Image
                     Hero(
                       tag: 'avatar_${user.id}',
                       child: AppAvatar(
-                        size: AppAvatarSize.large,
+                        customSize: 74,
                         imageUrl: user.photoURL,
+                        initials: user.username.isNotEmpty ? user.username[0] : '?',
                       ),
                     ),
-                    // Online Status with Pulsing Animation
+                    // 4. Online Status with Pulsing Animation
                     if (user.isOnline)
                       const Positioned(
-                        bottom: 2,
-                        right: 2,
-                        child: PulsingStatus(),
+                        bottom: 4,
+                        right: 4,
+                        child: PulsingStatus(size: 14),
                       ),
                   ],
                 ),
@@ -160,17 +175,18 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
 
               const SizedBox(height: 4),
 
-              // Role
-              Text(
-                user.role.isNotEmpty ? user.role : "Developer",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              // Role (only show if set and meaningful)
+              if (user.role.isNotEmpty && user.role.toLowerCase() != 'user')
+                Text(
+                  user.role,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
               
               const SizedBox(height: 12),
 

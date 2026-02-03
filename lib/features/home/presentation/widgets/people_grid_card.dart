@@ -34,8 +34,9 @@ class PeopleGridCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
           child: Stack(
             children: [
-              // Content
-              LayoutBuilder(
+              // Content - fill the entire card for proper centering
+              Positioned.fill(
+                child: LayoutBuilder(
                 builder: (context, constraints) {
                   final cardWidth = constraints.maxWidth;
                   final avatarRadius = cardWidth * 0.22;
@@ -48,6 +49,7 @@ class PeopleGridCard extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Avatar with Green Ring
                           // Avatar with Premium Gradient Ring
@@ -100,7 +102,7 @@ class PeopleGridCard extends StatelessWidget {
                                   Positioned(
                                     bottom: 4,
                                     right: 4,
-                                    child: const PulsingStatus(size: 10),
+                                    child: const PulsingStatus(size: 14),
                                   ),
                               ],
                             ),
@@ -127,49 +129,58 @@ class PeopleGridCard extends StatelessWidget {
                           ),
                         ),
                         
-                        SizedBox(height: 4),
-                        
-                        // Role/Subtitle
-                        Text(
-                          user.role,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), 
-                            fontSize: roleFontSize.clamp(10.0, 14.0),
-                            letterSpacing: 0.1,
+                        // Role/Subtitle (only show if set and meaningful)
+                        if (user.role.isNotEmpty && user.role.toLowerCase() != 'user') ...[
+                          SizedBox(height: 4),
+                          Text(
+                            user.role,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), 
+                              fontSize: roleFontSize.clamp(10.0, 14.0),
+                              letterSpacing: 0.1,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        ],
                         
-                        const Spacer(),
+                        SizedBox(height: cardWidth * 0.08),
                         
                         // "View profile" Label
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "View Profile",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary, 
-                                fontSize: (cardWidth * 0.065).clamp(10.0, 14.0),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 10,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ],
-                        ),
+                        Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "View Profile",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 10,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
                       ],
                     ),
                   ),
                 );
               },
-            )
+            ),
+          )
             ],
           ),
         ),

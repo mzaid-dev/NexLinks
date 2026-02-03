@@ -154,14 +154,23 @@ class AppAvatar extends StatelessWidget {
       );
     }
 
+    // Use dark, non-jarring fallback instead of red
     return Container(
-      color: isError 
-        ? Colors.redAccent.withValues(alpha: 0.05) 
-        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        gradient: RadialGradient(
+          colors: [
+            const Color(0xFF2563EB).withValues(alpha: 0.1),
+            Colors.transparent,
+          ],
+          center: Alignment.center,
+          radius: 0.8,
+        ),
+      ),
       child: Center(
         child: Icon(
-          isError ? Icons.cloud_off_rounded : Icons.person_rounded,
-          color: isError ? Colors.redAccent : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+          isError ? Icons.person_off_rounded : Icons.person_rounded,
+          color: Colors.white.withValues(alpha: 0.3),
           size: rawSize * 0.5,
         ),
       ),

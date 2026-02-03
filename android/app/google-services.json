@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:322014483549:android:7ab6bb1021520e8fef29b4",
+        "mobilesdk_app_id": "1:322014483549:android:ec4dec7f37e6aebeef29b4",
         "android_client_info": {
-          "package_name": "com.example.chat_app"
+          "package_name": "com.nexlinks.social"
         }
       },
       "oauth_client": [
         {
-          "client_id": "322014483549-e7eju43oaga0h3ottf8e7rooerbn0n7s.apps.googleusercontent.com",
+          "client_id": "322014483549-lpnqpdbe2ei2n2hlmq90jfdqr6opdcut.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.chat_app",
+            "package_name": "com.nexlinks.social",
             "certificate_hash": "649899eb58fc9288d333ec9f62c61867ba7a55ac"
           }
         },

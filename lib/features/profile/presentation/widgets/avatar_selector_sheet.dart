@@ -81,9 +81,29 @@ class AvatarSelectorSheet extends StatelessWidget {
                       mainAxisSpacing: 24,
                       crossAxisSpacing: 24,
                     ),
-                    itemCount: allAvatars.length,
+                    itemCount: allAvatars.length + 1,
                     itemBuilder: (context, index) {
-                      final avatarUrl = allAvatars[index];
+                      if (index == 0) {
+                        return TactileFeedback(
+                          onTap: () => Navigator.pop(context, ""),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                              color: Colors.white.withValues(alpha: 0.05),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.person_off_outlined, color: Colors.white.withValues(alpha: 0.6)),
+                                const SizedBox(height: 4),
+                                Text("Default", style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w500)),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      final avatarUrl = allAvatars[index - 1];
                       return TactileFeedback(
                         onTap: () => Navigator.pop(context, avatarUrl),
                         child: AppAvatar(

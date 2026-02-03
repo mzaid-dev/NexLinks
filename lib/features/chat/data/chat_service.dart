@@ -171,28 +171,40 @@ class ChatService {
     await messageRef.update({'reactions': reactions});
   }
 
-  // Global Unread Count Stream (Requires receiverId on messages)
+  // Global Unread Count Stream - Simplified approach without composite index
+  // Listen to all chats user is part of, then count unread messages
   Stream<int> getGlobalUnreadCountStream(String currentUserId) {
+    if (currentUserId.isEmpty) return Stream.value(0);
+    
     return _firestore
-        .collectionGroup('messages')
-        .where('receiverId', isEqualTo: currentUserId)
-        .where('isRead', isEqualTo: false)
+        .collection('chats')
+        .where('participants', arrayContains: currentUserId)
         .snapshots()
-        .map((snapshot) {
-          // Double safety: Ensure we don't count messages WE sent, even if receiverId matches
-          // (This handles self-chat or potential data inconsistencies)
-          return snapshot.docs.where((doc) {
-             final data = doc.data(); // collectionGroup docs have data
-             if (data.containsKey('senderId')) {
-               return data['senderId'] != currentUserId;
-             }
-             return true;
-          }).length;
+        .asyncMap((chatsSnapshot) async {
+          int totalUnread = 0;
+          
+          for (var chatDoc in chatsSnapshot.docs) {
+            final unreadSnapshot = await _firestore
+                .collection('chats')
+                .doc(chatDoc.id)
+                .collection('messages')
+                .where('isRead', isEqualTo: false)
+                .get();
+            
+            // Count messages NOT sent by me
+            final unreadCount = unreadSnapshot.docs
+                .where((doc) => doc['senderId'] != currentUserId)
+                .length;
+            
+            totalUnread += unreadCount;
+          }
+          
+          return totalUnread;
         })
         .distinct()
         .handleError((error) {
-           debugPrint("ChatService Error: getGlobalUnreadCountStream failed (Check if Index is needed). $error");
-           return 0; // Fallback to 0 if query fails
+          debugPrint("ChatService Error: getGlobalUnreadCountStream failed. $error");
+          return 0;
         });
   }
 }

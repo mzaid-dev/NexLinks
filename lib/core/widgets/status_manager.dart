@@ -44,10 +44,10 @@ class _StatusManagerState extends State<StatusManager> with WidgetsBindingObserv
       try {
         // Using a direct update here to ensure we satisfy the requirement for FieldValue.serverTimestamp()
         // and to avoid issues if the service method uses Timestamp.now()
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'isOnline': isOnline,
           'lastSeen': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
       } catch (e) {
         debugPrint("Error updating status: $e");
       }

@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get user;
   Future<UserModel?> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel?> registerWithEmailAndPassword({required String email, required String password, required String username});
+  Future<UserModel?> registerWithEmailAndPassword({required String email, required String password, required String username, required String fullName});
   Future<void> signOut();
   Future<void> sendPasswordResetEmail(String email);
   Future<void> deleteAccount();
@@ -43,113 +43,89 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel?> signInWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      User? user = result.user;
+    UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    User? user = result.user;
       if (user != null) {
         await _storage.write(key: 'uid', value: user.uid);
-        // Update online status
-        await _firestore.collection('users').doc(user.uid).update({
+        // Update online status (Use set merge to handle missing docs gracefully)
+        await _firestore.collection('users').doc(user.uid).set({
           'isOnline': true,
           'lastSeen': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
         
         final doc = await _firestore.collection('users').doc(user.uid).get();
         if (doc.exists) return UserModel.fromMap(doc.data()!);
       }
-      return null;
-    } catch (e) {
-      throw Exception("Failed to Sign In: $e");
-    }
+    return null;
   }
 
   @override
-  Future<UserModel?> registerWithEmailAndPassword({required String email, required String password, required String username}) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      User? user = result.user;
-      if (user != null) {
-        await _storage.write(key: 'uid', value: user.uid);
-        
-        final userModel = UserModel(
-          id: user.uid,
-          email: email,
-          username: username,
-          lastSeen: Timestamp.now(), 
-          role: 'user', // Explicitly set role
-          isOnline: true,
-          photoURL: '',
-          createdAt: Timestamp.now(),
-        );
+  Future<UserModel?> registerWithEmailAndPassword({required String email, required String password, required String username, required String fullName}) async {
+    UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    User? user = result.user;
+    if (user != null) {
+      await _storage.write(key: 'uid', value: user.uid);
+      
+      final userModel = UserModel(
+        id: user.uid,
+        email: email,
+        username: username,
+        fullName: fullName,
+        lastSeen: Timestamp.now(), 
+        role: '', // Empty by default, user can set later
+        isOnline: true,
+        photoURL: '',
+        createdAt: Timestamp.now(),
+      );
 
-        await _firestore.collection('users').doc(user.uid).set(userModel.toMap(), SetOptions(merge: true));
-        return userModel;
-      }
-      return null;
-    } catch (e) {
-      throw Exception("Failed to Register: $e");
+      await _firestore.collection('users').doc(user.uid).set(userModel.toMap(), SetOptions(merge: true));
+      return userModel;
     }
+    return null;
   }
 
   @override
   Future<void> signOut() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-         await _firestore.collection('users').doc(user.uid).update({
-          'isOnline': false,
-          'lastSeen': FieldValue.serverTimestamp(),
-        });
-      }
-      await _storage.delete(key: 'uid');
-      await _auth.signOut();
-    } catch (e) {
-      throw Exception("Failed to Sign Out: $e");
+    final user = _auth.currentUser;
+    if (user != null) {
+       await _firestore.collection('users').doc(user.uid).set({
+        'isOnline': false,
+        'lastSeen': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     }
+    await _storage.delete(key: 'uid');
+    await _auth.signOut();
   }
   
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      throw Exception("Failed to Send Password Reset Email: $e");
-    }
+    await _auth.sendPasswordResetEmail(email: email);
   }
   
   @override
   Future<void> deleteAccount() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).delete();
-        await _storage.delete(key: 'uid');
-        await user.delete();
-      }
-    } catch (e) {
-      throw Exception("Failed to Delete Account: $e");
+    final user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).delete();
+      await _storage.delete(key: 'uid');
+      await user.delete();
     }
   }
 
   @override
   Future<bool> checkUsernameUnique(String username) async {
-    try {
-      final result = await _firestore
-          .collection('users')
-          .where('username', isEqualTo: username)
-          .get();
-      return result.docs.isEmpty;
-    } catch (e) {
-      throw Exception("Failed to check username uniqueness: $e");
-    }
+    final result = await _firestore
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .get();
+    return result.docs.isEmpty;
   }
 
   @override
   Future<UserModel?> signInWithGoogle() async {
-    try {
       final googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) return null; // Canceled by user
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -166,12 +142,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         final doc = await _firestore.collection('users').doc(user.uid).get();
         if (!doc.exists) {
           // Create new user if first time
+          
+          // Get full name from Google profile
+          final googleFullName = user.displayName ?? '';
+          
+          // Generate a unique username based on display name (or email prefix as fallback)
+          String baseName = googleFullName;
+          if (baseName.isEmpty && user.email != null) {
+            baseName = user.email!.split('@').first;
+          }
+          final uniqueUsername = await _generateUniqueUsername(baseName.isNotEmpty ? baseName : 'user');
+
           final userModel = UserModel(
             id: user.uid,
             email: user.email ?? '',
-            username: user.displayName ?? 'Google User',
+            username: uniqueUsername,
+            fullName: googleFullName.isNotEmpty ? googleFullName : null,
             lastSeen: Timestamp.now(),
-            role: 'user',
+            role: '', // Empty by default, user can set later
             isOnline: true,
             photoURL: user.photoURL ?? '',
             createdAt: Timestamp.now(),
@@ -180,25 +168,48 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           return userModel;
         } else {
           // Update online status for existing user
-          await _firestore.collection('users').doc(user.uid).update({
+          await _firestore.collection('users').doc(user.uid).set({
             'isOnline': true,
             'lastSeen': FieldValue.serverTimestamp(),
-          });
+          }, SetOptions(merge: true));
           return UserModel.fromMap(doc.data()!);
         }
       }
       return null;
-    } catch (e) {
-      throw Exception("Google Sign-In Failed: $e");
-    }
   }
 
   @override
   Future<UserModel?> signInWithFacebook() async {
-    try {
-      throw Exception("Facebook Sign-In configuration pending in Facebook Developer Portal.");
-    } catch (e) {
-      throw Exception("Facebook Sign-In Failed: $e");
+    // throw Exception("Facebook Sign-In configuration pending in Facebook Developer Portal.");
+    // Keeping this exception for now as it is logic-based, not platform-based
+    throw UnimplementedError("Facebook login not configured yet.");
+  }
+
+  Future<String> _generateUniqueUsername(String displayName) async {
+    // 1. Sanitize the display name to create a base username
+    // Remove spaces, special characters, and convert to lowercase
+    String baseName = displayName.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    if (baseName.isEmpty) baseName = 'user';
+
+    // 2. Check if the base name is already unique
+    if (await checkUsernameUnique(baseName)) {
+      return baseName;
     }
+
+    // 3. If taken, try appending random numbers until unique
+    int attempts = 0;
+    while (attempts < 5) {
+      // Generate a random 4-digit suffix
+      final String suffix = (1000 + DateTime.now().microsecondsSinceEpoch % 9000).toString();
+      final String candidate = '${baseName}_$suffix';
+
+      if (await checkUsernameUnique(candidate)) {
+        return candidate;
+      }
+      attempts++;
+    }
+
+    // 4. Fallback: Use timestamp to guarantee uniqueness if random retries fail
+    return '${baseName}_${DateTime.now().millisecondsSinceEpoch}';
   }
 }

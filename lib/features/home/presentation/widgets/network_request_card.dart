@@ -1,6 +1,6 @@
-import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:chiclet/chiclet.dart';
 
 class NetworkRequestCard extends StatelessWidget {
   final UserModel user;
@@ -21,7 +21,7 @@ class NetworkRequestCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color, // Theme-aware card bg
+        color: const Color(0xFF1A1A1A), // Consistent dark background
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08)),
         boxShadow: [
@@ -65,12 +65,12 @@ class NetworkRequestCard extends StatelessWidget {
                 children: [
                   Text(
                     user.username,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     isSent ? "Pending acceptance" : "Wants to connect",
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
                   ),
                 ],
               ),
@@ -78,35 +78,34 @@ class NetworkRequestCard extends StatelessWidget {
             
             // Actions
             if (!isSent) ...[
-              // ACCEPT
-              AppButton(
-                text: "Accept",
+              // ACCEPT - Green check button
+              ChicletAnimatedButton(
                 onPressed: onAccept,
-                style: AppButtonStyle.secondary,
-                width: 100,
-                height: 40,
-                borderRadius: 20,
+                backgroundColor: Colors.green,
+                buttonHeight: 4,
+                borderRadius: 30,
+                padding: const EdgeInsets.all(12),
+                child: const Icon(Icons.check_rounded, color: Colors.white, size: 22),
               ),
               const SizedBox(width: 8),
-              // DECLINE
-              AppButton(
-                text: "",
+              // DECLINE - Red X button  
+              ChicletAnimatedButton(
                 onPressed: onDecline,
-                style: AppButtonStyle.outlined,
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                icon: Icons.close,
+                backgroundColor: Colors.redAccent,
+                buttonHeight: 4,
+                borderRadius: 30,
+                padding: const EdgeInsets.all(12),
+                child: const Icon(Icons.close_rounded, color: Colors.white, size: 22),
               ),
             ] else ...[
-               // CANCEL
-               AppButton(
-                 text: "Cancel",
+               // CANCEL - Red X button
+               ChicletAnimatedButton(
                  onPressed: onDecline,
-                 style: AppButtonStyle.outlined,
-                 width: 100,
-                 height: 40,
-                 borderRadius: 20,
+                 backgroundColor: Colors.redAccent,
+                 buttonHeight: 4,
+                 borderRadius: 30,
+                 padding: const EdgeInsets.all(12),
+                 child: const Icon(Icons.close_rounded, color: Colors.white, size: 22),
                ),
             ]
           ],

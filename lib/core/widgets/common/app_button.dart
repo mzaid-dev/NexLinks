@@ -12,6 +12,8 @@ class AppButton extends StatelessWidget {
   final double borderRadius;
   final bool isLoading;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   const AppButton({
     super.key,
@@ -23,6 +25,8 @@ class AppButton extends StatelessWidget {
     this.borderRadius = 16,
     this.isLoading = false,
     this.icon,
+    this.backgroundColor,
+    this.textColor,
   });
 
   @override
@@ -31,7 +35,7 @@ class AppButton extends StatelessWidget {
 
     Color buttonColor;
     Color? shadowColor;
-    Color textColor = Colors.white;
+    Color contentColor = Colors.white;
 
     switch (style) {
       case AppButtonStyle.primary:
@@ -45,12 +49,22 @@ class AppButton extends StatelessWidget {
       case AppButtonStyle.outlined:
         buttonColor = Colors.white;
         shadowColor = Colors.grey[300];
-        textColor = colorScheme.primary;
+        contentColor = colorScheme.primary;
         break;
       case AppButtonStyle.danger:
         buttonColor = Colors.redAccent;
         shadowColor = Colors.red[900];
         break;
+    }
+
+    if (backgroundColor != null) {
+      buttonColor = backgroundColor!;
+      // Auto-generate shadow color if not provided (darker version)
+      shadowColor = HSLColor.fromColor(buttonColor).withLightness((HSLColor.fromColor(buttonColor).lightness - 0.15).clamp(0.0, 1.0)).toColor();
+    }
+    
+    if (textColor != null) {
+      contentColor = textColor!;
     }
 
     if (onPressed == null || isLoading) {
