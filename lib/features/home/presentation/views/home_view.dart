@@ -174,13 +174,12 @@ class HomeView extends StatelessWidget {
               FadeInUp(
                 duration: const Duration(milliseconds: 600),
                 child: GlassCard(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
                   child: StreamBuilder<List<UserModel>>(
                     stream: context.read<FirestoreService>().getAllUsers(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const SizedBox(
-                          height: 260,
+                          height: 200,
                           child: Center(
                             child: AppLoadingIndicator(isFullScreen: false, size: 30),
                           ),
@@ -196,7 +195,7 @@ class HomeView extends StatelessWidget {
 
                       if (randomUsers.isEmpty) {
                         return const SizedBox(
-                          height: 260,
+                          height: 200,
                           child: Center(
                             child: Text(
                               "No users to discover yet",
@@ -206,7 +205,9 @@ class HomeView extends StatelessWidget {
                         );
                       }
 
-                      return PeopleGallery3D(users: randomUsers);
+                      return Center(
+                        child: PeopleGallery3D(users: randomUsers),
+                      );
                     },
                   ),
                 ),

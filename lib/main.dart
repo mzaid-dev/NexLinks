@@ -11,7 +11,8 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/services/storage_service.dart';
-import 'package:nexlinks/core/services/notification_service.dart';
+// TODO: Enable in second update
+// import 'package:nexlinks/core/services/notification_service.dart';
 import 'package:nexlinks/core/services/connectivity_service.dart';
 import 'package:nexlinks/core/widgets/status_manager.dart';
 import 'package:nexlinks/core/widgets/connectivity_overlay.dart';
@@ -38,11 +39,12 @@ Future<void> main() async {
     ));
 
     // Initialize services with individual error handling
-    try {
-      await NotificationService().init();
-    } catch (e) {
-      debugPrint("Notification Service Error: $e");
-    }
+    // TODO: Enable in second update
+    // try {
+    //   await NotificationService().init();
+    // } catch (e) {
+    //   debugPrint("Notification Service Error: $e");
+    // }
 
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

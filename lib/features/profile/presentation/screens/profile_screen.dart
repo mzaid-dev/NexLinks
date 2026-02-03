@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 32),
                             ProfileStats(
-                              sessions: displayUser.sessionsCount,
+                              sessions: displayUser.projectsCount,
                               successRate: displayUser.successRate,
                               experienceYears: displayUser.experienceYears,
                             ),

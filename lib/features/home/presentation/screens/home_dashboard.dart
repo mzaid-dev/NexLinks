@@ -2,7 +2,8 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/features/chat/data/chat_service.dart';
 import 'package:nexlinks/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nexlinks/features/home/presentation/widgets/custom_bottom_nav.dart';
-import 'package:nexlinks/features/home/presentation/widgets/notification_wrapper.dart';
+// TODO: Enable in second update
+// import 'package:nexlinks/features/home/presentation/widgets/notification_wrapper.dart';
 import 'package:nexlinks/features/home/presentation/views/home_view.dart';
 import 'package:nexlinks/features/home/presentation/views/explore_view.dart';
 import 'package:nexlinks/features/home/presentation/views/chat_list_view.dart';
@@ -28,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationWrapper(
-      child: Scaffold(
+    // TODO: Enable NotificationWrapper in second update
+    return Scaffold(
         extendBody: true, // Allows body to scroll behind Nav Bar
         backgroundColor: const Color(0xFF000000), 
         body: Stack(
@@ -103,8 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                unreadChatCount: unreadCount,
              );
           }
-        ),
-      ),
+          ),
     );
   }
 }

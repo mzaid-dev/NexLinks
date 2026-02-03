@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 import 'package:nexlinks/core/widgets/common/pulsing_status.dart';
+import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:nexlinks/router/route_names.dart';
 
@@ -43,7 +44,7 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
       height: 200,
       isClip: false,
       itemConfig: const GalleryItemConfig(
-        width: 160,
+        width: 200,
         height: 220,
         radius: 24,
         isShowTransformMask: false,
@@ -53,9 +54,6 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
           currentIndex = index;
         });
       },
-      onClickItem: (index) {
-        context.push(AppRoutes.profile, extra: widget.users[index]);
-      },
       itemBuilder: (context, index) {
         final user = widget.users[index];
         return _buildUserCard(user);
@@ -64,7 +62,9 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
   }
 
   Widget _buildUserCard(UserModel user) {
-    return Container(
+    return TactileFeedback(
+      onTap: () => context.push(AppRoutes.profile, extra: user),
+      child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
         color: const Color(0xFF1A1A1A), // Darker black for 3D effect
@@ -185,7 +185,7 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                   Text(
                     "View Profile",
                     style: TextStyle(
-                      color: const Color(0xFF22D3EE),
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -194,13 +194,14 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 10,
-                    color: const Color(0xFF22D3EE),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }

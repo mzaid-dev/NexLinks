@@ -30,6 +30,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _bioController;
   late TextEditingController _experienceController;
   late TextEditingController _roleController;
+  late TextEditingController _projectsController;
+  late TextEditingController _successRateController;
   
   List<String> _expertise = [];
   bool _isLoading = false;
@@ -44,6 +46,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController = TextEditingController(text: widget.user.bio);
     _experienceController = TextEditingController(text: widget.user.experienceYears.toString());
     _roleController = TextEditingController(text: widget.user.role);
+    _projectsController = TextEditingController(text: widget.user.projectsCount == 0 ? "" : widget.user.projectsCount.toString());
+    _successRateController = TextEditingController(text: widget.user.successRate == 0 ? "" : widget.user.successRate.toString());
     _expertise = List.from(widget.user.expertise);
     _selectedAvatarUrl = widget.user.photoURL;
   }
@@ -55,6 +59,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController.dispose();
     _experienceController.dispose();
     _roleController.dispose();
+    _projectsController.dispose();
+    _successRateController.dispose();
     super.dispose();
   }
 
@@ -90,6 +96,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         experienceYears: int.tryParse(_experienceController.text.trim()) ?? 0,
         expertise: _expertise,
         photoURL: _selectedAvatarUrl,
+        projectsCount: int.tryParse(_projectsController.text.trim()) ?? 0,
+        successRate: int.tryParse(_successRateController.text.trim()) ?? 0,
       );
 
       await context.read<FirestoreService>().updateUser(updatedUser);
@@ -198,6 +206,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                        _buildAboutSection(),
 
 
+                       const SizedBox(height: 32),
+
+                       // 3. "Professional Stats" Section
+                       _buildSectionHeader("Professional Stats"),
+                       _buildProfessionalStatsSection(),
+
                        const SizedBox(height: 40),
                        
                        // Save Button
@@ -245,6 +259,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         keyboardType: TextInputType.multiline,
         maxLines: 4,
         validator: AppValidators.validateBio,
+      ),
+    );
+  }
+
+  Widget _buildProfessionalStatsSection() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        children: [
+          MyTextFormField(
+            controller: _projectsController,
+            hintText: "Number of projects completed",
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) return null;
+              final number = int.tryParse(value);
+              if (number == null || number < 0 || number > 999) {
+                return 'Please enter a valid number (0-999)';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          MyTextFormField(
+            controller: _successRateController,
+            hintText: "Success rate percentage (0-100)",
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) return null;
+              final number = int.tryParse(value);
+              if (number == null || number < 0 || number > 100) {
+                return 'Please enter a valid percentage (0-100)';
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }
