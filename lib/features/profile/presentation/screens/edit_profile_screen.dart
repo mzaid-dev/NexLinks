@@ -122,7 +122,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return AppBaseView(
-      showGlows: true,
+      showGlows: false, // Disabled for cleaner look
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

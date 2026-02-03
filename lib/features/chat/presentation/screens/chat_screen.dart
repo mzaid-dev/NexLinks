@@ -96,7 +96,7 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return AppBaseView(
-      showGlows: true,
+      showGlows: false, // Disabled for cleaner look
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(

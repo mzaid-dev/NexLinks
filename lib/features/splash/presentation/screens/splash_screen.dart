@@ -51,8 +51,8 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
       if (mounted) setState(() => _phase = 'loading');
     });
 
-    // Organic Progress Simulation (Matches Reference)
-    _progressTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    // Organic Progress Simulation - speeds up when auth resolves
+    _progressTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (!mounted) return;
       if (_phase == 'loading') {
         setState(() {
@@ -61,8 +61,13 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
             timer.cancel();
             _checkAndExit();
           } else {
-            // Natural random progress
-            _progress += math.Random().nextDouble() * 15;
+            // If auth is resolved, complete progress quickly
+            if (_isAuthResolved) {
+              _progress += 20; // Much faster increment
+            } else {
+              // Slower progress while waiting for auth
+              _progress += math.Random().nextDouble() * 8;
+            }
             if (_progress > 100) _progress = 100;
           }
         });
@@ -87,8 +92,8 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
     // Navigate only if both progress is 100% AND auth is resolved
     if (_progress >= 100 && _isAuthResolved) {
       setState(() => _phase = 'exit');
-      // Wait for the exit animation (fading out) to complete
-      Future.delayed(const Duration(milliseconds: 900), () {
+      // Shorter delay for faster navigation
+      Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) {
           _navigateNext();
         }

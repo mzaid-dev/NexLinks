@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 
 import 'package:nexlinks/router/route_names.dart';
 import 'package:go_router/go_router.dart';
@@ -210,7 +211,7 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     color: Colors.black.withValues(alpha: 0.3),
                     child: const Center(
-                      child: CircularProgressIndicator(color: AppTheme.primaryColor),
+                      child: AppLoadingIndicator(),
                     ),
                   ),
               ],

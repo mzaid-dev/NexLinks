@@ -27,7 +27,7 @@ class ChatListView extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return AppBaseView(
-      showGlows: true,
+      showGlows: false, // Disabled for cleaner look
       child: SizedBox(
         height: screenHeight,
         width: double.infinity,

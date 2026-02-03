@@ -35,36 +35,37 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFF000000), 
         body: Stack(
           children: [
-            // 1. Background with Light Leaks
+            // 1. Background (glows disabled for cleaner look)
             Container(
               decoration: const BoxDecoration(
                 color: Color(0xFF050505),
               ),
             ),
-            Positioned(
-              top: -100, left: -100,
-              child: Container(
-                width: 400, height: 400,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [const Color(0xFF2E8AF6).withValues(alpha: 0.15), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -100, right: -100,
-              child: Container(
-                width: 400, height: 400,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [const Color(0xFF00F0FF).withValues(alpha: 0.1), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
+            // Disabled for cleaner look
+            // Positioned(
+            //   top: -100, left: -100,
+            //   child: Container(
+            //     width: 400, height: 400,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       gradient: RadialGradient(
+            //         colors: [const Color(0xFF2E8AF6).withValues(alpha: 0.15), Colors.transparent],
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Positioned(
+            //   bottom: -100, right: -100,
+            //   child: Container(
+            //     width: 400, height: 400,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       gradient: RadialGradient(
+            //         colors: [const Color(0xFF00F0FF).withValues(alpha: 0.1), Colors.transparent],
+            //       ),
+            //     ),
+            //   ),
+            // ),
   
             // 2. Main Content
             SafeArea(

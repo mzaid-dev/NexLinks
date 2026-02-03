@@ -37,16 +37,16 @@ class AppBaseView extends StatelessWidget {
           color: bgColor,
         child: Stack(
           children: [
-            if (showGlows) ...[
-              _buildGlow(
-                top: -100, right: -100, 
-                color: const Color(0xFF2563EB).withValues(alpha: 0.12)
-              ),
-              _buildGlow(
-                bottom: -100, left: -100, 
-                color: const Color(0xFF22D3EE).withValues(alpha: 0.08)
-              ),
-            ],
+            // if (showGlows) ...[
+            //   _buildGlow(
+            //     top: -100, right: -100, 
+            //     color: const Color(0xFF2563EB).withValues(alpha: 0.12)
+            //   ),
+            //   _buildGlow(
+            //     bottom: -100, left: -100, 
+            //     color: const Color(0xFF22D3EE).withValues(alpha: 0.08)
+            //   ),
+            // ],
             AppStatusWrapper(
               isLoading: isLoading,
               error: error,

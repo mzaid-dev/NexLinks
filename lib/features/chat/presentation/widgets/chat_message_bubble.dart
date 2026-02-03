@@ -37,6 +37,12 @@ class ChatMessageBubble extends StatelessWidget {
               messageId: message.id,
               controller: reactionsController,
               alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+              config: const ChatReactionsConfig(
+                // Remove Reply/Copy/Delete menu
+                menuItems: [],
+                // Remove the "+" button from reactions list
+                availableReactions: ['👍', '❤️', '😂', '😮', '😢', '😠'],
+              ),
               onReactionAdded: (reaction) {
                  context.read<ChatCubit>().toggleReaction(
                   chatId, 

@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return AppBaseView(
           isLoading: snapshot.connectionState == ConnectionState.waiting && displayUser == null,
           error: snapshot.hasError ? snapshot.error : null,
-          showGlows: true,
+          showGlows: false, // Disabled for cleaner look
           child: Scaffold(
             backgroundColor: Colors.transparent, // Let AppBaseView handle the background
             body: SafeArea(
@@ -122,15 +122,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             totalRepeatCount: 1,
           ),
           
-          _buildIconBtn(
-            icon: widget.isMe ? Icons.logout_rounded : Icons.more_vert_rounded,
-            iconColor: widget.isMe ? Colors.redAccent : null,
-            onTap: () {
-              if (widget.isMe) {
+          if (widget.isMe)
+            _buildIconBtn(
+              icon: Icons.logout_rounded,
+              iconColor: Colors.redAccent,
+              onTap: () {
                  context.read<AuthBloc>().add(AuthLogoutRequested());
-              }
-            },
-          ),
+              },
+            )
+          else
+            const SizedBox(width: 40), // Spacer to keep title centered
         ],
       ),
     );
