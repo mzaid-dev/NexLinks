@@ -104,20 +104,23 @@ class AppAvatar extends StatelessWidget {
     if (initials != null && initials!.isNotEmpty) {
       return Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          color: const Color(0xFF0D0D0D), // Premium dark background inside the ring
+          gradient: RadialGradient(
             colors: [
-              const Color(0xFF2563EB).withValues(alpha: 0.1),
-              const Color(0xFF22D3EE).withValues(alpha: 0.1),
+              const Color(0xFF2563EB).withValues(alpha: 0.15),
+              Colors.transparent,
             ],
+            center: Alignment.center,
+            radius: 0.8,
           ),
         ),
         child: Center(
           child: Text(
             initials!.toUpperCase(),
             style: TextStyle(
-              color: const Color(0xFF2563EB),
+              color: const Color(0xFF22D3EE), // Cyan text for contrast
               fontWeight: FontWeight.w900,
-              fontSize: rawSize * 0.4,
+              fontSize: rawSize * 0.45,
               letterSpacing: -1,
             ),
           ),

@@ -215,9 +215,12 @@ class _ChatViewState extends State<ChatView> {
                   children: [
                     Hero(
                       tag: 'name_hero_${user.id}',
-                      child: AppGradientText(
-                        user.username,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: AppGradientText(
+                          user.username,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 2),

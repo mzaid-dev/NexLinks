@@ -111,16 +111,19 @@ class PeopleGridCard extends StatelessWidget {
                         // Name
                         Hero(
                           tag: 'name_hero_${user.id}',
-                          child: AppGradientText(
-                            user.username, 
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800, 
-                              fontSize: nameFontSize.clamp(12.0, 18.0),
-                              letterSpacing: -0.5,
-                            ), 
-                            textAlign: TextAlign.center, 
-                            maxLines: 1, 
-                            overflow: TextOverflow.ellipsis
+                          child: Material(
+                            color: Colors.transparent,
+                            child: AppGradientText(
+                              user.username, 
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800, 
+                                fontSize: nameFontSize.clamp(12.0, 18.0),
+                                letterSpacing: -0.5,
+                              ), 
+                              textAlign: TextAlign.center, 
+                              maxLines: 1, 
+                              overflow: TextOverflow.ellipsis
+                            ),
                           ),
                         ),
                         
