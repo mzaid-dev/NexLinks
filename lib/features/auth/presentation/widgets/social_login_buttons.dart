@@ -27,17 +27,17 @@ class SocialLoginButtons extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        FadeInUp(
-          duration: const Duration(milliseconds: 800),
-          delay: const Duration(milliseconds: 800),
-          child: _SocialButton(
-            text: "Continue with Facebook",
-            icon: Icons.facebook_rounded,
-            color: const Color(0xFF1877F2),
-            textColor: Colors.white,
-            onPressed: onFacebookPressed,
-          ),
-        ),
+        // FadeInUp(
+        //   duration: const Duration(milliseconds: 800),
+        //   delay: const Duration(milliseconds: 800),
+        //   child: _SocialButton(
+        //     text: "Continue with Facebook",
+        //     icon: Icons.facebook_rounded,
+        //     color: const Color(0xFF1877F2),
+        //     textColor: Colors.white,
+        //     onPressed: onFacebookPressed,
+        //   ),
+        // ),
       ],
     );
   }

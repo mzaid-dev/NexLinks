@@ -11,6 +11,7 @@ class MyTextFormField extends StatefulWidget {
   final Widget? suffixIcon;
   final void Function()? onSuffixIconPressed;
   final int? maxLines;
+  final void Function(String)? onChanged;
 
   const MyTextFormField({
     super.key,
@@ -24,6 +25,7 @@ class MyTextFormField extends StatefulWidget {
     this.suffixIcon,
     this.onSuffixIconPressed,
     this.maxLines = 1,
+    this.onChanged,
   });
 
   @override
@@ -122,6 +124,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
         ),
       ),
       validator: widget.validator,
+      onChanged: widget.onChanged,
     );
   }
 }
