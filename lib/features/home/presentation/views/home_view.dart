@@ -4,6 +4,7 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/features/home/presentation/widgets/glass_card.dart';
+import 'package:nexlinks/features/home/presentation/widgets/people_gallery_3d.dart';
 import 'package:nexlinks/router/route_names.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -147,7 +148,71 @@ class HomeView extends StatelessWidget {
                 }
               ),
             const SizedBox(height: 32),
-            const SizedBox(height: 24),
+            
+            // 3D People Gallery Section
+            Align(
+              alignment: Alignment.centerLeft,
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  TyperAnimatedText(
+                    "Discover People",
+                    textStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    speed: const Duration(milliseconds: 100),
+                  ),
+                ],
+                totalRepeatCount: 1,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // 3D Gallery in Glass Container
+            if (currentUser != null)
+              FadeInUp(
+                duration: const Duration(milliseconds: 600),
+                child: GlassCard(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  child: StreamBuilder<List<UserModel>>(
+                    stream: context.read<FirestoreService>().getAllUsers(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox(
+                          height: 260,
+                          child: Center(
+                            child: AppLoadingIndicator(isFullScreen: false, size: 30),
+                          ),
+                        );
+                      }
+
+                      // Get random 10 users (excluding current user)
+                      final allUsers = snapshot.data!
+                          .where((u) => u.id != currentUser.uid)
+                          .toList();
+                      allUsers.shuffle();
+                      final randomUsers = allUsers.take(10).toList();
+
+                      if (randomUsers.isEmpty) {
+                        return const SizedBox(
+                          height: 260,
+                          child: Center(
+                            child: Text(
+                              "No users to discover yet",
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return PeopleGallery3D(users: randomUsers);
+                    },
+                  ),
+                ),
+              ),
+            
+            const SizedBox(height: 32),
             // Header for recommended users
             Align(
               alignment: Alignment.centerLeft,
