@@ -14,7 +14,8 @@ class PulsingStatus extends StatefulWidget {
   State<PulsingStatus> createState() => _PulsingStatusState();
 }
 
-class _PulsingStatusState extends State<PulsingStatus> with SingleTickerProviderStateMixin {
+class _PulsingStatusState extends State<PulsingStatus>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -25,9 +26,10 @@ class _PulsingStatusState extends State<PulsingStatus> with SingleTickerProvider
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

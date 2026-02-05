@@ -27,7 +27,7 @@ class AvatarSelectorSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final firestoreService = context.read<FirestoreService>();
-    
+
     return GlassContainer(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
       opacity: 0.1,
@@ -49,9 +49,9 @@ class AvatarSelectorSheet extends StatelessWidget {
             Text(
               "Select Your Avatar",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1.0,
-                  ),
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1.0,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -67,20 +67,22 @@ class AvatarSelectorSheet extends StatelessWidget {
                 stream: firestoreService.getAvatars(),
                 builder: (context, snapshot) {
                   final dynamicAvatars = snapshot.data ?? [];
-                  // Combine dynamic and static, ensuring no duplicates
+
                   final allAvatars = {...dynamicAvatars, ...avatars}.toList();
-                  
-                  if (snapshot.connectionState == ConnectionState.waiting && dynamicAvatars.isEmpty) {
+
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      dynamicAvatars.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
                   return GridView.builder(
                     physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 24,
-                      crossAxisSpacing: 24,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 24,
+                          crossAxisSpacing: 24,
+                        ),
                     itemCount: allAvatars.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
@@ -89,15 +91,27 @@ class AvatarSelectorSheet extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
                               color: Colors.white.withValues(alpha: 0.05),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.person_off_outlined, color: Colors.white.withValues(alpha: 0.6)),
+                                Icon(
+                                  Icons.person_off_outlined,
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                ),
                                 const SizedBox(height: 4),
-                                Text("Default", style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w500)),
+                                Text(
+                                  "Default",
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.6),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ],
                             ),
                           ),

@@ -17,7 +17,6 @@ import 'package:nexlinks/core/widgets/common/app_empty_state.dart';
 import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
 
@@ -26,18 +25,16 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
-  // State for animated search (Restored exactly as requested)
   bool _isSearchExpanded = false;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
-  // Pagination State
+
   final List<UserModel> _users = [];
   DocumentSnapshot? _lastDocument;
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasMore = true;
-  final int _limit = 6; // Limit per page
+  final int _limit = 6;
 
   @override
   void initState() {
@@ -51,15 +48,17 @@ class _ExploreViewState extends State<ExploreView> {
     final currentUserId = context.read<AuthService>().currentUserId;
 
     try {
-      final snapshot = await firestoreService.getPaginatedUsers(_limit, lastDocument: _lastDocument);
-      
+      final snapshot = await firestoreService.getPaginatedUsers(
+        _limit,
+        lastDocument: _lastDocument,
+      );
+
       final List<UserModel> newUsers = snapshot.docs
           .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
           .where((u) => u.id != currentUserId)
           .toList();
 
       setState(() {
-        
         if (_lastDocument == null) {
           _users.clear();
         }
@@ -67,8 +66,7 @@ class _ExploreViewState extends State<ExploreView> {
         _lastDocument = snapshot.docs.isNotEmpty ? snapshot.docs.last : null;
         _isLoading = false;
         _isLoadingMore = false;
-        
-        // If we got fewer results than limit, there are no more users
+
         if (snapshot.docs.length < _limit) {
           _hasMore = false;
         }
@@ -82,7 +80,8 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       if (!_isLoadingMore && _hasMore && !_isSearchExpanded) {
         setState(() => _isLoadingMore = true);
         _fetchUsers();
@@ -99,9 +98,15 @@ class _ExploreViewState extends State<ExploreView> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter logic for search
-    final List<UserModel> displayedUsers = _isSearchExpanded && _searchController.text.isNotEmpty
-        ? _users.where((u) => u.username.toLowerCase().contains(_searchController.text.toLowerCase())).toList()
+    final List<UserModel> displayedUsers =
+        _isSearchExpanded && _searchController.text.isNotEmpty
+        ? _users
+              .where(
+                (u) => u.username.toLowerCase().contains(
+                  _searchController.text.toLowerCase(),
+                ),
+              )
+              .toList()
         : _users;
 
     return AppBaseView(
@@ -123,119 +128,158 @@ class _ExploreViewState extends State<ExploreView> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
                 child: GlassContainer(
                   borderRadius: BorderRadius.circular(30),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: SizedBox(
-                  height: 54,
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      // Title (Hidden when search expanded)
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: _isSearchExpanded ? 0.0 : 1.0,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: AnimatedTextKit(
-                            animatedTexts: [
-                              TyperAnimatedText(
-                                "Explore People",
-                                textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -1.0,
-                                  color: Colors.white,
+                    height: 54,
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          opacity: _isSearchExpanded ? 0.0 : 1.0,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: AnimatedTextKit(
+                              animatedTexts: [
+                                TyperAnimatedText(
+                                  "Explore People",
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: -1.0,
+                                        color: Colors.white,
+                                      ),
+                                  speed: const Duration(milliseconds: 100),
                                 ),
-                                speed: const Duration(milliseconds: 100),
-                              ),
-                            ],
-                            totalRepeatCount: 1,
+                              ],
+                              totalRepeatCount: 1,
+                            ),
                           ),
                         ),
-                      ),
-                      
-                      // Animated Search Bar
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOutBack, 
-                        width: _isSearchExpanded ? MediaQuery.of(context).size.width - 72 : 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05))
-                        ),
-                        child: _isSearchExpanded 
-                          ? Stack( 
-                              children: [
-                                Positioned(
-                                  left: 16,
-                                  right: 48,
-                                  top: 0,
-                                  bottom: 0,
-                                  child: Center(
-                                    child: TextField(
-                                      controller: _searchController,
-                                      autofocus: true,
-                                      onChanged: (_) => setState(() {}),
-                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                                      decoration: InputDecoration(
-                                        hintText: "Search people...", 
-                                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)),
-                                        border: InputBorder.none,
-                                        focusedBorder : InputBorder.none,
-                                        enabledBorder : InputBorder.none,
-                                        filled : false,
-                                        isDense: true,
-                                        contentPadding: EdgeInsets.zero,
+
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeOutBack,
+                          width: _isSearchExpanded
+                              ? MediaQuery.of(context).size.width - 72
+                              : 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.05),
+                            ),
+                          ),
+                          child: _isSearchExpanded
+                              ? Stack(
+                                  children: [
+                                    Positioned(
+                                      left: 16,
+                                      right: 48,
+                                      top: 0,
+                                      bottom: 0,
+                                      child: Center(
+                                        child: TextField(
+                                          controller: _searchController,
+                                          autofocus: true,
+                                          onChanged: (_) => setState(() {}),
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
+                                          decoration: InputDecoration(
+                                            hintText: "Search people...",
+                                            hintStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withValues(alpha: 0.38),
+                                            ),
+                                            border: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                            enabledBorder: InputBorder.none,
+                                            filled: false,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.zero,
+                                          ),
+                                        ),
                                       ),
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      child: TactileFeedback(
+                                        onTap: () {
+                                          setState(() {
+                                            _isSearchExpanded = false;
+                                            _searchController.clear();
+                                          });
+                                        },
+                                        child: SizedBox(
+                                          width: 48,
+                                          height: 48,
+                                          child: Icon(
+                                            Icons.close_rounded,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.7),
+                                            size: 22,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : TactileFeedback(
+                                  onTap: () {
+                                    setState(() {
+                                      _isSearchExpanded = true;
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.7),
+                                      size: 22,
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  right: 0,
-                                  child: TactileFeedback(
-                                    onTap: () {
-                                      setState(() {
-                                        _isSearchExpanded = false;
-                                        _searchController.clear();
-                                      });
-                                    },
-                                    child: SizedBox(
-                                      width: 48, height: 48,
-                                    child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                          : TactileFeedback(
-                              onTap: () {
-                                setState(() {
-                                  _isSearchExpanded = true;
-                                });
-                              },
-                              child: Container(
-                                width: 48, height: 48,
-                                decoration: const BoxDecoration(color: Colors.transparent),
-                                child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
-                              ),
-                            ),
-                      )
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 ),
               ),
             ),
           ),
-          
+
           if (_isLoading && _users.isEmpty)
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, 
-                  mainAxisSpacing: 16, 
-                  crossAxisSpacing: 16, 
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
                   childAspectRatio: 0.68,
                 ),
                 delegate: SliverChildBuilderDelegate(
@@ -249,17 +293,20 @@ class _ExploreViewState extends State<ExploreView> {
               ),
             )
           else if (displayedUsers.isEmpty)
-             SliverFillRemaining(
+            SliverFillRemaining(
               child: AppEmptyState(
                 icon: Icons.search_off_rounded,
                 title: "No results found",
-                message: "No users match your current search criteria. Try a different username or explore other people.",
-                onAction: _isSearchExpanded ? () {
-                  setState(() {
-                    _isSearchExpanded = false;
-                    _searchController.clear();
-                  });
-                } : null,
+                message:
+                    "No users match your current search criteria. Try a different username or explore other people.",
+                onAction: _isSearchExpanded
+                    ? () {
+                        setState(() {
+                          _isSearchExpanded = false;
+                          _searchController.clear();
+                        });
+                      }
+                    : null,
                 actionLabel: "Clear Search",
               ),
             )
@@ -268,49 +315,49 @@ class _ExploreViewState extends State<ExploreView> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, 
-                  mainAxisSpacing: 16, 
-                  crossAxisSpacing: 16, 
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
                   childAspectRatio: 0.68,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final user = displayedUsers[index];
-                    return FadeInUp(
-                      key: ValueKey(user.id),
-                      delay: Duration(milliseconds: (index % _limit) * 50),
-                      duration: const Duration(milliseconds: 500),
-                      child: PeopleGridCard(
-                        user: user,
-                        onTap: () {
-                             context.push(AppRoutes.profile, extra: user);
-                        },
-                      ),
-                    );
-                  },
-                  childCount: displayedUsers.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final user = displayedUsers[index];
+                  return FadeInUp(
+                    key: ValueKey(user.id),
+                    delay: Duration(milliseconds: (index % _limit) * 50),
+                    duration: const Duration(milliseconds: 500),
+                    child: PeopleGridCard(
+                      user: user,
+                      onTap: () {
+                        context.push(AppRoutes.profile, extra: user);
+                      },
+                    ),
+                  );
+                }, childCount: displayedUsers.length),
               ),
             ),
-            
+
             if (_hasMore && !_isSearchExpanded)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                  child: _isLoadingMore 
-                    ? AppLoadingIndicator(size: 30, isFullScreen: false)
-                    : Center(
-                        child: AppButton(
-                          text: "Load More People",
-                          onPressed: _fetchUsers,
-                          style: AppButtonStyle.primary,
-                          width: 220,
-                          height: 48,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32,
+                    horizontal: 24,
+                  ),
+                  child: _isLoadingMore
+                      ? AppLoadingIndicator(size: 30, isFullScreen: false)
+                      : Center(
+                          child: AppButton(
+                            text: "Load More People",
+                            onPressed: _fetchUsers,
+                            style: AppButtonStyle.primary,
+                            width: 220,
+                            height: 48,
+                          ),
                         ),
-                      ),
                 ),
               ),
-              
+
             const SliverToBoxAdapter(child: SizedBox(height: 140)),
           ],
         ],

@@ -15,7 +15,6 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 import 'package:nexlinks/core/widgets/common/pulsing_status.dart';
 
-
 class ChatListView extends StatelessWidget {
   const ChatListView({super.key});
 
@@ -26,11 +25,10 @@ class ChatListView extends StatelessWidget {
     if (currentUserId == null) return const SizedBox.shrink();
 
     return AppBaseView(
-      showGlows: false, // Disabled for cleaner look
+      showGlows: false,
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // 1. YouTube-style Floating Header
           SliverAppBar(
             floating: true,
             snap: true,
@@ -63,7 +61,6 @@ class ChatListView extends StatelessWidget {
             ),
           ),
 
-          // 2. Chat List Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -73,7 +70,6 @@ class ChatListView extends StatelessWidget {
                   return StreamBuilder<List<UserModel>>(
                     stream: firestoreService.getAllUsers(),
                     builder: (context, chatSnapshot) {
-                      // Check for errors
                       if (meSnapshot.hasError || chatSnapshot.hasError) {
                         return Container(
                           height: 300,
@@ -81,30 +77,42 @@ class ChatListView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error_outline_rounded, color: Colors.red.withValues(alpha: 0.5), size: 48),
+                              Icon(
+                                Icons.error_outline_rounded,
+                                color: Colors.red.withValues(alpha: 0.5),
+                                size: 48,
+                              ),
                               const SizedBox(height: 16),
                               Text(
                                 "Something went wrong",
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
+                                ),
                               ),
                               const SizedBox(height: 16),
                               TextButton.icon(
                                 onPressed: () {
-                                  // This will trigger a rebuild of the streams
                                   (context as Element).markNeedsBuild();
-                                }, 
-                                icon: const Icon(Icons.refresh_rounded, size: 18),
+                                },
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  size: 18,
+                                ),
                                 label: const Text("Retry"),
-                                style: TextButton.styleFrom(foregroundColor: const Color(0xFF2E8AF6)),
-                              )
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF2E8AF6),
+                                ),
+                              ),
                             ],
                           ),
                         );
                       }
 
-                      // Check for loading
-                      if (meSnapshot.connectionState == ConnectionState.waiting || 
-                          chatSnapshot.connectionState == ConnectionState.waiting) {
+                      if (meSnapshot.connectionState ==
+                              ConnectionState.waiting ||
+                          chatSnapshot.connectionState ==
+                              ConnectionState.waiting) {
                         return const SizedBox(
                           height: 500,
                           child: AppLoadingIndicator(isFullScreen: false),
@@ -112,11 +120,16 @@ class ChatListView extends StatelessWidget {
                       }
 
                       final myFriends = meSnapshot.data?.friends ?? [];
-                      final users = chatSnapshot.data
-                              ?.where((u) => u.id != currentUserId && myFriends.contains(u.id))
-                              .toList() ?? [];
+                      final users =
+                          chatSnapshot.data
+                              ?.where(
+                                (u) =>
+                                    u.id != currentUserId &&
+                                    myFriends.contains(u.id),
+                              )
+                              .toList() ??
+                          [];
 
-                      // Check for empty
                       if (users.isEmpty) {
                         return Container(
                           height: 300,
@@ -125,12 +138,22 @@ class ChatListView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.chat_bubble_outline_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1), size: 64),
+                              Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.1),
+                                size: 64,
+                              ),
                               const SizedBox(height: 16),
                               Text(
                                 "No connections yet.\nAccepted requests will appear here.",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), height: 1.5),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
+                                  height: 1.5,
+                                ),
                               ),
                             ],
                           ),
@@ -138,10 +161,14 @@ class ChatListView extends StatelessWidget {
                       }
 
                       return Column(
-                        children: users.map((user) => ChatUserTile(
-                          user: user, 
-                          currentUserId: currentUserId
-                        )).toList(),
+                        children: users
+                            .map(
+                              (user) => ChatUserTile(
+                                user: user,
+                                currentUserId: currentUserId,
+                              ),
+                            )
+                            .toList(),
                       );
                     },
                   );
@@ -159,7 +186,11 @@ class ChatListView extends StatelessWidget {
 class ChatUserTile extends StatelessWidget {
   final UserModel user;
   final String currentUserId;
-  const ChatUserTile({super.key, required this.user, required this.currentUserId});
+  const ChatUserTile({
+    super.key,
+    required this.user,
+    required this.currentUserId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +207,8 @@ class ChatUserTile extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                // Avatar with Premium Gradient Ring
                 Container(
-                  padding: const EdgeInsets.all(2), // Ring thickness
+                  padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -190,15 +220,17 @@ class ChatUserTile extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).scaffoldBackgroundColor, // Inner gap
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
                     padding: const EdgeInsets.all(1.5),
                     child: Hero(
                       tag: 'avatar_${user.id}',
                       child: AppAvatar(
                         imageUrl: user.photoURL,
-                        customSize: 44, // Slightly smaller to fit inside ring
-                        initials: user.username.isNotEmpty ? user.username[0] : '?',
+                        customSize: 44,
+                        initials: user.username.isNotEmpty
+                            ? user.username[0]
+                            : '?',
                       ),
                     ),
                   ),
@@ -210,19 +242,29 @@ class ChatUserTile extends StatelessWidget {
                     child: PulsingStatus(size: 10),
                   ),
                 StreamBuilder<int>(
-                  stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
+                  stream: chatService.getUnreadCountFromChatStream(
+                    chatId,
+                    currentUserId,
+                  ),
                   builder: (context, snapshot) {
                     if (snapshot.hasData && snapshot.data! > 0) {
                       return Positioned(
-                        right: 0, top: 0,
+                        right: 0,
+                        top: 0,
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFF3B30),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                            border: Border.all(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              width: 2,
+                            ),
                           ),
-                          constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+                          constraints: const BoxConstraints(
+                            minWidth: 12,
+                            minHeight: 12,
+                          ),
                         ),
                       );
                     }
@@ -236,44 +278,62 @@ class ChatUserTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppGradientText(
-                  user.username, 
+                  user.username,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600, 
-                    fontSize: 16
-                  )
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 StreamBuilder<int>(
-                  stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
+                  stream: chatService.getUnreadCountFromChatStream(
+                    chatId,
+                    currentUserId,
+                  ),
                   builder: (context, unreadSnapshot) {
                     return StreamBuilder<Map<String, dynamic>?>(
                       stream: chatService.getLastMessageStream(chatId),
                       builder: (context, lastMsgSnapshot) {
-                        bool hasUnread = unreadSnapshot.hasData && unreadSnapshot.data! > 0;
-                        String? lastMsgText = lastMsgSnapshot.data?['lastMessage'];
-                        
+                        bool hasUnread =
+                            unreadSnapshot.hasData && unreadSnapshot.data! > 0;
+                        String? lastMsgText =
+                            lastMsgSnapshot.data?['lastMessage'];
+
                         if (hasUnread) {
                           return Text(
-                            "${unreadSnapshot.data} new messages", 
-                            style: const TextStyle(color: Color(0xFFFF3B30), fontSize: 13, fontWeight: FontWeight.bold)
+                            "${unreadSnapshot.data} new messages",
+                            style: const TextStyle(
+                              color: Color(0xFFFF3B30),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           );
-                        } else if (lastMsgText != null && lastMsgText.isNotEmpty) {
+                        } else if (lastMsgText != null &&
+                            lastMsgText.isNotEmpty) {
                           return Text(
                             lastMsgText,
-                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
+                              fontSize: 13,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           );
                         }
-                        
+
                         return Text(
-                          user.isOnline ? "Online Now" : "Offline", 
+                          user.isOnline ? "Online Now" : "Offline",
                           style: TextStyle(
-                            color: user.isOnline ? const Color(0xFF00FF94) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3), 
-                            fontSize: 12
-                          )
+                            color: user.isOnline
+                                ? const Color(0xFF00FF94)
+                                : Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.3),
+                            fontSize: 12,
+                          ),
                         );
-                      }
+                      },
                     );
                   },
                 ),
@@ -282,8 +342,19 @@ class ChatUserTile extends StatelessWidget {
             const Spacer(),
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05), shape: BoxShape.circle),
-              child: Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 14),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
+                size: 14,
+              ),
             ),
           ],
         ),

@@ -56,12 +56,19 @@ class _RegisterViewState extends State<RegisterView> {
       setState(() => _isCheckingUsername = true);
       try {
         final authRepo = context.read<AuthRepository>();
-        final isUnique = await authRepo.checkUsernameUnique(_usernameController.text.trim());
+        final isUnique = await authRepo.checkUsernameUnique(
+          _usernameController.text.trim(),
+        );
         if (!mounted) return;
         setState(() => _isCheckingUsername = false);
 
         if (!isUnique) {
-          MySnackBar.show(context: context, title: "Unavailable", message: "Username is already taken.", isError: true);
+          MySnackBar.show(
+            context: context,
+            title: "Unavailable",
+            message: "Username is already taken.",
+            isError: true,
+          );
           return;
         }
 
@@ -76,7 +83,12 @@ class _RegisterViewState extends State<RegisterView> {
         });
       } catch (e) {
         if (mounted) setState(() => _isCheckingUsername = false);
-        MySnackBar.show(context: context, title: "Verification Error", message: e.toString(), isError: true);
+        MySnackBar.show(
+          context: context,
+          title: "Verification Error",
+          message: e.toString(),
+          isError: true,
+        );
       }
     }
   }
@@ -95,12 +107,14 @@ class _RegisterViewState extends State<RegisterView> {
 
   Future<void> _register() async {
     if (_formKey2.currentState!.validate()) {
-      context.read<AuthBloc>().add(AuthRegisterRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-            username: _usernameController.text.trim(),
-            fullName: _fullNameController.text.trim(),
-          ));
+      context.read<AuthBloc>().add(
+        AuthRegisterRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          username: _usernameController.text.trim(),
+          fullName: _fullNameController.text.trim(),
+        ),
+      );
     }
   }
 
@@ -109,14 +123,25 @@ class _RegisterViewState extends State<RegisterView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStatus.failure) {
-          MySnackBar.show(context: context, title: "Register Failed", message: state.errorMessage ?? "Error", isError: true);
+          MySnackBar.show(
+            context: context,
+            title: "Register Failed",
+            message: state.errorMessage ?? "Error",
+            isError: true,
+          );
         } else if (state.status == AuthStatus.authenticated) {
-          MySnackBar.show(context: context, title: "Registration Successful", message: "Account created!", isError: false);
+          MySnackBar.show(
+            context: context,
+            title: "Registration Successful",
+            message: "Account created!",
+            isError: false,
+          );
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          final isLoading = state.status == AuthStatus.loading || _isCheckingUsername;
+          final isLoading =
+              state.status == AuthStatus.loading || _isCheckingUsername;
           return AppBaseView(
             isLoading: false,
             child: Stack(
@@ -127,10 +152,7 @@ class _RegisterViewState extends State<RegisterView> {
                     child: PageView(
                       controller: _pageController,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        _buildStep1(state),
-                        _buildStep2(state),
-                      ],
+                      children: [_buildStep1(state), _buildStep2(state)],
                     ),
                   ),
                 ),
@@ -169,7 +191,11 @@ class _RegisterViewState extends State<RegisterView> {
                       color: AppTheme.primaryColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.chat_bubble_rounded, size: 40, color: Colors.white),
+                    child: const Icon(
+                      Icons.chat_bubble_rounded,
+                      size: 40,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -190,8 +216,14 @@ class _RegisterViewState extends State<RegisterView> {
               const SizedBox(height: 8),
               FadeInUp(
                 duration: const Duration(milliseconds: 800),
-                child: Text("Tell us a bit about yourself",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                child: Text(
+                  "Tell us a bit about yourself",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
               ),
               const SizedBox(height: 40),
               _buildLabel("Full Name", delay: 100),
@@ -251,7 +283,10 @@ class _RegisterViewState extends State<RegisterView> {
                     const Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text("OR", style: Theme.of(context).textTheme.bodySmall),
+                      child: Text(
+                        "OR",
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ),
                     const Expanded(child: Divider()),
                   ],
@@ -259,8 +294,10 @@ class _RegisterViewState extends State<RegisterView> {
               ),
               const SizedBox(height: 24),
               SocialLoginButtons(
-                onGooglePressed: () => context.read<AuthBloc>().add(AuthGoogleLoginRequested()),
-                onFacebookPressed: () => context.read<AuthBloc>().add(AuthFacebookLoginRequested()),
+                onGooglePressed: () =>
+                    context.read<AuthBloc>().add(AuthGoogleLoginRequested()),
+                onFacebookPressed: () =>
+                    context.read<AuthBloc>().add(AuthFacebookLoginRequested()),
               ),
               const SizedBox(height: 32),
               FadeInUp(
@@ -273,7 +310,13 @@ class _RegisterViewState extends State<RegisterView> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => context.go(AppRoutes.login),
-                      child: Text("Sign In", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        "Sign In",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -307,7 +350,11 @@ class _RegisterViewState extends State<RegisterView> {
                       color: AppTheme.primaryColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.security_rounded, size: 40, color: Colors.white),
+                    child: const Icon(
+                      Icons.security_rounded,
+                      size: 40,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -328,8 +375,14 @@ class _RegisterViewState extends State<RegisterView> {
               const SizedBox(height: 8),
               FadeInUp(
                 duration: const Duration(milliseconds: 800),
-                child: Text("Set up your password",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                child: Text(
+                  "Set up your password",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
               ),
               const SizedBox(height: 40),
               _buildLabel("Password", delay: 100),
@@ -399,22 +452,28 @@ class _RegisterViewState extends State<RegisterView> {
                         setState(() {});
                       },
                       validator: (value) {
-                        if (value?.isEmpty ?? true) return "Please confirm your password";
-                        if (value != _passwordController.text) return 'Passwords do not match';
+                        if (value?.isEmpty ?? true) {
+                          return "Please confirm your password";
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
                         return null;
                       },
                     ),
                     const SizedBox(height: 32),
-              if (_showConfirmPassword)
-                AppButton(
-                  text: "Create Account",
-                  onPressed: _register,
-                  isLoading: state.status == AuthStatus.loading,
-                  style: AppButtonStyle.primary,
-                ),
+                    if (_showConfirmPassword)
+                      AppButton(
+                        text: "Create Account",
+                        onPressed: _register,
+                        isLoading: state.status == AuthStatus.loading,
+                        style: AppButtonStyle.primary,
+                      ),
                   ],
                 ),
-                crossFadeState: _showConfirmPassword ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                crossFadeState: _showConfirmPassword
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 500),
               ),
               const SizedBox(height: 16),
@@ -424,7 +483,14 @@ class _RegisterViewState extends State<RegisterView> {
                 child: Center(
                   child: TextButton(
                     onPressed: _previousStep,
-                    child: Text("Back to User Info", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                    child: Text(
+                      "Back to User Info",
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -447,7 +513,9 @@ class _RegisterViewState extends State<RegisterView> {
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: isActive ? AppTheme.primaryColor : AppTheme.primaryColor.withValues(alpha: 0.2),
+            color: isActive
+                ? AppTheme.primaryColor
+                : AppTheme.primaryColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(4),
           ),
         );
@@ -462,7 +530,9 @@ class _RegisterViewState extends State<RegisterView> {
         child: Text(
           text,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
             fontSize: 15,
             letterSpacing: 0.2,
@@ -478,7 +548,9 @@ class _RegisterViewState extends State<RegisterView> {
         child: Text(
           text,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
             fontSize: 15,
             letterSpacing: 0.2,

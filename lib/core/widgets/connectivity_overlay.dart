@@ -12,7 +12,8 @@ class ConnectivityOverlay extends StatefulWidget {
   State<ConnectivityOverlay> createState() => _ConnectivityOverlayState();
 }
 
-class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTickerProviderStateMixin {
+class _ConnectivityOverlayState extends State<ConnectivityOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _offsetAnimation;
   ConnectivityStatus _lastStatus = ConnectivityStatus.online;
@@ -26,9 +27,10 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _offsetAnimation = Tween<double>(begin: -100.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _offsetAnimation = Tween<double>(
+      begin: -100.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
   }
 
   @override
@@ -46,9 +48,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
         _showBanner = true;
       });
       _controller.forward();
-    } else if (status == ConnectivityStatus.online && _lastStatus == ConnectivityStatus.offline) {
-      // Briefly show "Back Online" then dismiss
-      _controller.forward(); // Ensure it's visible
+    } else if (status == ConnectivityStatus.online &&
+        _lastStatus == ConnectivityStatus.offline) {
+      _controller.forward();
       _dismissTimer?.cancel();
       _dismissTimer = Timer(const Duration(seconds: 3), () {
         if (mounted) {
@@ -74,8 +76,7 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
       stream: connectivityService.statusStream,
       builder: (context, snapshot) {
         final status = snapshot.data ?? ConnectivityStatus.online;
-        
-        // Use addPostFrameCallback to avoid calling setState during build
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _handleStatusChange(status);
         });
@@ -88,17 +89,22 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
                 animation: _offsetAnimation,
                 builder: (context, child) {
                   return Positioned(
-                    top: _offsetAnimation.value + MediaQuery.of(context).padding.top,
+                    top:
+                        _offsetAnimation.value +
+                        MediaQuery.of(context).padding.top,
                     left: 16,
                     right: 16,
                     child: Material(
                       color: Colors.transparent,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
-                          color: status == ConnectivityStatus.offline 
-                            ? const Color(0xFFD32F2F).withValues(alpha: 0.9)
-                            : const Color(0xFF388E3C).withValues(alpha: 0.9),
+                          color: status == ConnectivityStatus.offline
+                              ? const Color(0xFFD32F2F).withValues(alpha: 0.9)
+                              : const Color(0xFF388E3C).withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -115,9 +121,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
                         child: Row(
                           children: [
                             Icon(
-                              status == ConnectivityStatus.offline 
-                                ? Icons.wifi_off_rounded 
-                                : Icons.wifi_rounded,
+                              status == ConnectivityStatus.offline
+                                  ? Icons.wifi_off_rounded
+                                  : Icons.wifi_rounded,
                               color: Colors.white,
                               size: 20,
                             ),
@@ -128,9 +134,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    status == ConnectivityStatus.offline 
-                                      ? "No Internet Connection" 
-                                      : "Back Online",
+                                    status == ConnectivityStatus.offline
+                                        ? "No Internet Connection"
+                                        : "Back Online",
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -141,7 +147,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay> with SingleTi
                                     Text(
                                       "Please check your network settings",
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.8),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.8,
+                                        ),
                                         fontSize: 12,
                                       ),
                                     ),

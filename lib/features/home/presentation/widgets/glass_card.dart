@@ -35,25 +35,24 @@ class GlassCard extends StatelessWidget {
               color: Theme.of(context).cardTheme.color!.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark 
+                color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white.withValues(alpha: 0.05)
                     : Colors.white.withValues(alpha: 0.4),
                 width: 1,
               ),
               boxShadow: [
-                // Bottom-Right Dark Shadow (Depth)
                 BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.black.withValues(alpha: 0.6) 
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black.withValues(alpha: 0.6)
                       : const Color(0xFFA3B1C6).withValues(alpha: 0.5),
                   blurRadius: 24,
                   spreadRadius: 1,
                   offset: const Offset(10, 10),
                 ),
-                // Top-Left Light Shadow (Highlight)
+
                 BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.white.withValues(alpha: 0.05) 
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.05)
                       : Colors.white,
                   blurRadius: 24,
                   spreadRadius: 1,

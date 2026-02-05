@@ -32,7 +32,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _roleController;
   late TextEditingController _projectsController;
   late TextEditingController _successRateController;
-  
+
   List<String> _expertise = [];
   bool _isLoading = false;
   String? _selectedAvatarUrl;
@@ -42,13 +42,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fullNameController = TextEditingController(text: widget.user.fullName ?? "");
+    _fullNameController = TextEditingController(
+      text: widget.user.fullName ?? "",
+    );
     _usernameController = TextEditingController(text: widget.user.username);
     _bioController = TextEditingController(text: widget.user.bio);
-    _experienceController = TextEditingController(text: widget.user.experienceYears == 0 ? "" : widget.user.experienceYears.toString());
+    _experienceController = TextEditingController(
+      text: widget.user.experienceYears == 0
+          ? ""
+          : widget.user.experienceYears.toString(),
+    );
     _roleController = TextEditingController(text: widget.user.role);
-    _projectsController = TextEditingController(text: widget.user.projectsCount == 0 ? "" : widget.user.projectsCount.toString());
-    _successRateController = TextEditingController(text: widget.user.successRate == 0 ? "" : widget.user.successRate.toString());
+    _projectsController = TextEditingController(
+      text: widget.user.projectsCount == 0
+          ? ""
+          : widget.user.projectsCount.toString(),
+    );
+    _successRateController = TextEditingController(
+      text: widget.user.successRate == 0
+          ? ""
+          : widget.user.successRate.toString(),
+    );
     _expertise = List.from(widget.user.expertise);
     _selectedAvatarUrl = widget.user.photoURL;
   }
@@ -86,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (!_formKey.currentState!.validate()) {
       setState(() => _isLoading = false);
-      // Scroll to top so user can see what's missing (Name/Username are at the top)
+
       _scrollController.animateTo(
         0,
         duration: const Duration(milliseconds: 500),
@@ -96,7 +110,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     try {
-      // Robustness check: Ensure user ID is present
       if (widget.user.id.trim().isEmpty) {
         throw "Your session profile is invalid. Please log out and back in.";
       }
@@ -116,7 +129,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await context.read<FirestoreService>().updateUser(updatedUser);
 
       if (mounted) {
-        MySnackBar.show(context: context, title: "Success", message: "Profile updated successfully!", isError: false);
+        MySnackBar.show(
+          context: context,
+          title: "Success",
+          message: "Profile updated successfully!",
+          isError: false,
+        );
         Future.delayed(const Duration(milliseconds: 1000), () {
           if (mounted) context.pop();
         });
@@ -125,21 +143,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         String errorMessage = e.toString();
         if (errorMessage.contains("ArgumentError")) {
-          errorMessage = "App Error: User ID is missing. Try restarting the app.";
+          errorMessage =
+              "App Error: User ID is missing. Try restarting the app.";
         }
-        MySnackBar.show(context: context, title: "Update Failed", message: errorMessage, isError: true);
+        MySnackBar.show(
+          context: context,
+          title: "Update Failed",
+          message: errorMessage,
+          isError: true,
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return AppBaseView(
-      showGlows: false, // Disabled for cleaner look
+      showGlows: false,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
@@ -154,33 +176,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SingleChildScrollView(
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(24, 0, 24, MediaQuery.of(context).padding.bottom + 200),
+                        padding: EdgeInsets.fromLTRB(
+                          24,
+                          0,
+                          24,
+                          MediaQuery.of(context).padding.bottom + 200,
+                        ),
                         child: Column(
                           children: [
                             const SizedBox(height: 20),
-                            
-                            // Industry Polish: Onboarding Hint for new users
-                            if (widget.user.fullName == null || widget.user.fullName!.isEmpty || (widget.user.bio ?? "").isEmpty)
+
+                            if (widget.user.fullName == null ||
+                                widget.user.fullName!.isEmpty ||
+                                (widget.user.bio ?? "").isEmpty)
                               FadeInDown(
                                 duration: const Duration(milliseconds: 600),
                                 child: Container(
                                   margin: const EdgeInsets.only(bottom: 24),
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF22D3EE).withValues(alpha: 0.1),
+                                    color: const Color(
+                                      0xFF22D3EE,
+                                    ).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(color: const Color(0xFF22D3EE).withValues(alpha: 0.3)),
+                                    border: Border.all(
+                                      color: const Color(
+                                        0xFF22D3EE,
+                                      ).withValues(alpha: 0.3),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.rocket_launch_rounded, color: Color(0xFF22D3EE)),
+                                      const Icon(
+                                        Icons.rocket_launch_rounded,
+                                        color: Color(0xFF22D3EE),
+                                      ),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Text("Complete your profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
-                                            Text("Adding a photo and bio helps people get to know you better.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                                            Text(
+                                              "Complete your profile",
+                                              style: TextStyle(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              "Adding a photo and bio helps people get to know you better.",
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withValues(alpha: 0.6),
+                                                fontSize: 12,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -189,7 +244,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
 
-                            // Avatar
                             TactileFeedback(
                               onTap: _selectAvatar,
                               child: EditProfileAvatar(
@@ -200,43 +254,47 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                             const SizedBox(height: 16),
                             Text(
-                              widget.user.fullName?.isNotEmpty == true ? widget.user.fullName! : widget.user.username, 
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -1.0,
-                              ),
+                              widget.user.fullName?.isNotEmpty == true
+                                  ? widget.user.fullName!
+                                  : widget.user.username,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -1.0,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              widget.user.role.isNotEmpty ? widget.user.role : "Flutter Enthusiast", 
-                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w700)
+                              widget.user.role.isNotEmpty
+                                  ? widget.user.role
+                                  : "Flutter Enthusiast",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                            
+
                             const SizedBox(height: 32),
 
-                            // 1. Identity Section
                             _buildSectionHeader("Identity"),
                             _buildIdentitySection(),
 
                             const SizedBox(height: 32),
 
-                            // 2. "About" Section
                             _buildSectionHeader("About"),
                             _buildAboutSection(),
 
-
                             const SizedBox(height: 32),
 
-                            // 3. "Professional Stats" Section
                             _buildSectionHeader("Professional Stats"),
                             _buildProfessionalStatsSection(),
 
-                            const SizedBox(height: 48), // Bottom spacer
+                            const SizedBox(height: 48),
                           ],
                         ),
                       ),
 
-                      // Sticky Save Button
                       _buildStickySaveButton(),
                     ],
                   ),
@@ -249,14 +307,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-
   Widget _buildStickySaveButton() {
     return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).padding.bottom + 20),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          MediaQuery.of(context).padding.bottom + 20,
+        ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -294,9 +356,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        ),
+      ),
       child: MyTextFormField(
         controller: _bioController,
         hintText: "Write a short bio about yourself...",
@@ -313,7 +378,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        ),
       ),
       child: Column(
         children: [

@@ -16,7 +16,8 @@ class SkeletonShimmer extends StatefulWidget {
   State<SkeletonShimmer> createState() => _SkeletonShimmerState();
 }
 
-class _SkeletonShimmerState extends State<SkeletonShimmer> with SingleTickerProviderStateMixin {
+class _SkeletonShimmerState extends State<SkeletonShimmer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -56,11 +57,7 @@ class _SkeletonShimmerState extends State<SkeletonShimmer> with SingleTickerProv
                 Color(0xFF1A1A1A),
                 Color(0xFF0A0A0A),
               ],
-              stops: [
-                0,
-                0.5 + (_animation.value * 0.1),
-                1,
-              ],
+              stops: [0, 0.5 + (_animation.value * 0.1), 1],
               transform: _SlidingGradientTransform(offset: _animation.value),
             ),
           ),

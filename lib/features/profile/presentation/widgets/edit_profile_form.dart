@@ -25,7 +25,8 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class _EditProfileFormState extends State<EditProfileForm> {
-  final TextEditingController _expertiseInputController = TextEditingController();
+  final TextEditingController _expertiseInputController =
+      TextEditingController();
   bool _isInputEmpty = true;
 
   @override
@@ -53,15 +54,15 @@ class _EditProfileFormState extends State<EditProfileForm> {
   void _addExpertise() {
     final text = _expertiseInputController.text.trim();
     if (text.isNotEmpty && !widget.expertise.contains(text)) {
-       final newList = List<String>.from(widget.expertise)..add(text);
-       widget.onExpertiseChanged(newList);
-       _expertiseInputController.clear();
+      final newList = List<String>.from(widget.expertise)..add(text);
+      widget.onExpertiseChanged(newList);
+      _expertiseInputController.clear();
     }
   }
 
   void _removeExpertise(String tag) {
-     final newList = List<String>.from(widget.expertise)..remove(tag);
-     widget.onExpertiseChanged(newList);
+    final newList = List<String>.from(widget.expertise)..remove(tag);
+    widget.onExpertiseChanged(newList);
   }
 
   @override
@@ -71,63 +72,106 @@ class _EditProfileFormState extends State<EditProfileForm> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildRegularTextField(
-                  "Full Name", "Muhammad Zaid", widget.fullNameController,
-                  validator: AppValidators.validateFullName),
-              const SizedBox(height: 16),
-              
-              _buildRegularTextField("Username", "@mzaid", widget.usernameController,
-                  validator: AppValidators.validateUsername),
-              const SizedBox(height: 16),
-              
-              _buildRegularTextField(
-                  "Current Role", "Flutter Developer", widget.roleController,
-                  validator: AppValidators.validateRole),
+                "Full Name",
+                "Muhammad Zaid",
+                widget.fullNameController,
+                validator: AppValidators.validateFullName,
+              ),
               const SizedBox(height: 16),
 
               _buildRegularTextField(
-                 "Experience (Years)", "eg: 1", widget.experienceController,
-                 keyboardType: TextInputType.number,
-                 validator: AppValidators.validateExperience,
+                "Username",
+                "@mzaid",
+                widget.usernameController,
+                validator: AppValidators.validateUsername,
+              ),
+              const SizedBox(height: 16),
+
+              _buildRegularTextField(
+                "Current Role",
+                "Flutter Developer",
+                widget.roleController,
+                validator: AppValidators.validateRole,
+              ),
+              const SizedBox(height: 16),
+
+              _buildRegularTextField(
+                "Experience (Years)",
+                "eg: 1",
+                widget.experienceController,
+                keyboardType: TextInputType.number,
+                validator: AppValidators.validateExperience,
               ),
             ],
           ),
         ),
 
         const SizedBox(height: 32),
-        
-        // 3. Expertise Section (Built directly in Column for better hierarchy)
+
         _buildSectionHeader(context, "Expertise"),
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: widget.expertise.map((tag) => Chip(
-                  label: Text(tag, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
-                  backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
-                  onDeleted: () => _removeExpertise(tag),
-                )).toList(),
+                children: widget.expertise
+                    .map(
+                      (tag) => Chip(
+                        label: Text(
+                          tag,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 12,
+                          ),
+                        ),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1),
+                        side: BorderSide.none,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        deleteIcon: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white70,
+                        ),
+                        onDeleted: () => _removeExpertise(tag),
+                      ),
+                    )
+                    .toList(),
               ),
-              
+
               if (widget.expertise.isNotEmpty) const SizedBox(height: 24),
-              
+
               _buildRegularTextField(
                 "Add Expertise",
                 "Add skill (e.g. Flutter)",
@@ -171,11 +215,14 @@ class _EditProfileFormState extends State<EditProfileForm> {
   }
 
   Widget _buildRegularTextField(
-      String label, String placeholder, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text,
-      String? Function(String?)? validator,
-      Widget? suffixIcon,
-      void Function()? onSuffixIconPressed}) {
+    String label,
+    String placeholder,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+    void Function()? onSuffixIconPressed,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,7 +231,9 @@ class _EditProfileFormState extends State<EditProfileForm> {
           child: Text(
             label,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
               fontSize: 15,
               letterSpacing: 0.2,

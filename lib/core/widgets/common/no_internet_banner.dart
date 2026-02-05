@@ -39,10 +39,10 @@ class NoInternetBanner extends StatelessWidget {
                 Text(
                   'No internet connection',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.2,
-                      ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ],
             ),

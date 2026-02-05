@@ -21,10 +21,7 @@ class AppGradientText extends StatelessWidget {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
       shaderCallback: (bounds) => const LinearGradient(
-        colors: [
-          Colors.white,
-          Color(0xFFE5E7EB), // Very subtle grey/off-white (Gray-200)
-        ],
+        colors: [Colors.white, Color(0xFFE5E7EB)],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),

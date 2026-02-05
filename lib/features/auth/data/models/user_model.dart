@@ -29,8 +29,6 @@ class UserModel extends AuthUser {
     this.successRate = 0,
   });
 
-
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,

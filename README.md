@@ -41,8 +41,6 @@
 [![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Web.tar.gz)
 
 > *Links always point to the latest version.*
->
-> **👉 [Click here for Step-by-Step Installation Guide](INSTALLATION.md)**
 
 </div>
 

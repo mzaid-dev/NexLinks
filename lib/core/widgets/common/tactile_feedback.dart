@@ -16,7 +16,8 @@ class TactileFeedback extends StatefulWidget {
   State<TactileFeedback> createState() => _TactileFeedbackState();
 }
 
-class _TactileFeedbackState extends State<TactileFeedback> with SingleTickerProviderStateMixin {
+class _TactileFeedbackState extends State<TactileFeedback>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -27,9 +28,10 @@ class _TactileFeedbackState extends State<TactileFeedback> with SingleTickerProv
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _animation = Tween<double>(begin: 1.0, end: widget.scaleDown).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 1.0,
+      end: widget.scaleDown,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -51,10 +53,7 @@ class _TactileFeedbackState extends State<TactileFeedback> with SingleTickerProv
       onTapCancel: () {
         if (widget.onTap != null) _controller.reverse();
       },
-      child: ScaleTransition(
-        scale: _animation,
-        child: widget.child,
-      ),
+      child: ScaleTransition(scale: _animation, child: widget.child),
     );
   }
 }

@@ -22,11 +22,7 @@ class ProfileScreen extends StatefulWidget {
   final UserModel? user;
   final bool isMe;
 
-  const ProfileScreen({
-    super.key,
-    this.user,
-    this.isMe = false,
-  });
+  const ProfileScreen({super.key, this.user, this.isMe = false});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -38,7 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authService = context.read<AuthService>();
     final firestoreService = context.read<FirestoreService>();
 
-    String? targetUserId = widget.isMe ? authService.currentUserId : widget.user?.id;
+    String? targetUserId = widget.isMe
+        ? authService.currentUserId
+        : widget.user?.id;
     if (targetUserId == null) {
       return const Scaffold(body: AppLoadingIndicator());
     }
@@ -51,7 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final currentUser = authService.currentUser;
 
         return AppBaseView(
-          isLoading: snapshot.connectionState == ConnectionState.waiting && displayUser == null,
+          isLoading:
+              snapshot.connectionState == ConnectionState.waiting &&
+              displayUser == null,
           error: snapshot.hasError ? snapshot.error : null,
           showGlows: false,
           child: Scaffold(
@@ -62,7 +62,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: [
-                      // 1. Animated Slivers Header
                       SliverPersistentHeader(
                         delegate: ProfileSliverHeader(
                           user: displayUser,
@@ -71,10 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         pinned: true,
                       ),
-                      
-                      // 2. Action buttons removed from scroll (now fixed at bottom)
 
-                      // 3. Information Sections
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         sliver: SliverList(
@@ -93,19 +89,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ProfileAbout(bio: displayUser.bio),
                             const SizedBox(height: 24),
                             ProfileExpertise(expertise: displayUser.expertise),
-                            const SizedBox(height: 140), // Standardized for Nav Bar
+                            const SizedBox(height: 140),
                           ]),
                         ),
                       ),
                     ],
                   ),
-                
-                // 4. Overlaid Buttons (Back and Logout)
+
                 _buildFloatingAppBar(context, currentUser),
 
-                // 5. Fixed Action Button at Bottom
                 if (displayUser != null)
-                  _buildFixedBottomSection(context, displayUser, currentUser?.uid),
+                  _buildFixedBottomSection(
+                    context,
+                    displayUser,
+                    currentUser?.uid,
+                  ),
               ],
             ),
           ),
@@ -114,13 +112,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildFixedBottomSection(BuildContext context, UserModel displayUser, String? currentUserId) {
+  Widget _buildFixedBottomSection(
+    BuildContext context,
+    UserModel displayUser,
+    String? currentUserId,
+  ) {
     return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).padding.bottom + 20),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          MediaQuery.of(context).padding.bottom + 20,
+        ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -138,13 +145,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, UserModel displayUser, String? currentUserId) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    UserModel displayUser,
+    String? currentUserId,
+  ) {
     if (widget.isMe) {
       return FadeInUp(
         duration: const Duration(milliseconds: 300),
         child: AppButton(
           text: "Edit Profile",
-          onPressed: () => context.push(AppRoutes.editProfile, extra: displayUser),
+          onPressed: () =>
+              context.push(AppRoutes.editProfile, extra: displayUser),
           style: AppButtonStyle.primary,
           height: 52,
           borderRadius: 20,
@@ -179,13 +191,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )
           else
             const SizedBox(width: 44),
-            
+
           if (widget.isMe)
             _buildIconBtn(
               icon: Icons.logout_rounded,
               iconColor: Colors.redAccent,
               onTap: () {
-                 context.read<AuthBloc>().add(AuthLogoutRequested());
+                context.read<AuthBloc>().add(AuthLogoutRequested());
               },
             ),
         ],
@@ -193,18 +205,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap, Color? iconColor}) {
+  Widget _buildIconBtn({
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? iconColor,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.1),
+          ),
         ),
-        child: Icon(icon, color: iconColor ?? Theme.of(context).colorScheme.onSurface, size: 20),
+        child: Icon(
+          icon,
+          color: iconColor ?? Theme.of(context).colorScheme.onSurface,
+          size: 20,
+        ),
       ),
     );
   }

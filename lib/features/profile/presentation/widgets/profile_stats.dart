@@ -19,16 +19,16 @@ class ProfileStats extends StatelessWidget {
       children: [
         Expanded(
           child: _buildStatPanel(
-            context, 
-            "PROJECTS", 
+            context,
+            "PROJECTS",
             sessions == 0 ? "—" : "$sessions+",
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatPanel(
-            context, 
-            "SUCCESS", 
+            context,
+            "SUCCESS",
             successRate == 0 ? "—" : "$successRate%",
             valueColor: const Color(0xFF00FF94),
           ),
@@ -36,8 +36,8 @@ class ProfileStats extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatPanel(
-            context, 
-            "EXP.", 
+            context,
+            "EXP.",
             experienceYears == 0 ? "—" : "$experienceYears Yrs",
           ),
         ),
@@ -45,7 +45,12 @@ class ProfileStats extends StatelessWidget {
     );
   }
 
-  Widget _buildStatPanel(BuildContext context, String label, String value, {Color? valueColor}) {
+  Widget _buildStatPanel(
+    BuildContext context,
+    String label,
+    String value, {
+    Color? valueColor,
+  }) {
     return GlassCard(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
       borderRadius: 20,
@@ -55,7 +60,9 @@ class ProfileStats extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.5,

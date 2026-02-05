@@ -16,11 +16,16 @@ class EditProfileHeader extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Theme.of(context).colorScheme.primary, size: 20),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
             ),
           ),
           Expanded(
@@ -41,7 +46,7 @@ class EditProfileHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 40), // Balance the row
+          const SizedBox(width: 40),
         ],
       ),
     );

@@ -7,22 +7,22 @@ class EditProfileAvatar extends StatelessWidget {
   final String? selectedAvatarUrl;
 
   const EditProfileAvatar({
-    super.key, 
-    required this.user, 
+    super.key,
+    required this.user,
     this.selectedAvatarUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty) 
-        ? selectedAvatarUrl 
+    final avatarUrl =
+        (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty)
+        ? selectedAvatarUrl
         : user.photoURL;
 
     return Center(
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Premium Profile Ring
           Container(
             width: 114,
             height: 114,
@@ -42,7 +42,7 @@ class EditProfileAvatar extends StatelessWidget {
               ],
             ),
           ),
-          // Inner Spacer
+
           Container(
             width: 108,
             height: 108,
@@ -51,7 +51,7 @@ class EditProfileAvatar extends StatelessWidget {
               color: Theme.of(context).scaffoldBackgroundColor,
             ),
           ),
-          // App Avatar Image
+
           Hero(
             tag: 'avatar_${user.id}',
             child: AppAvatar(
@@ -60,7 +60,7 @@ class EditProfileAvatar extends StatelessWidget {
               initials: user.username.isNotEmpty ? user.username[0] : '?',
             ),
           ),
-          // Edit Icon Overlay
+
           Positioned(
             bottom: 0,
             right: 0,
@@ -69,7 +69,10 @@ class EditProfileAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
                 shape: BoxShape.circle,
-                border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 3),
+                border: Border.all(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: 3,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),

@@ -32,7 +32,9 @@ class AppValidators {
     if (value == null || value.isEmpty) {
       return 'Email is required';
     }
-    final emailRegex = RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+    );
     if (!emailRegex.hasMatch(value)) {
       return 'Please enter a valid email address';
     }
@@ -58,7 +60,7 @@ class AppValidators {
 
   static String? validateRole(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return null; // Optional
+      return null;
     }
     if (value.length < 2) {
       return 'Please enter a valid role';
@@ -68,7 +70,7 @@ class AppValidators {
 
   static String? validateExperience(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return null; // Optional
+      return null;
     }
     final years = int.tryParse(value);
     if (years == null) {

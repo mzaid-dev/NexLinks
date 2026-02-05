@@ -60,7 +60,9 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator> {
                   Text(
                     "Taking a bit long...",
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -69,7 +71,9 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator> {
                   Text(
                     "Please check your internet connection.",
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.3),
                       fontSize: 12,
                     ),
                   ),

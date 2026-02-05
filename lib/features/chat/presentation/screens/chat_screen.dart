@@ -42,7 +42,7 @@ class _ChatViewState extends State<ChatView> {
   final _messageController = TextEditingController();
   final _chatService = ChatService();
   final ScrollController _scrollController = ScrollController();
-  late final ReactionsController _reactionsController; // Required for flutter_chat_reactions
+  late final ReactionsController _reactionsController;
   late String _chatId;
   late String _currentUserId;
   StreamSubscription? _messageSubscription;
@@ -53,11 +53,9 @@ class _ChatViewState extends State<ChatView> {
     _currentUserId = context.read<AuthService>().currentUserId!;
     _reactionsController = ReactionsController(currentUserId: _currentUserId);
     _chatId = _chatService.getChatRoomId(_currentUserId, widget.targetUser.id);
-    
-    // Initial mark as read
+
     context.read<ChatCubit>().markMessagesAsRead(_chatId, _currentUserId);
 
-    // Listen to messages and mark as read in real-time
     _messageSubscription = _chatService.getMessages(_chatId).listen((messages) {
       if (mounted) {
         context.read<ChatCubit>().markMessagesAsRead(_chatId, _currentUserId);
@@ -74,7 +72,7 @@ class _ChatViewState extends State<ChatView> {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -89,7 +87,12 @@ class _ChatViewState extends State<ChatView> {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
 
-    context.read<ChatCubit>().sendMessage(_chatId, text, _currentUserId, widget.targetUser.id);
+    context.read<ChatCubit>().sendMessage(
+      _chatId,
+      text,
+      _currentUserId,
+      widget.targetUser.id,
+    );
     _messageController.clear();
     _scrollToBottom();
   }
@@ -97,21 +100,28 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return AppBaseView(
-      showGlows: false, // Disabled for cleaner look
+      showGlows: false,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            // Custom Header
             _buildChatHeader(context),
 
-            // Messages
             Expanded(
               child: StreamBuilder<List<ChatMessage>>(
                 stream: _chatService.getMessages(_chatId),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
-                  if (snapshot.connectionState == ConnectionState.waiting) return const AppLoadingIndicator();
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error: ${snapshot.error}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const AppLoadingIndicator();
+                  }
 
                   final messages = snapshot.data ?? [];
 
@@ -119,13 +129,16 @@ class _ChatViewState extends State<ChatView> {
                     controller: _scrollController,
                     reverse: true,
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
                       final isMe = message.senderId == _currentUserId;
                       return ChatMessageBubble(
-                        message: message, 
+                        message: message,
                         isMe: isMe,
                         chatId: _chatId,
                         currentUserId: _currentUserId,
@@ -137,11 +150,7 @@ class _ChatViewState extends State<ChatView> {
               ),
             ),
 
-            // Input Area
-            ChatInputArea(
-              controller: _messageController,
-              onSend: _sendMessage,
-            ),
+            ChatInputArea(controller: _messageController, onSend: _sendMessage),
           ],
         ),
       ),
@@ -150,7 +159,9 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _buildChatHeader(BuildContext context) {
     return StreamBuilder<UserModel>(
-      stream: context.read<FirestoreService>().getUserStream(widget.targetUser.id),
+      stream: context.read<FirestoreService>().getUserStream(
+        widget.targetUser.id,
+      ),
       builder: (context, snapshot) {
         final user = snapshot.data ?? widget.targetUser;
         return SafeArea(
@@ -164,17 +175,27 @@ class _ChatViewState extends State<ChatView> {
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.05),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.1),
+                      ),
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Avatar with Premium Gradient Ring
+
                 Container(
-                  padding: const EdgeInsets.all(2), // Ring thickness
+                  padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -186,15 +207,17 @@ class _ChatViewState extends State<ChatView> {
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).scaffoldBackgroundColor, // Inner gap
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
                     padding: const EdgeInsets.all(1.5),
                     child: Hero(
                       tag: 'avatar_${user.id}',
                       child: AppAvatar(
                         imageUrl: user.photoURL,
-                        customSize: 32, // Fits inside header
-                        initials: user.username.isNotEmpty ? user.username[0] : '?',
+                        customSize: 32,
+                        initials: user.username.isNotEmpty
+                            ? user.username[0]
+                            : '?',
                       ),
                     ),
                   ),
@@ -209,7 +232,10 @@ class _ChatViewState extends State<ChatView> {
                         color: Colors.transparent,
                         child: AppGradientText(
                           user.username,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -217,14 +243,25 @@ class _ChatViewState extends State<ChatView> {
                     Row(
                       children: [
                         Container(
-                          width: 6, height: 6,
+                          width: 6,
+                          height: 6,
                           decoration: BoxDecoration(
-                            color: user.isOnline ? const Color(0xFF00F0FF) : Colors.grey,
+                            color: user.isOnline
+                                ? const Color(0xFF00F0FF)
+                                : Colors.grey,
                             shape: BoxShape.circle,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(user.isOnline ? "Online" : "Offline", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11)),
+                        Text(
+                          user.isOnline ? "Online" : "Offline",
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -234,7 +271,7 @@ class _ChatViewState extends State<ChatView> {
             ),
           ),
         );
-      }
+      },
     );
   }
 }

@@ -17,7 +17,6 @@ import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/utils/app_validators.dart';
 import 'package:nexlinks/features/auth/presentation/widgets/social_login_buttons.dart';
 
-
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -47,25 +46,25 @@ class _LoginViewState extends State<LoginView> {
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStatus.failure) {
-             MySnackBar.show(
-              context: context,
-              title: "Login Failed",
-              message: state.errorMessage ?? "An error occurred",
-              isError: true,
-            );
+          MySnackBar.show(
+            context: context,
+            title: "Login Failed",
+            message: state.errorMessage ?? "An error occurred",
+            isError: true,
+          );
         } else if (state.status == AuthStatus.authenticated) {
-            MySnackBar.show(
-              context: context,
-              title: "Welcome Back",
-              message: "You have successfully logged in.",
-              isError: false,
-            );
+          MySnackBar.show(
+            context: context,
+            title: "Welcome Back",
+            message: "You have successfully logged in.",
+            isError: false,
+          );
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -97,7 +96,11 @@ class _LoginViewState extends State<LoginView> {
                                       color: AppTheme.primaryColor,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Icon(Icons.chat_bubble_rounded, size: 40, color: Colors.white),
+                                    child: const Icon(
+                                      Icons.chat_bubble_rounded,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -108,7 +111,9 @@ class _LoginViewState extends State<LoginView> {
                                   animatedTexts: [
                                     TyperAnimatedText(
                                       "Welcome Back !",
-                                      textStyle: Theme.of(context).textTheme.headlineLarge!,
+                                      textStyle: Theme.of(
+                                        context,
+                                      ).textTheme.headlineLarge!,
                                       speed: const Duration(milliseconds: 80),
                                     ),
                                   ],
@@ -120,8 +125,12 @@ class _LoginViewState extends State<LoginView> {
                                 duration: const Duration(milliseconds: 800),
                                 child: Text(
                                   "Sign In to continue chatting with friends & family",
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.6),
                                       ),
                                 ),
                               ),
@@ -171,8 +180,13 @@ class _LoginViewState extends State<LoginView> {
                                   children: [
                                     const Expanded(child: Divider()),
                                     const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16),
-                                      child: Text("OR", style: TextStyle(fontSize: 12)),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: Text(
+                                        "OR",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
                                     ),
                                     const Expanded(child: Divider()),
                                   ],
@@ -180,8 +194,12 @@ class _LoginViewState extends State<LoginView> {
                               ),
                               const SizedBox(height: 32),
                               SocialLoginButtons(
-                                onGooglePressed: () => context.read<AuthBloc>().add(AuthGoogleLoginRequested()),
-                                onFacebookPressed: () => context.read<AuthBloc>().add(AuthFacebookLoginRequested()),
+                                onGooglePressed: () => context
+                                    .read<AuthBloc>()
+                                    .add(AuthGoogleLoginRequested()),
+                                onFacebookPressed: () => context
+                                    .read<AuthBloc>()
+                                    .add(AuthFacebookLoginRequested()),
                               ),
                               const SizedBox(height: 32),
                               FadeInUp(
@@ -190,16 +208,25 @@ class _LoginViewState extends State<LoginView> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text("Don't have an account?", style: TextStyle(fontSize: 14)),
+                                    const Text(
+                                      "Don't have an account?",
+                                      style: TextStyle(fontSize: 14),
+                                    ),
                                     const SizedBox(width: 8),
                                     GestureDetector(
-                                      onTap: () => context.go(AppRoutes.register),
-                                      child: const Text("Sign Up",
-                                          style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
-                                    )
+                                      onTap: () =>
+                                          context.go(AppRoutes.register),
+                                      child: const Text(
+                                        "Sign Up",
+                                        style: TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -210,9 +237,7 @@ class _LoginViewState extends State<LoginView> {
                 if (isLoading)
                   Container(
                     color: Colors.black.withValues(alpha: 0.3),
-                    child: const Center(
-                      child: AppLoadingIndicator(),
-                    ),
+                    child: const Center(child: AppLoadingIndicator()),
                   ),
               ],
             ),
@@ -230,7 +255,9 @@ class _LoginViewState extends State<LoginView> {
         child: Text(
           text,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
             fontSize: 15,
             letterSpacing: 0.2,

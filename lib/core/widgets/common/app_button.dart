@@ -39,11 +39,11 @@ class AppButton extends StatelessWidget {
 
     switch (style) {
       case AppButtonStyle.primary:
-        buttonColor = const Color(0xFF2979FF); // Brand Blue
+        buttonColor = const Color(0xFF2979FF);
         shadowColor = const Color(0xFF1C54B2);
         break;
       case AppButtonStyle.secondary:
-        buttonColor = const Color(0xFF00FF94); // Brand Green
+        buttonColor = const Color(0xFF00FF94);
         shadowColor = const Color(0xFF00C774);
         break;
       case AppButtonStyle.outlined:
@@ -59,10 +59,14 @@ class AppButton extends StatelessWidget {
 
     if (backgroundColor != null) {
       buttonColor = backgroundColor!;
-      // Auto-generate shadow color if not provided (darker version)
-      shadowColor = HSLColor.fromColor(buttonColor).withLightness((HSLColor.fromColor(buttonColor).lightness - 0.15).clamp(0.0, 1.0)).toColor();
+
+      shadowColor = HSLColor.fromColor(buttonColor)
+          .withLightness(
+            (HSLColor.fromColor(buttonColor).lightness - 0.15).clamp(0.0, 1.0),
+          )
+          .toColor();
     }
-    
+
     if (textColor != null) {
       contentColor = textColor!;
     }

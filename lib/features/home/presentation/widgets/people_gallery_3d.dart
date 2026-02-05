@@ -31,22 +31,19 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
 
   @override
   Widget build(BuildContext context) {
-    // Gallery3D requires at least 3 items
     if (widget.users.length < 3) {
       return const SizedBox.shrink();
     }
 
     final screenWidth = MediaQuery.of(context).size.width;
-    
-    // Calculate dimensions exactly like Explore View grid items
-    // (Screen - 20 pad left - 20 pad right - 16 spacing) / 2
+
     final gridCardWidth = (screenWidth - 56) / 2;
-    // Aspect ratio from explore_view.dart (0.75 usually)
+
     final ratio = screenWidth < 380 ? 0.7 : 0.75;
     final gridCardHeight = gridCardWidth / ratio;
 
     return SizedBox(
-      height: gridCardHeight, // Add padding for shadow/stacking
+      height: gridCardHeight,
       child: Gallery3D(
         controller: controller,
         width: screenWidth,
@@ -57,7 +54,7 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
           width: gridCardWidth,
           height: gridCardHeight,
           radius: 32,
-          isShowTransformMask: true, // Adds depth shadow
+          isShowTransformMask: true,
         ),
         onClickItem: (index) {
           context.push(AppRoutes.profile, extra: widget.users[index]);
@@ -93,14 +90,12 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Avatar with Premium Gradient Ring (matching PeopleGridCard style)
               SizedBox(
                 width: 90,
                 height: 90,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // 1. Gradient Ring with glow
                     Container(
                       width: 86,
                       height: 86,
@@ -113,32 +108,36 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF2979FF).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF2979FF,
+                            ).withValues(alpha: 0.6),
                             blurRadius: 20,
                             spreadRadius: 1,
                           ),
                         ],
                       ),
                     ),
-                    // 2. Spacer (Background) to separate ring from avatar
+
                     Container(
                       width: 80,
                       height: 80,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF1A1A1A), // Match card bg
+                        color: Color(0xFF1A1A1A),
                       ),
                     ),
-                    // 3. Avatar Image
+
                     Hero(
                       tag: 'avatar_${user.id}',
                       child: AppAvatar(
                         customSize: 74,
                         imageUrl: user.photoURL,
-                        initials: user.username.isNotEmpty ? user.username[0] : '?',
+                        initials: user.username.isNotEmpty
+                            ? user.username[0]
+                            : '?',
                       ),
                     ),
-                    // 4. Online Status with Pulsing Animation
+
                     if (user.isOnline)
                       const Positioned(
                         bottom: 4,
@@ -151,7 +150,6 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
 
               const SizedBox(height: 12),
 
-              // Name with Hero Animation
               Hero(
                 tag: 'name_${user.id}',
                 child: Material(
@@ -159,7 +157,9 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      user.fullName?.isNotEmpty == true ? user.fullName! : user.username,
+                      user.fullName?.isNotEmpty == true
+                          ? user.fullName!
+                          : user.username,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -175,7 +175,6 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
 
               const SizedBox(height: 4),
 
-              // Role (only show if set and meaningful)
               if (user.role.isNotEmpty && user.role.toLowerCase() != 'user')
                 Text(
                   user.role,
@@ -187,14 +186,18 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              
+
               const SizedBox(height: 12),
 
-              // View Profile
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(

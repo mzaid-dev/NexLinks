@@ -15,16 +15,16 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin {
-  String _phase = 'logo'; // logo, text, loading, exit
+class _SplashViewState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  String _phase = 'logo';
   double _progress = 0;
   late Timer _phaseTimer1;
   late Timer _phaseTimer2;
   late Timer _progressTimer;
-  
-  // For the scanline effect
+
   late AnimationController _scanlineController;
-  
+
   bool _isAuthResolved = false;
   AuthStatus? _pendingStatus;
 
@@ -32,26 +32,23 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
   void initState() {
     super.initState();
 
-    // REMOVE native splash AFTER our app has painted the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
     });
-    
+
     _scanlineController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
 
-    // Sequence Phasing (Matches Reference)
     _phaseTimer1 = Timer(const Duration(milliseconds: 800), () {
       if (mounted) setState(() => _phase = 'text');
     });
-    
+
     _phaseTimer2 = Timer(const Duration(milliseconds: 1400), () {
       if (mounted) setState(() => _phase = 'loading');
     });
 
-    // Organic Progress Simulation - speeds up when auth resolves
     _progressTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (!mounted) return;
       if (_phase == 'loading') {
@@ -61,11 +58,9 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
             timer.cancel();
             _checkAndExit();
           } else {
-            // If auth is resolved, complete progress quickly
             if (_isAuthResolved) {
-              _progress += 20; // Much faster increment
+              _progress += 20;
             } else {
-              // Slower progress while waiting for auth
               _progress += math.Random().nextDouble() * 8;
             }
             if (_progress > 100) _progress = 100;
@@ -74,7 +69,6 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
       }
     });
 
-    // Catch initial auth state if already resolved
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final currentState = context.read<AuthBloc>().state;
@@ -89,10 +83,9 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
   }
 
   void _checkAndExit() {
-    // Navigate only if both progress is 100% AND auth is resolved
     if (_progress >= 100 && _isAuthResolved) {
       setState(() => _phase = 'exit');
-      // Shorter delay for faster navigation
+
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) {
           _navigateNext();
@@ -127,22 +120,19 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
             _isAuthResolved = true;
             _pendingStatus = state.status;
           });
-          // If loading already finished, trigger exit now that we have the route
+
           if (_progress >= 100) {
             _checkAndExit();
           }
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: _buildBody(),
-      ),
+      child: Scaffold(backgroundColor: Colors.black, body: _buildBody()),
     );
   }
 
   Widget _buildBody() {
     final bool isExit = _phase == 'exit';
-    
+
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 800),
       opacity: isExit ? 0.0 : 1.0,
@@ -152,7 +142,6 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
         curve: Curves.easeOutQuart,
         child: Stack(
           children: [
-            // 1. Ambient Background Glow
             Center(
               child: Container(
                 width: 300,
@@ -170,12 +159,13 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
               ),
             ),
 
-            // 2. Scanline Effect
             AnimatedBuilder(
               animation: _scanlineController,
               builder: (context, child) {
                 return Positioned(
-                  top: MediaQuery.sizeOf(context).height * _scanlineController.value,
+                  top:
+                      MediaQuery.sizeOf(context).height *
+                      _scanlineController.value,
                   left: 0,
                   right: 0,
                   child: Container(
@@ -198,21 +188,22 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo Container
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 1000),
                     curve: const Cubic(0.2, 0.8, 0.2, 1.0),
                     width: 120,
                     height: 120,
                     transform: Matrix4.translationValues(
-                      0, 
-                      _phase == 'logo' ? 40 : 0, 
-                      0
+                      0,
+                      _phase == 'logo' ? 40 : 0,
+                      0,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0D0D0D),
                       borderRadius: BorderRadius.circular(32),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF2979FF).withValues(alpha: 0.2),
@@ -226,10 +217,8 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          // Internal Pulsing Glow
                           const _PulseGlow(),
-                          
-                          // Logo Image
+
                           Opacity(
                             opacity: _phase == 'logo' ? 0.0 : 1.0,
                             child: Image.asset(
@@ -237,9 +226,9 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
                               width: 70,
                               height: 70,
                               errorBuilder: (c, e, s) => const Icon(
-                                Icons.hub_rounded, 
-                                size: 60, 
-                                color: Colors.white
+                                Icons.hub_rounded,
+                                size: 60,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -249,10 +238,12 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
                   ),
                   const SizedBox(height: 40),
 
-                  // App Name & Tagline
                   ClipRect(
                     child: AnimatedTitle(
-                      visible: _phase == 'text' || _phase == 'loading' || _phase == 'exit',
+                      visible:
+                          _phase == 'text' ||
+                          _phase == 'loading' ||
+                          _phase == 'exit',
                       title: "NexLinks",
                       tagline: "CONNECT WITH FUTURE",
                     ),
@@ -261,7 +252,6 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
               ),
             ),
 
-            // 3. Loading Bar Section
             Positioned(
               bottom: 100,
               left: 0,
@@ -310,12 +300,17 @@ class _SplashViewState extends State<SplashScreen> with TickerProviderStateMixin
                             child: Container(
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2979FF), Color(0xFF00F2FE)],
+                                  colors: [
+                                    Color(0xFF2979FF),
+                                    Color(0xFF00F2FE),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2979FF).withValues(alpha: 0.5),
+                                    color: const Color(
+                                      0xFF2979FF,
+                                    ).withValues(alpha: 0.5),
                                     blurRadius: 10,
                                   ),
                                 ],
@@ -353,7 +348,8 @@ class _PulseGlow extends StatefulWidget {
   State<_PulseGlow> createState() => _PulseGlowState();
 }
 
-class _PulseGlowState extends State<_PulseGlow> with SingleTickerProviderStateMixin {
+class _PulseGlowState extends State<_PulseGlow>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override

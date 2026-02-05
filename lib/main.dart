@@ -11,8 +11,7 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/services/storage_service.dart';
-// TODO: Enable in second update
-// import 'package:nexlinks/core/services/notification_service.dart';
+
 import 'package:nexlinks/core/services/connectivity_service.dart';
 import 'package:nexlinks/core/widgets/status_manager.dart';
 import 'package:nexlinks/core/widgets/connectivity_overlay.dart';
@@ -22,29 +21,23 @@ import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart'
 import 'core/theme/app_theme.dart';
 import 'package:flutter/services.dart';
 
-
 Future<void> main() async {
   try {
     WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-    
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    
-    // Force dark system UI immediately to prevent flicker
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
 
-    // Initialize services with individual error handling
-    // TODO: Enable in second update
-    // try {
-    //   await NotificationService().init();
-    // } catch (e) {
-    //   debugPrint("Notification Service Error: $e");
-    // }
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.black,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
 
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -54,18 +47,22 @@ Future<void> main() async {
     runApp(const MyApp());
   } catch (e) {
     debugPrint("CRITICAL INITIALIZATION ERROR: $e");
-    
+
     String errorMessage = "Startup Error: $e";
-    if (e.toString().contains("DefaultFirebaseOptions have not been configured for linux")) {
-      errorMessage = "Linux Support Missing.\nPlease run `flutterfire configure` in your terminal to enable Firebase for Linux.";
+    if (e.toString().contains(
+      "DefaultFirebaseOptions have not been configured for linux",
+    )) {
+      errorMessage =
+          "Linux Support Missing.\nPlease run `flutterfire configure` in your terminal to enable Firebase for Linux.";
     }
 
-    // Fallback runner if Firebase or root setup fails
-    runApp(MaterialApp(
-      home: Scaffold(
-        body: Center(child: Text(errorMessage, textAlign: TextAlign.center)),
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(child: Text(errorMessage, textAlign: TextAlign.center)),
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -76,13 +73,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        // Legacy Services (Keep until fully refactored if needed)
         RepositoryProvider(create: (context) => AuthService()),
         RepositoryProvider(create: (context) => FirestoreService()),
         RepositoryProvider(create: (context) => StorageService()),
         RepositoryProvider(create: (context) => ConnectivityService()),
-        
-        // Clean Architecture Auth Feature
+
         RepositoryProvider<AuthRemoteDataSource>(
           create: (context) => AuthRemoteDataSourceImpl(),
         ),
@@ -93,9 +88,9 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: BlocProvider(
-        create: (context) => AuthBloc(
-          authRepository: context.read<AuthRepository>(),
-        )..add(AuthStarted()),
+        create: (context) =>
+            AuthBloc(authRepository: context.read<AuthRepository>())
+              ..add(AuthStarted()),
         child: const AppView(),
       ),
     );
@@ -128,7 +123,6 @@ class _AppViewState extends State<AppView> {
       themeMode: ThemeMode.dark,
       routerConfig: _appRouter.router,
       builder: (context, child) {
-        // Platform-aware builder
         Widget wrappedChild = StatusManager(
           child: ConnectivityOverlay(
             child: GestureDetector(
@@ -138,11 +132,11 @@ class _AppViewState extends State<AppView> {
             ),
           ),
         );
-        
-        // Check if Desktop or Web (Not Android/iOS)
-        final bool isMobile = defaultTargetPlatform == TargetPlatform.android || 
-                              defaultTargetPlatform == TargetPlatform.iOS;
-                              
+
+        final bool isMobile =
+            defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS;
+
         if (kIsWeb || !isMobile) {
           return DeviceFrame(
             device: Devices.ios.iPhone13ProMax,
@@ -155,8 +149,3 @@ class _AppViewState extends State<AppView> {
     );
   }
 }
-
-
-// NexLink (Next + Link)
-
-// SyncMinds (Synchronizing brains)

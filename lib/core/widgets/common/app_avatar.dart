@@ -30,10 +30,14 @@ class AppAvatar extends StatelessWidget {
   double _getRawSize() {
     if (customSize != null) return customSize!;
     switch (size) {
-      case AppAvatarSize.small: return 32;
-      case AppAvatarSize.medium: return 48;
-      case AppAvatarSize.large: return 80;
-      case AppAvatarSize.xlarge: return 110;
+      case AppAvatarSize.small:
+        return 32;
+      case AppAvatarSize.medium:
+        return 48;
+      case AppAvatarSize.large:
+        return 80;
+      case AppAvatarSize.xlarge:
+        return 110;
     }
   }
 
@@ -48,41 +52,45 @@ class AppAvatar extends StatelessWidget {
       height: rawSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: hasImage ? null : [
-          BoxShadow(
-            color: (gradientColors?.first ?? defaultGradients.first).withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: hasImage
+            ? null
+            : [
+                BoxShadow(
+                  color: (gradientColors?.first ?? defaultGradients.first)
+                      .withValues(alpha: 0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
         border: showBorder
             ? Border.all(
                 color: borderColor ?? Colors.white24,
                 width: borderWidth,
               )
             : null,
-        gradient: (hasImage || (initials != null && initials!.isNotEmpty)) ? null : LinearGradient(
-          colors: gradientColors ?? defaultGradients,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: (hasImage || (initials != null && initials!.isNotEmpty))
+            ? null
+            : LinearGradient(
+                colors: gradientColors ?? defaultGradients,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
       ),
-      child: ClipOval(
-        child: _buildAvatarContent(context, rawSize),
-      ),
+      child: ClipOval(child: _buildAvatarContent(context, rawSize)),
     );
   }
 
   Widget _buildAvatarContent(BuildContext context, double rawSize) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       String url = imageUrl!;
-      
-      // Auto-fix DiceBear PNG to SVG (more reliable, higher quality, fixes EncodingError)
+
       if (url.contains('dicebear.com') && url.contains('/png')) {
         url = url.replaceAll('/png', '/svg');
       }
 
-      final isSvg = url.toLowerCase().contains('.svg') || url.toLowerCase().contains('/svg');
+      final isSvg =
+          url.toLowerCase().contains('.svg') ||
+          url.toLowerCase().contains('/svg');
 
       if (isSvg) {
         return _buildSvgImage(context, url, rawSize);
@@ -93,7 +101,9 @@ class AppAvatar extends StatelessWidget {
         fit: BoxFit.cover,
         placeholder: (context, url) => _buildShimmer(context, rawSize),
         errorWidget: (context, url, error) {
-          debugPrint("AppAvatar: Failed to load image from $url. Error: $error");
+          debugPrint(
+            "AppAvatar: Failed to load image from $url. Error: $error",
+          );
           return _buildFallback(context, rawSize, isError: true);
         },
       );
@@ -114,21 +124,21 @@ class AppAvatar extends StatelessWidget {
   Widget _buildShimmer(BuildContext context, double rawSize) {
     return Shimmer.fromColors(
       baseColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
-      highlightColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-      child: Container(
-        width: rawSize,
-        height: rawSize,
-        color: Colors.white,
-      ),
+      highlightColor: Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.05),
+      child: Container(width: rawSize, height: rawSize, color: Colors.white),
     );
   }
 
-  Widget _buildFallback(BuildContext context, double rawSize, {bool isError = false}) {
+  Widget _buildFallback(
+    BuildContext context,
+    double rawSize, {
+    bool isError = false,
+  }) {
     if (initials != null && initials!.isNotEmpty) {
       return Container(
-        decoration: const BoxDecoration(
-          color: Colors.transparent, 
-        ),
+        decoration: const BoxDecoration(color: Colors.transparent),
         child: Center(
           child: Material(
             color: Colors.transparent,
@@ -146,7 +156,6 @@ class AppAvatar extends StatelessWidget {
       );
     }
 
-    // Use dark, non-jarring fallback instead of red
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),

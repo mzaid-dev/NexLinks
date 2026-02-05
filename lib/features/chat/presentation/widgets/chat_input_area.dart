@@ -6,9 +6,9 @@ class ChatInputArea extends StatelessWidget {
   final VoidCallback onSend;
 
   const ChatInputArea({
-    super.key, 
-    required this.controller, 
-    required this.onSend
+    super.key,
+    required this.controller,
+    required this.onSend,
   });
 
   @override
@@ -23,17 +23,17 @@ class ChatInputArea extends StatelessWidget {
           borderRadius: BorderRadius.circular(40),
           border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           boxShadow: [
-             BoxShadow(
-               color: Colors.black.withValues(alpha: 0.4),
-               blurRadius: 20,
-               offset: const Offset(0, 10)
-             )
-          ]
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
         child: Row(
           children: [
             const SizedBox(width: 12),
-             Expanded(
+            Expanded(
               child: TextField(
                 controller: controller,
                 minLines: 1,
@@ -44,15 +44,17 @@ class ChatInputArea extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   hintText: "Write your message",
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
                   border: InputBorder.none,
-                  filled : false,
+                  filled: false,
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  isDense : false,
-                  contentPadding : const EdgeInsets.symmetric(vertical: 12),
+                  isDense: false,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 textCapitalization: TextCapitalization.sentences,
               ),
@@ -64,7 +66,11 @@ class ChatInputArea extends StatelessWidget {
               buttonHeight: 4,
               borderRadius: 30,
               padding: const EdgeInsets.all(12),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 8),
           ],

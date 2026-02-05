@@ -33,7 +33,11 @@ class ChatMessage {
     };
   }
 
-  static ChatMessage fromMap(String id, Map<String, dynamic> map, {MessageStatus? status}) {
+  static ChatMessage fromMap(
+    String id,
+    Map<String, dynamic> map, {
+    MessageStatus? status,
+  }) {
     return ChatMessage(
       id: id,
       senderId: map['senderId'] ?? '',

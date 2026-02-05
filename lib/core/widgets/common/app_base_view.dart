@@ -29,42 +29,33 @@ class AppBaseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final bgColor =
+        backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
     return Material(
       color: Colors.transparent,
       child: SlideAnimation(
         child: Container(
           color: bgColor,
-        child: Stack(
-          children: [
-            // if (showGlows) ...[
-            //   _buildGlow(
-            //     top: -100, right: -100, 
-            //     color: const Color(0xFF2563EB).withValues(alpha: 0.12)
-            //   ),
-            //   _buildGlow(
-            //     bottom: -100, left: -100, 
-            //     color: const Color(0xFF22D3EE).withValues(alpha: 0.08)
-            //   ),
-            // ],
-            AppStatusWrapper(
-              isLoading: isLoading,
-              error: error,
-              isEmpty: isEmpty,
-              onRetry: onRetry,
-              emptyMessage: emptyMessage,
-              child: child,
-            ),
-            StreamBuilder<ConnectivityStatus>(
-              stream: context.read<ConnectivityService>().statusStream,
-              builder: (context, snapshot) {
-                if (snapshot.data == ConnectivityStatus.offline) {
-                  return const NoInternetBanner();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
+          child: Stack(
+            children: [
+              AppStatusWrapper(
+                isLoading: isLoading,
+                error: error,
+                isEmpty: isEmpty,
+                onRetry: onRetry,
+                emptyMessage: emptyMessage,
+                child: child,
+              ),
+              StreamBuilder<ConnectivityStatus>(
+                stream: context.read<ConnectivityService>().statusStream,
+                builder: (context, snapshot) {
+                  if (snapshot.data == ConnectivityStatus.offline) {
+                    return const NoInternetBanner();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
         ),
       ),

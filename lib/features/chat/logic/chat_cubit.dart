@@ -6,7 +6,12 @@ class ChatCubit extends Cubit<void> {
 
   ChatCubit(this._chatService) : super(null);
 
-  void sendMessage(String chatId, String text, String senderId, String receiverId) {
+  void sendMessage(
+    String chatId,
+    String text,
+    String senderId,
+    String receiverId,
+  ) {
     _chatService.sendMessage(chatId, text, senderId, receiverId: receiverId);
   }
 
@@ -14,7 +19,12 @@ class ChatCubit extends Cubit<void> {
     _chatService.markMessagesAsRead(chatId, currentUserId);
   }
 
-  void toggleReaction(String chatId, String messageId, String userId, String emoji) {
+  void toggleReaction(
+    String chatId,
+    String messageId,
+    String userId,
+    String emoji,
+  ) {
     _chatService.toggleReaction(chatId, messageId, userId, emoji);
   }
 }

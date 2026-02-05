@@ -2,8 +2,7 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/features/chat/data/chat_service.dart';
 import 'package:nexlinks/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nexlinks/features/home/presentation/widgets/custom_bottom_nav.dart';
-// TODO: Enable in second update
-// import 'package:nexlinks/features/home/presentation/widgets/notification_wrapper.dart';
+
 import 'package:nexlinks/features/home/presentation/views/home_view.dart';
 import 'package:nexlinks/features/home/presentation/views/explore_view.dart';
 import 'package:nexlinks/features/home/presentation/views/chat_list_view.dart';
@@ -27,56 +26,57 @@ class HomeScreen extends StatelessWidget {
       create: (_) => HomeNavigationCubit(),
       child: Builder(
         builder: (context) {
-          final selectedIndex = context.select((HomeNavigationCubit cubit) => cubit.state);
-          
-          return Scaffold(
-              extendBody: false, // Prevents body from scrolling behind Nav Bar
-              backgroundColor: const Color(0xFF000000), 
-              body: Stack(
-                children: [
-                  // 1. Background
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF050505),
-                    ),
-                  ),
-
-                  // 2. Main Content
-                  SafeArea(
-                    bottom: false,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300), 
-                      switchInCurve: Curves.easeOut,
-                      switchOutCurve: Curves.easeIn,
-                      transitionBuilder: (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child, 
-                        );
-                      },
-                      child: KeyedSubtree(
-                        key: ValueKey<int>(selectedIndex),
-                        child: _pages[selectedIndex],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              bottomNavigationBar: StreamBuilder<int>(
-                stream: ChatService().getGlobalUnreadCountStream(context.read<AuthService>().currentUserId ?? ''),
-                builder: (context, snapshot) {
-                  final unreadCount = snapshot.data ?? 0;
-                  return CustomBottomNavBar(
-                     selectedIndex: selectedIndex,
-                     onItemSelected: (index) {
-                       context.read<HomeNavigationCubit>().changeTab(index);
-                     },
-                     unreadChatCount: unreadCount,
-                   );
-                }
-                ),
+          final selectedIndex = context.select(
+            (HomeNavigationCubit cubit) => cubit.state,
           );
-        }
+
+          return Scaffold(
+            extendBody: false,
+            backgroundColor: const Color(0xFF000000),
+            body: Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(color: Color(0xFF050505)),
+                ),
+
+                SafeArea(
+                  bottom: false,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                    child: KeyedSubtree(
+                      key: ValueKey<int>(selectedIndex),
+                      child: _pages[selectedIndex],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: StreamBuilder<int>(
+              stream: ChatService().getGlobalUnreadCountStream(
+                context.read<AuthService>().currentUserId ?? '',
+              ),
+              builder: (context, snapshot) {
+                final unreadCount = snapshot.data ?? 0;
+                return CustomBottomNavBar(
+                  selectedIndex: selectedIndex,
+                  onItemSelected: (index) {
+                    context.read<HomeNavigationCubit>().changeTab(index);
+                  },
+                  unreadChatCount: unreadCount,
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

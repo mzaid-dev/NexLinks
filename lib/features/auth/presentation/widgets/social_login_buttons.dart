@@ -15,9 +15,9 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Google Sign-In only supports Android, iOS, and Web.
-    final bool isSupportedPlatform = kIsWeb || 
-        defaultTargetPlatform == TargetPlatform.android || 
+    final bool isSupportedPlatform =
+        kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS;
 
     if (!isSupportedPlatform) return const SizedBox.shrink();
@@ -33,12 +33,11 @@ class SocialLoginButtons extends StatelessWidget {
             backgroundColor: Colors.white,
             textColor: Colors.black,
             onPressed: onGooglePressed,
-            style: AppButtonStyle.outlined, // Use outline base, but overrides apply
+            style: AppButtonStyle.outlined,
             height: 56,
           ),
         ),
         const SizedBox(height: 16),
-        // Facebook button (commented out) can be similarly updated when needed
       ],
     );
   }
