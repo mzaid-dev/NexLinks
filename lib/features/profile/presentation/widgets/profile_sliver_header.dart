@@ -100,10 +100,13 @@ class ProfileSliverHeader extends SliverPersistentHeaderDelegate {
                     ),
                   ),
                   // Actual Avatar
-                  AppAvatar(
-                    imageUrl: user.photoURL,
-                    customSize: avatarSize * 0.82,
-                    initials: user.username.isNotEmpty ? user.username[0] : '?',
+                  Hero(
+                    tag: 'avatar_${user.id}',
+                    child: AppAvatar(
+                      imageUrl: user.photoURL,
+                      customSize: avatarSize * 0.82,
+                      initials: user.username.isNotEmpty ? user.username[0] : '?',
+                    ),
                   ),
                 ],
               ),

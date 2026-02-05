@@ -4,7 +4,7 @@ import 'package:nexlinks/core/services/auth_service.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/features/home/presentation/widgets/glass_card.dart';
-import 'package:nexlinks/features/home/presentation/widgets/people_gallery_3d.dart';
+import 'package:nexlinks/features/home/presentation/widgets/modern_people_carousel.dart';
 import 'package:nexlinks/router/route_names.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexlinks/features/home/logic/home_navigation_cubit.dart';
@@ -19,10 +19,64 @@ import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
   @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  List<UserModel>? _randomUsers;
+  List<UserModel>? _recommendedUsers;
+  bool _isLoadingDiscovery = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDiscoveryData();
+  }
+
+  Future<void> _fetchDiscoveryData() async {
+    final firestoreService = context.read<FirestoreService>();
+    final currentUserId = context.read<AuthService>().currentUserId;
+    
+    if (currentUserId == null) return;
+
+    try {
+      // 1. Get all users (fetch once)
+      final allUsers = await firestoreService.getAllUsers().first;
+      
+      // 2. Get current user data for filtering
+      final me = await firestoreService.getUser(currentUserId);
+      final myFriends = me?.friends ?? [];
+
+      setState(() {
+        // Shuffle for discovery
+        final discoveryBase = allUsers.where((u) => u.id != currentUserId && !myFriends.contains(u.id)).toList();
+        discoveryBase.shuffle();
+        _randomUsers = discoveryBase.take(8).toList();
+
+        // People you may know: Friends first, then broaden if empty
+        final friendsList = allUsers.where((u) => u.id != currentUserId && myFriends.contains(u.id)).toList();
+        if (friendsList.isEmpty) {
+          // If no friends, show some other active users
+          _recommendedUsers = allUsers.where((u) => u.id != currentUserId).toList();
+          _recommendedUsers!.shuffle();
+          _recommendedUsers = _recommendedUsers!.take(10).toList();
+        } else {
+          _recommendedUsers = friendsList;
+        }
+
+        _isLoadingDiscovery = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingDiscovery = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = context.read<AuthService>().currentUser;
@@ -43,6 +97,8 @@ class HomeView extends StatelessWidget {
                   floating: true,
                   snap: true,
                   backgroundColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                   elevation: 0,
                   automaticallyImplyLeading: false,
                   toolbarHeight: 110,
@@ -73,38 +129,46 @@ class HomeView extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  AnimatedTextKit(
-                                    animatedTexts: [
-                                      TyperAnimatedText(
-                                        user.username,
-                                        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold),
-                                        speed: const Duration(milliseconds: 100),
+                                  ShaderMask(
+                                    shaderCallback: (bounds) => const LinearGradient(
+                                      colors: [Colors.white, Color(0xFF2979FF)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ).createShader(bounds),
+                                    child: Text(
+                                      user.username,
+                                      style: const TextStyle(
+                                        color: Colors.white, 
+                                        fontSize: 32, 
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: -0.5,
                                       ),
-                                    ],
-                                    totalRepeatCount: 1,
+                                    ),
                                   ),
                                 ],
                               ),
                               GlassCard(
-                                borderRadius: 50,
-                                padding: const EdgeInsets.all(10),
+                                borderRadius: 16, // Matching HTML pro design
+                                padding: const EdgeInsets.all(12),
                                 onTap: () {
                                   context.push(AppRoutes.network);
                                 },
                                 child: Stack(
+                                  clipBehavior: Clip.none,
                                   children: [
-                                    Icon(Icons.notifications_none_rounded, color: Theme.of(context).colorScheme.onSurface),
+                                    Icon(Icons.notifications_none_rounded, color: Theme.of(context).colorScheme.onSurface, size: 22),
                                     StreamBuilder<QuerySnapshot>(
                                       stream: context.read<FirestoreService>().getIncomingRequestsStream(currentUser.uid),
                                       builder: (context, snapshot) {
                                         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                                            return Positioned(
-                                             right: 2, top: 2,
+                                             right: -2, top: -2,
                                              child: Container(
-                                               width: 8, height: 8,
-                                               decoration: const BoxDecoration(
-                                                 color: Color(0xFF00FF94),
+                                               width: 10, height: 10,
+                                               decoration: BoxDecoration(
+                                                 color: const Color(0xFF00FF94),
                                                  shape: BoxShape.circle,
+                                                 border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
                                                ),
                                              ),
                                            );
@@ -184,93 +248,77 @@ class HomeView extends StatelessWidget {
 
                       const SizedBox(height: 8),
                       
-                      // 3D People Gallery Section
+                      // Discover People Section
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: AnimatedTextKit(
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              "Discover People",
-                              textStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              speed: const Duration(milliseconds: 100),
-                            ),
-                          ],
-                          totalRepeatCount: 1,
+                        child: Text(
+                          "Discover People",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       
-                      // 3D Gallery in Glass Container
-                      if (user != null)
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 600),
-                          child: GlassCard(
-                            child: StreamBuilder<List<UserModel>>(
-                              stream: context.read<FirestoreService>().getAllUsers(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const SizedBox(
-                                    height: 200,
-                                    child: Center(
-                                      child: AppLoadingIndicator(isFullScreen: false, size: 30),
-                                    ),
-                                  );
-                                }
-        
-                                final myFriends = user.friends;
-                                // Get users who are NOT me AND NOT in my friends list
-                                final allUsers = snapshot.data!
-                                    .where((u) => u.id != currentUser.uid && !myFriends.contains(u.id))
-                                    .toList();
-                                allUsers.shuffle();
-                                final randomUsers = allUsers.take(10).toList();
-        
-                                if (randomUsers.isEmpty) {
-                                  return const SizedBox(
-                                    height: 200,
-                                    child: Center(
-                                      child: Text(
-                                        "No new people to discover",
-                                        style: TextStyle(color: Colors.white54),
-                                      ),
-                                    ),
-                                  );
-                                }
-        
-                                return Center(
-                                  child: PeopleGallery3D(users: randomUsers),
-                                );
-                              },
+                      if (_isLoadingDiscovery)
+                        const SizedBox(
+                          height: 340,
+                          child: Center(
+                            child: AppLoadingIndicator(isFullScreen: false, size: 30),
+                          ),
+                        )
+                      else if (_randomUsers == null || _randomUsers!.isEmpty)
+                        const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: Text(
+                              "No new people to discover",
+                              style: TextStyle(color: Colors.white54),
                             ),
                           ),
+                        )
+                      else
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 600),
+                          child: ModernPeopleCarousel(users: _randomUsers!),
                         ),
                       
+                      /* 
                       const SizedBox(height: 32),
                       // Header for recommended users
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: AnimatedTextKit(
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              "People you may know",
-                              textStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              speed: const Duration(milliseconds: 100),
-                            ),
-                          ],
-                          totalRepeatCount: 1,
+                        child: Text(
+                          "People you may know",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const UserListSection(onlyFriends: true),
-                      const SizedBox(height: 100), // Bottom Padding for Nav
+                      
+                      if (_isLoadingDiscovery)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40),
+                          child: AppLoadingIndicator(isFullScreen: false),
+                        )
+                      else if (_recommendedUsers == null || _recommendedUsers!.isEmpty)
+                        AppEmptyState(
+                          icon: Icons.people_outline_rounded,
+                          title: "No users yet",
+                          message: "Connect with people in Explore to see them here!",
+                          onAction: () => context.read<HomeNavigationCubit>().changeTab(1),
+                          actionLabel: "Explore People",
+                        )
+                      else
+                        RecommendedPeopleSection(users: _recommendedUsers!),
+                      */
+                        
+                      const SizedBox(height: 140), // Sufficient Bottom Padding for Nav
                     ],
                   ),
                 ),
@@ -284,77 +332,26 @@ class HomeView extends StatelessWidget {
 }
 
 // Extracted UserList to separate widget for better SRP
-class UserListSection extends StatelessWidget {
-  final bool onlyFriends;
-  const UserListSection({super.key, required this.onlyFriends});
+class RecommendedPeopleSection extends StatelessWidget {
+  final List<UserModel> users;
+  const RecommendedPeopleSection({super.key, required this.users});
 
   @override
   Widget build(BuildContext context) {
-    final firestoreService = context.read<FirestoreService>();
     final currentUserId = context.read<AuthService>().currentUserId;
     if (currentUserId == null) return const SizedBox.shrink();
 
-    return StreamBuilder<UserModel>(
-      stream: firestoreService.getUserStream(currentUserId),
-      builder: (context, meSnapshot) {
-        if (!meSnapshot.hasData) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 40),
-            child: AppLoadingIndicator(isFullScreen: false),
-          );
-        }
-        final myFriends = meSnapshot.data?.friends ?? [];
-
-        return StreamBuilder<List<UserModel>>(
-          stream: firestoreService.getAllUsers(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
-            if (!snapshot.hasData) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: AppLoadingIndicator(isFullScreen: false),
-              );
-            }
-            
-            final users = snapshot.data!.where((u) {
-              if (u.id == currentUserId) return false;
-              if (onlyFriends) return myFriends.contains(u.id);
-              return true;
-            }).toList();
-
-            // Industry Polish: Randomize and limit to 7-8 people from friends
-            if (onlyFriends) {
-              users.shuffle();
-              if (users.length > 8) {
-                users.removeRange(8, users.length);
-              }
-            }
-            
-            if (users.isEmpty) {
-              return AppEmptyState(
-                icon: Icons.people_outline_rounded,
-                title: "No users yet",
-                message: "It looks like you're the first one here! Or at least, none of your friends are online.",
-                onAction: () => context.read<HomeNavigationCubit>().changeTab(1), // Switch to Explore Tab
-                actionLabel: "Explore People",
-              );
-            }
-
-            return Column(
-              children: users.asMap().entries.map((entry) {
-                final index = entry.key;
-                final user = entry.value;
-                return FadeInUp(
-                  key: ValueKey(user.id),
-                  delay: Duration(milliseconds: 400 + (index * 50)),
-                  duration: const Duration(milliseconds: 600),
-                  child: UserTile(user: user, currentUserId: currentUserId),
-                );
-              }).toList(),
-            );
-          },
+    return Column(
+      children: users.asMap().entries.map((entry) {
+        final index = entry.key;
+        final user = entry.value;
+        return FadeInUp(
+          key: ValueKey(user.id),
+          delay: Duration(milliseconds: index * 50),
+          duration: const Duration(milliseconds: 600),
+          child: UserTile(user: user, currentUserId: currentUserId),
         );
-      }
+      }).toList(),
     );
   }
 }
@@ -367,18 +364,38 @@ class UserTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 12),
       child: GlassCard(
         padding: const EdgeInsets.all(12),
+        borderRadius: 20,
         onTap: () => context.push(AppRoutes.profile, extra: user),
         child: Row(
           children: [
-            Hero(
-              tag: 'avatar_${user.id}',
-              child: AppAvatar(
-                imageUrl: user.photoURL,
-                customSize: 48,
-                initials: user.username.isNotEmpty ? user.username[0] : '?',
+            // Avatar with Premium Gradient Ring (matching Chat Screen)
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
+                padding: const EdgeInsets.all(1.5),
+                child: Hero(
+                  tag: 'avatar_${user.id}',
+                  child: AppAvatar(
+                    imageUrl: user.photoURL,
+                    customSize: 44,
+                    initials: user.username.isNotEmpty ? user.username[0] : '?',
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -388,28 +405,42 @@ class UserTile extends StatelessWidget {
                 children: [
                   Hero(
                     tag: 'name_hero_${user.id}',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: AppGradientText(
-                        user.username, 
-                        style: const TextStyle(fontWeight: FontWeight.bold)
-                      ),
+                    child: Text(
+                      user.username, 
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 16,
+                        color: Colors.white,
+                      )
                     ),
                   ),
-                  Text(user.isOnline ? "Online Now" : "Offline", 
+                  const SizedBox(height: 2),
+                  Text(
+                    user.role.isNotEmpty ? user.role.toUpperCase() : "EXPLORER", 
                     style: TextStyle(
-                      color: user.isOnline 
-                        ? const Color(0xFF00FF94) 
-                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), 
-                      fontSize: 12,
-                      fontWeight: user.isOnline ? FontWeight.bold : FontWeight.normal,
+                      color: const Color(0xFF2979FF), 
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
                     )
                   ),
                 ],
               ),
             ),
-            const Spacer(),
-            Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 14),
+            const SizedBox(width: 12),
+            // Modern Interaction Button
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2979FF).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_add_rounded, 
+                color: Color(0xFF2979FF), 
+                size: 20,
+              ),
+            ),
           ],
         ),
       ),

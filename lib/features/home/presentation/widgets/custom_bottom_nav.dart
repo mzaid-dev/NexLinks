@@ -65,7 +65,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   onTap: () => onItemSelected(0),
                 ),
                 _NavItem(
-                  icon: Icons.compass_calibration_rounded,
+                  icon: Icons.radar_rounded,
                   label: "Explore",
                   isSelected: selectedIndex == 1,
                   onTap: () => onItemSelected(1),

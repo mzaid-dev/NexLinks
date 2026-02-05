@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ProfileAbout(bio: displayUser.bio),
                             const SizedBox(height: 24),
                             ProfileExpertise(expertise: displayUser.expertise),
-                            const SizedBox(height: 120), // Increased for fixed button
+                            const SizedBox(height: 140), // Standardized for Nav Bar
                           ]),
                         ),
                       ),

@@ -113,6 +113,8 @@ class _ExploreViewState extends State<ExploreView> {
             floating: true,
             snap: true,
             backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
             elevation: 0,
             automaticallyImplyLeading: false,
             toolbarHeight: 90,
@@ -234,7 +236,7 @@ class _ExploreViewState extends State<ExploreView> {
                   crossAxisCount: 2, 
                   mainAxisSpacing: 16, 
                   crossAxisSpacing: 16, 
-                  childAspectRatio: 0.65,
+                  childAspectRatio: 0.68,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => const SkeletonShimmer(
@@ -269,7 +271,7 @@ class _ExploreViewState extends State<ExploreView> {
                   crossAxisCount: 2, 
                   mainAxisSpacing: 16, 
                   crossAxisSpacing: 16, 
-                  childAspectRatio: 0.65,
+                  childAspectRatio: 0.68,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -309,7 +311,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ),
               ),
               
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            const SliverToBoxAdapter(child: SizedBox(height: 140)),
           ],
         ],
       ),

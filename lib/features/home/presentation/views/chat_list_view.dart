@@ -148,7 +148,7 @@ class ChatListView extends StatelessWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 140)),
         ],
       ),
     );
