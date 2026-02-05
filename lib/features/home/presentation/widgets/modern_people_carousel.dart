@@ -40,178 +40,204 @@ class _ModernPeopleCarouselState extends State<ModernPeopleCarousel> {
     if (widget.users.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 400,
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: 10000, 
-        itemBuilder: (context, index) {
-          final userIndex = index % widget.users.length;
-          final user = widget.users[userIndex];
+      height: 300,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: PageView.builder(
+          controller: _pageController,
+          physics: const BouncingScrollPhysics(),
+          itemCount: 10000, 
+          itemBuilder: (context, index) {
+            final userIndex = index % widget.users.length;
+            final user = widget.users[userIndex];
 
-          return AnimatedBuilder(
-            animation: _pageController,
-            builder: (context, child) {
-              double page = 0.0;
-              if (_pageController.position.haveDimensions) {
-                page = _pageController.page!;
-              } else {
-                page = _realIndex.toDouble();
-              }
+            return AnimatedBuilder(
+              animation: _pageController,
+              builder: (context, child) {
+                double page = 0.0;
+                if (_pageController.position.haveDimensions) {
+                  page = _pageController.page!;
+                } else {
+                  page = _realIndex.toDouble();
+                }
 
-              double value = (page - index);
-              double absValue = value.abs();
+                double value = (page - index);
+                double absValue = value.abs();
 
-              // 1. Scale Logic: Active 1.0 -> Side 0.8
-              double scale = (1 - (absValue * 0.2)).clamp(0.8, 1.0);
-              
-              // 2. Blur Logic: Active 0.0 -> Side 6.0
-              double blurSigma = (absValue * 6.0).clamp(0.0, 6.0);
-              
-              // 3. Opacity Logic: Active 1.0 -> Side 0.4
-              double opacity = (1 - (absValue * 0.6)).clamp(0.4, 1.0);
+                // 1. Scale Logic: Active 1.0 -> Side 0.8
+                double scale = (1 - (absValue * 0.2)).clamp(0.8, 1.0);
+                
+                // 2. Blur Logic: Active 0.0 -> Side 6.0
+                double blurSigma = (absValue * 6.0).clamp(0.0, 6.0);
+                
+                // 3. Opacity Logic: Active 1.0 -> Side 0.4
+                double opacity = (1 - (absValue * 0.6)).clamp(0.4, 1.0);
 
-              // 4. Translation/Stacked Logic: Tucking behind
-              // Higher value means more horizontal compression
-              double translation = value * 40.0; 
+                // 4. Translation/Stacked Logic: Tucking behind
+                // Higher value means more horizontal compression
+                double translation = value * 40.0; 
 
-              bool isActive = absValue < 0.2;
+                bool isActive = absValue < 0.2;
 
-              return Center(
-                child: Container(
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, 0.001) // Perspective
-                    ..translate(translation) 
-                    ..scale(scale),
-                  child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-                    child: Opacity(
-                      opacity: opacity,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Neon Glow (Standard Widget for stability)
-                          if (isActive)
-                            Container(
-                              width: 160,
-                              height: 160,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF2979FF).withValues(alpha: 0.15),
-                                    blurRadius: 100,
-                                    spreadRadius: 30,
-                                  ),
-                                ],
+                return Center(
+                  child: Container(
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.001) // Perspective
+                      ..translate(translation) 
+                      ..scale(scale),
+                    child: ImageFiltered(
+                      imageFilter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Neon Glow (Standard Widget for stability)
+                            if (isActive)
+                              Container(
+                                width: 160,
+                                height: 160,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF2979FF).withValues(alpha: 0.15),
+                                      blurRadius: 100,
+                                      spreadRadius: 30,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          
-                          _buildUserCard(user, isActive),
-                        ],
+                            
+                            _buildUserCard(user, isActive, index),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildUserCard(UserModel user, bool isActive) {
+  Widget _buildUserCard(UserModel user, bool isActive, int index) {
     return TactileFeedback(
-      onTap: isActive ? () => context.push(AppRoutes.profile, extra: user) : null,
+      onTap: () {
+        if (isActive) {
+          context.push(AppRoutes.profile, extra: user);
+        } else {
+          _pageController.animateToPage(
+            index, 
+            duration: const Duration(milliseconds: 500), 
+            curve: Curves.easeOutQuint,
+          );
+        }
+      },
       child: GlassCard(
         borderRadius: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Avatar with Premium Gradient Ring
-            Container(
-              padding: const EdgeInsets.all(3.5),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(2.5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-                child: Hero(
-                  tag: 'avatar_${user.id}',
-                  child: AppAvatar(
-                    imageUrl: user.photoURL,
-                    customSize: 86,
-                    initials: user.username.isNotEmpty ? user.username[0] : '?',
+        padding: EdgeInsets.zero, // Handle padding internally for fixed size
+        child: SizedBox(
+          width: 260, // Fixed width for uniformity
+          height: 340, // Fixed height for uniformity
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Avatar with Premium Gradient Ring
+                Container(
+                  padding: const EdgeInsets.all(3.5),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              user.fullName?.isNotEmpty == true ? user.fullName! : user.username,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              user.role.isNotEmpty ? user.role.toUpperCase() : "EXPLORER",
-              style: const TextStyle(
-                color: Color(0xFF2979FF),
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // View Profile Button (Only interactive on active card)
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              opacity: isActive ? 1.0 : 0.0,
-              child: IgnorePointer(
-                ignoring: !isActive,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2979FF).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.1)),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "View Profile",
-                        style: TextStyle(
-                          color: Color(0xFF2979FF),
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: Container(
+                    padding: const EdgeInsets.all(2.5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    child: Hero(
+                      tag: 'carousel_avatar_${user.id}', // Unique tag to avoid conflicts if needed, or keep same
+                      child: AppAvatar(
+                        imageUrl: user.photoURL,
+                        customSize: 86,
+                        initials: user.username.isNotEmpty ? user.username[0] : '?',
                       ),
-                      SizedBox(width: 6),
-                      Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF2979FF)),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                Text(
+                  user.fullName?.isNotEmpty == true ? user.fullName! : user.username,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  user.role.isNotEmpty ? user.role.toUpperCase() : "EXPLORER",
+                  style: const TextStyle(
+                    color: Color(0xFF2979FF),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+                const Spacer(),
+                
+                // View Profile Button (Only interactive visually on active card)
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: isActive ? 1.0 : 0.0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2979FF).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.1)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "View Profile",
+                          style: TextStyle(
+                            color: Color(0xFF2979FF),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF2979FF)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

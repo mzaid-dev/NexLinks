@@ -192,10 +192,13 @@ class ChatUserTile extends StatelessWidget {
                       color: Theme.of(context).scaffoldBackgroundColor, // Inner gap
                     ),
                     padding: const EdgeInsets.all(1.5),
-                    child: AppAvatar(
-                      imageUrl: user.photoURL,
-                      customSize: 44, // Slightly smaller to fit inside ring
-                      initials: user.username.isNotEmpty ? user.username[0] : '?',
+                    child: Hero(
+                      tag: 'avatar_${user.id}',
+                      child: AppAvatar(
+                        imageUrl: user.photoURL,
+                        customSize: 44, // Slightly smaller to fit inside ring
+                        initials: user.username.isNotEmpty ? user.username[0] : '?',
+                      ),
                     ),
                   ),
                 ),
@@ -225,15 +228,12 @@ class ChatUserTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Hero(
-                  tag: 'name_hero_${user.id}',
-                  child: AppGradientText(
-                    user.username, 
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600, 
-                      fontSize: 16
-                    )
-                  ),
+                AppGradientText(
+                  user.username, 
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600, 
+                    fontSize: 16
+                  )
                 ),
                 const SizedBox(height: 4),
                 StreamBuilder<int>(

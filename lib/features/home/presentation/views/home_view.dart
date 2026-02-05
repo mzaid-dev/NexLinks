@@ -260,7 +260,7 @@ class _HomeViewState extends State<HomeView> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       
                       if (_isLoadingDiscovery)
                         const SizedBox(
@@ -284,6 +284,8 @@ class _HomeViewState extends State<HomeView> {
                           duration: const Duration(milliseconds: 600),
                           child: ModernPeopleCarousel(users: _randomUsers!),
                         ),
+                      
+                      const SizedBox(height: 24),
                       
                       /* 
                       const SizedBox(height: 32),

@@ -45,11 +45,9 @@ class _TactileFeedbackState extends State<TactileFeedback> with SingleTickerProv
         if (widget.onTap != null) _controller.forward();
       },
       onTapUp: (_) {
-        if (widget.onTap != null) {
-          _controller.reverse();
-          widget.onTap!();
-        }
+        if (widget.onTap != null) _controller.reverse();
       },
+      onTap: widget.onTap,
       onTapCancel: () {
         if (widget.onTap != null) _controller.reverse();
       },
