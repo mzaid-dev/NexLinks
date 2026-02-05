@@ -62,9 +62,4 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthUser?> signInWithFacebook() async {
     return await remoteDataSource.signInWithFacebook();
   }
-
-  @override
-  Future<AuthUser?> signInWithApple() async {
-    return await remoteDataSource.signInWithApple();
-  }
 }

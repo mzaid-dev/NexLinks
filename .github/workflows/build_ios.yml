@@ -33,13 +33,13 @@ jobs:
         run: |
           mkdir Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r NexLinks_iOS.ipa Payload
+          zip -r NexLinks.ipa Payload
           rm -rf Payload
 
       - name: Upload iOS Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_iOS.ipa"
+          artifacts: "NexLinks.ipa"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}

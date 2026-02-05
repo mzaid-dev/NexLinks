@@ -200,9 +200,6 @@ class _LoginViewState extends State<LoginView> {
                                 onFacebookPressed: () => context
                                     .read<AuthBloc>()
                                     .add(AuthFacebookLoginRequested()),
-                                onApplePressed: () => context
-                                    .read<AuthBloc>()
-                                    .add(AuthAppleLoginRequested()),
                               ),
                               const SizedBox(height: 32),
                               FadeInUp(

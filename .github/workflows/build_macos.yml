@@ -32,12 +32,12 @@ jobs:
 
       - name: Create macOS DMG
         run: |
-          hdiutil create -volname "NexLinks" -srcfolder build/macos/Build/Products/Release/nexlinks.app -ov -format UDZO NexLinks_macOS.dmg
+          hdiutil create -volname "NexLinks" -srcfolder build/macos/Build/Products/Release/nexlinks.app -ov -format UDZO NexLinks.dmg
 
       - name: Upload macOS Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_macOS.dmg"
+          artifacts: "NexLinks.dmg"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}

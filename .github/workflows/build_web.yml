@@ -29,12 +29,12 @@ jobs:
         run: flutter build web --release
 
       - name: Compress Web
-        run: tar -czvf NexLinks_Web.tar.gz -C build/web .
+        run: tar -czvf NexLinks.tar.gz -C build/web .
 
       - name: Upload Web Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_Web.tar.gz"
+          artifacts: "NexLinks.tar.gz"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}

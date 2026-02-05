@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get user;
@@ -216,70 +215,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel?> signInWithFacebook() async {
     throw UnimplementedError("Facebook login not configured yet.");
-  }
-
-  @override
-  Future<UserModel?> signInWithApple() async {
-    try {
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final OAuthCredential credential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
-      );
-
-      final UserCredential result = await _auth.signInWithCredential(credential);
-      final User? user = result.user;
-
-      if (user != null) {
-        await _storage.write(key: 'uid', value: user.uid);
-
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (!doc.exists) {
-          // Apple only returns name on FIRST sign in.
-          String? displayName =
-              (appleCredential.givenName != null)
-                  ? "${appleCredential.givenName} ${appleCredential.familyName}"
-                  : user.displayName;
-
-          final uniqueUsername = await _generateUniqueUsername(
-            displayName ?? 'apple_user',
-          );
-
-          final userModel = UserModel(
-            id: user.uid,
-            email: user.email ?? appleCredential.email ?? '',
-            username: uniqueUsername,
-            fullName: displayName,
-            lastSeen: Timestamp.now(),
-            role: '',
-            isOnline: true,
-            photoURL: '', // Apple doesn't provide a photo URL by default
-            createdAt: Timestamp.now(),
-          );
-
-          await _firestore
-              .collection('users')
-              .doc(user.uid)
-              .set(userModel.toMap());
-          return userModel;
-        } else {
-           await _firestore.collection('users').doc(user.uid).set({
-          'isOnline': true,
-          'lastSeen': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-          return UserModel.fromMap(doc.data()!);
-        }
-      }
-    } catch (e) {
-      debugPrint("Apple Sign In Error: $e");
-    }
-    return null;
   }
 
   Future<String> _generateUniqueUsername(String displayName) async {

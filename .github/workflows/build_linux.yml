@@ -33,13 +33,13 @@ jobs:
       - name: Build Linux
         run: flutter build linux --release
 
-      - name: Compress Linux
-        run: tar -czvf NexLinks_Linux.tar.gz -C build/linux/x64/release/bundle .
+      - name: Compress Linux Build
+        run: tar -czvf NexLinks.tar.gz -C build/linux/x64/release/bundle .
 
       - name: Upload Linux Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_Linux.tar.gz"
+          artifacts: "NexLinks.tar.gz"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}

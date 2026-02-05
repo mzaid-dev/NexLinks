@@ -61,7 +61,6 @@ dependencies:
   flutter_pw_validator: ^1.6.0
   cached_network_image: ^3.4.1
   flutter_chat_reactions: ^0.2.7
-  sign_in_with_apple: ^7.0.1
 
 dev_dependencies:
   flutter_test:
@@ -124,3 +123,18 @@ msix_config:
   logo_path: assets/branding/logo.png
   description: "Join the future of professional networking."
   output_name: NexLinks_Installer
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/branding/logo.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/branding/logo.png"
+  macos:
+    generate: true
+    image_path: "assets/branding/logo.png"
+  windows:
+    generate: true
+    image_path: "assets/branding/logo.png"

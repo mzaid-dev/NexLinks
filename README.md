@@ -1,5 +1,4 @@
 <div align="center">
-
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D0D0D,50:2563EB,100:22D3EE&height=250&section=header&text=NexLinks&fontSize=80&fontAlign=50&fontAlignY=35&animation=fadeIn&fontColor=FFFFFF&desc=Connect%20•%20Collaborate%20•%20Create&descAlign=50&descAlignY=60&descSize=22" alt="NexLinks Header" width="100%" />
 
 <div align="center">
@@ -18,13 +17,6 @@
     <img src="https://img.shields.io/badge/Clean_Architecture-22D3EE?style=for-the-badge" alt="Architecture" />
   </p>
 
-  <p align="center">
-    <img src="https://img.shields.io/github/stars/mzaid-dev/NexLinks?style=social" alt="Stars" />
-    <img src="https://img.shields.io/github/forks/mzaid-dev/NexLinks?style=social" alt="Forks" />
-    <img src="https://img.shields.io/badge/Version-1.0.0-brightgreen?style=flat-square" alt="Version" />
-    <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
-  </p>
-
 </div>
   
   <br>
@@ -35,14 +27,13 @@
 
 **Get the latest version for your platform:**
 
-[![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Android.apk)
-[![Windows](https://img.shields.io/badge/Windows-MSIX-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Windows.msix)
-[![Linux](https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Linux.tar.gz)
-[![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Web.tar.gz)
+[![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks.apk)
+[![iOS](https://img.shields.io/badge/iOS-IPA-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks.ipa)
+[![macOS](https://img.shields.io/badge/macOS-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks.dmg)
+[![Windows](https://img.shields.io/badge/Windows-MSIX-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks.msix)
+[![Linux](https://img.shields.io/badge/Linux-Bundle-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks.tar.gz)
 
-> *Links always point to the latest version.*
->
-> [![Live Demo](https://img.shields.io/badge/Live_Demo-Try_Now-FF5722?style=for-the-badge&logo=vercel&logoColor=white)](https://nex-links.vercel.app/#/login)
+> *Links point to the latest professional builds.*
 
 </div>
 
@@ -98,7 +89,7 @@
 | **Frontend** | Flutter 3.9+, Dart, BLoC Pattern, GoRouter |
 | **Backend** | Firebase Auth, Cloud Firestore, Firebase Storage |
 | **State Management** | flutter_bloc, Equatable, Cubit |
-| **UI/UX** | animate_do, shimmer, flutter_gallery_3d, chiclet, cached_network_image |
+| **UI/UX** | animate_do, shimmer, chiclet, cached_network_image |
 | **Auth** | Email/Password, Google Sign-In, Flutter Secure Storage |
 | **Notifications** | flutter_local_notifications, firebase_messaging |
 
@@ -131,7 +122,7 @@ lib/
 │   │
 │   ├── home/                      # Dashboard & navigation
 │   │   ├── logic/                 # HomeNavigationCubit
-│   │   └── presentation/          # HomeView, ExploreView, PeopleGallery3D
+│   │   └── presentation/          # HomeView, ExploreView
 │   │
 │   └── profile/                   # User profiles
 │       └── presentation/          # ProfileScreen, EditProfileScreen
@@ -187,11 +178,11 @@ flutter run
 
 | Feature | Description |
 |---------|-------------|
-| **🔐 Multi-Auth** | Email/Password with validation, Google OAuth (Mobile/Web), Password recovery |
-| **👥 3D People Gallery** | Stunning carousel for discovering new connections |
+| **🔐 Multi-Auth** | Email/Password with validation, Google OAuth (Mobile), Password recovery |
+| **👥 User Networking** | Stunning UI for discovering new connections |
 | **💬 Smart Chat** | Real-time messaging with reactions, read receipts, and typing indicators |
 | **🔴 Activity Status** | Live online/offline presence updates and unread message badges |
-| **🌍 Cross-Platform** | Native support for Android, iOS, Web, Windows, and Linux |
+| **🌍 Cross-Platform** | Native support for Android, iOS, macOS, Windows, and Linux |
 | **👤 Rich Profiles** | Avatar filters, bio, expertise tags, and project metrics |
 | **🎨 Premium UI** | Dark theme, glassmorphism, and responsive tactile buttons |
 | **🧹 Error Handling** | Centralized error handler with platform-specific smart guards |

@@ -35,12 +35,12 @@ jobs:
         run: flutter build apk --release
 
       - name: Rename APK
-        run: mv build/app/outputs/flutter-apk/app-release.apk NexLinks_Android.apk
+        run: mv build/app/outputs/flutter-apk/app-release.apk NexLinks.apk
 
       - name: Upload Android Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_Android.apk"
+          artifacts: "NexLinks.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
