@@ -147,7 +147,7 @@ class AppRouter {
           state.matchedLocation == AppRoutes.forgotPassword;
 
       if (authState.status == AuthStatus.unknown) {
-        return null;
+        return AppRoutes.splash;
       }
 
       if (isUnAuth) {
