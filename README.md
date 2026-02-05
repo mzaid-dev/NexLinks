@@ -41,6 +41,8 @@
 [![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Web.tar.gz)
 
 > *Links always point to the latest version.*
+>
+> [![Live Demo](https://img.shields.io/badge/Live_Demo-Try_Now-FF5722?style=for-the-badge&logo=vercel&logoColor=white)](https://nex-links.vercel.app/#/login)
 
 </div>
 
