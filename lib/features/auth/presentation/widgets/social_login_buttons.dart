@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:flutter/foundation.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   final VoidCallback onGooglePressed;
@@ -14,6 +15,13 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Google Sign-In only supports Android, iOS, and Web.
+    final bool isSupportedPlatform = kIsWeb || 
+        defaultTargetPlatform == TargetPlatform.android || 
+        defaultTargetPlatform == TargetPlatform.iOS;
+
+    if (!isSupportedPlatform) return const SizedBox.shrink();
+
     return Column(
       children: [
         FadeInUp(

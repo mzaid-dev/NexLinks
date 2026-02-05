@@ -19,10 +19,12 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 380;
+    // Add safe area padding to bottom margin to avoid system navigation handle
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Container(
       margin: EdgeInsets.only(
-        bottom: isSmallScreen ? 12 : 20, 
+        bottom: (isSmallScreen ? 12 : 20) + bottomPadding, 
         left: isSmallScreen ? 12 : 16, 
         right: isSmallScreen ? 12 : 16
       ),

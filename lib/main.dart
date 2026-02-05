@@ -2,7 +2,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:nexlinks/features/auth/logic/auth_event.dart';
 import 'package:nexlinks/firebase_options.dart';
 import 'package:nexlinks/router/app_router.dart';
-import 'package:device_preview/device_preview.dart';
+import 'package:device_frame/device_frame.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,16 +51,19 @@ Future<void> main() async {
       DeviceOrientation.portraitDown,
     ]);
 
-    runApp(DevicePreview(
-      enabled: !kReleaseMode && (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)),
-      builder: (context) => const MyApp(),
-    ));
+    runApp(const MyApp());
   } catch (e) {
     debugPrint("CRITICAL INITIALIZATION ERROR: $e");
+    
+    String errorMessage = "Startup Error: $e";
+    if (e.toString().contains("DefaultFirebaseOptions have not been configured for linux")) {
+      errorMessage = "Linux Support Missing.\nPlease run `flutterfire configure` in your terminal to enable Firebase for Linux.";
+    }
+
     // Fallback runner if Firebase or root setup fails
     runApp(MaterialApp(
       home: Scaffold(
-        body: Center(child: Text("Startup Error: $e")),
+        body: Center(child: Text(errorMessage, textAlign: TextAlign.center)),
       ),
     ));
   }
@@ -125,7 +128,8 @@ class _AppViewState extends State<AppView> {
       themeMode: ThemeMode.dark,
       routerConfig: _appRouter.router,
       builder: (context, child) {
-        return StatusManager(
+        // Platform-aware builder
+        Widget wrappedChild = StatusManager(
           child: ConnectivityOverlay(
             child: GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -134,6 +138,19 @@ class _AppViewState extends State<AppView> {
             ),
           ),
         );
+        
+        // Check if Desktop or Web (Not Android/iOS)
+        final bool isMobile = defaultTargetPlatform == TargetPlatform.android || 
+                              defaultTargetPlatform == TargetPlatform.iOS;
+                              
+        if (kIsWeb || !isMobile) {
+          return DeviceFrame(
+            device: Devices.ios.iPhone13ProMax,
+            screen: wrappedChild,
+          );
+        }
+
+        return wrappedChild;
       },
     );
   }

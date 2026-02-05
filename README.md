@@ -26,6 +26,25 @@
   </p>
 
 </div>
+  
+  <br>
+
+<div align="center">
+
+## 🚀 Download NexLinks
+
+**Get the latest version for your platform:**
+
+[![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
+[![Windows](https://img.shields.io/badge/Windows-MSIX-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
+[![Linux](https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/mzaid-dev/NexLinks/actions)
+[![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
+
+> *Builds are automatically generated via GitHub Actions.*
+>
+> **👉 [Click here for Step-by-Step Installation Guide](INSTALLATION.md)**
+
+</div>
 
 ---
 
@@ -168,14 +187,24 @@ flutter run
 
 | Feature | Description |
 |---------|-------------|
-| **🔐 Multi-Auth** | Email/Password registration with validation, Google OAuth, Password recovery |
+| **🔐 Multi-Auth** | Email/Password with validation, Google OAuth (Mobile/Web), Password recovery |
 | **👥 3D People Gallery** | Stunning carousel for discovering new connections |
-| **💬 Smart Chat** | Real-time messaging with reactions, read status, and typing indicators |
-| **🔔 Notification Badges** | Unread counts on bottom nav and chat list |
-| **🟢 Presence System** | Online/offline status with pulsing indicators |
-| **👤 Rich Profiles** | Avatar selection, bio, expertise tags, projects count, success rate |
-| **🎨 Premium UI** | Dark theme, gradient rings, glassmorphism, tactile (chiclet) buttons |
-| **🧹 Error Handling** | Centralized error handler with user-friendly messages |
+| **💬 Smart Chat** | Real-time messaging with reactions, read receipts, and typing indicators |
+| **🔴 Activity Status** | Live online/offline presence updates and unread message badges |
+| **🌍 Cross-Platform** | Native support for Android, iOS, Web, Windows, and Linux |
+| **👤 Rich Profiles** | Avatar filters, bio, expertise tags, and project metrics |
+| **🎨 Premium UI** | Dark theme, glassmorphism, and responsive tactile buttons |
+| **🧹 Error Handling** | Centralized error handler with platform-specific smart guards |
+
+<br>
+
+## 🚀 Roadmap (Upcoming Features)
+
+- [ ] **Push Notifications** (FCM integration for background alerts)
+- [ ] **File Sharing** (Images, Documents, Voice Notes)
+- [ ] **Audio/Video Calls** (WebRTC integration)
+- [ ] **Group Chats** (Create and manage groups)
+- [ ] **End-to-End Encryption** (Enhanced privacy)
 
 <br>
 
@@ -232,8 +261,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <br>
 
+<sub><i>Built with ❤️ using Flutter & Firebase</i></sub>
+
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D0D0D,50:2563EB,100:22D3EE&height=120&section=footer" width="100%" />
 
-<sub><i>Built with ❤️ using Flutter & Firebase</i></sub>
 
 </div>

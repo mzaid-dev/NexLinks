@@ -94,6 +94,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }, SetOptions(merge: true));
     }
     await _storage.delete(key: 'uid');
+    
+    // Force Google Sign-Out to clear the cached account
+    // This ensures the user is asked "Which account?" next time they login
+    try {
+      await GoogleSignIn().signOut();
+    } catch (e) {
+      // Ignore errors if Google Sign-In wasn't used or isn't available
+    }
+
     await _auth.signOut();
   }
   
