@@ -1,0 +1,43 @@
+name: Build iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build iOS (No Codesign)
+        # Building without codesign avoids needing Apple Developer secrets for now
+        run: flutter build ios --release --no-codesign
+
+      - name: Compress iOS App
+        run: tar -czvf NexLinks_iOS.tar.gz -C build/ios/iphoneos Runner.app
+
+      - name: Upload iOS Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks_iOS.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          omitPrereleaseDuringUpdate: true

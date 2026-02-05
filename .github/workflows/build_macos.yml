@@ -1,0 +1,44 @@
+name: Build macOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        # Note: This builds an unsigned .app. For distribution outside App Store,
+        # users will need to right-click open it due to Gatekeeper.
+        run: flutter build macos --release
+
+      - name: Compress macOS App
+        run: tar -czvf NexLinks_macOS.tar.gz -C build/macos/Build/Products/Release nexlinks.app
+
+      - name: Upload macOS Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks_macOS.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          omitPrereleaseDuringUpdate: true
