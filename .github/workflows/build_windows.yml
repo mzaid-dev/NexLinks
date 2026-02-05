@@ -29,13 +29,24 @@ jobs:
         # FIX: --install-certificate false prevents interactive prompt crash
         run: dart run msix:create --install-certificate false
 
-      - name: Rename MSIX
-        run: Rename-Item -Path build/windows/runner/Release/NexLinks_Installer.msix -NewName NexLinks_Windows.msix
+      - name: Find and Rename MSIX
+        run: |
+          Get-ChildItem -Path build -Filter *.msix -Recurse | ForEach-Object {
+            Write-Host "Found MSIX: $($_.FullName)"
+            Move-Item -Path $_.FullName -Destination "NexLinks_Windows.msix"
+          }
+
+      - name: Verify MSIX Exists
+        run: |
+          if (-Not (Test-Path "NexLinks_Windows.msix")) {
+            Write-Error "MSIX file was not found after build!"
+            exit 1
+          }
 
       - name: Upload Windows Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/windows/runner/Release/NexLinks_Windows.msix"
+          artifacts: "NexLinks_Windows.msix"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
