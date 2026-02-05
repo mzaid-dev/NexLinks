@@ -37,6 +37,9 @@ jobs:
           artifacts: "NexLinks_Web.tar.gz"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
           omitBody: true
-          omitName: true
+          omitName: false
           omitPrereleaseDuringUpdate: true
