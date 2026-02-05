@@ -109,111 +109,119 @@ class _ExploreViewState extends State<ExploreView> {
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: GlassContainer(
-                borderRadius: BorderRadius.circular(30),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: SizedBox(
-                height: 54,
-                child: Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    // Title (Hidden when search expanded)
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: _isSearchExpanded ? 0.0 : 1.0,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: AnimatedTextKit(
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              "Explore People",
-                              textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -1.0,
-                                color: Colors.white,
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            toolbarHeight: 90,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
+                child: GlassContainer(
+                  borderRadius: BorderRadius.circular(30),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: SizedBox(
+                  height: 54,
+                  child: Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      // Title (Hidden when search expanded)
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _isSearchExpanded ? 0.0 : 1.0,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                "Explore People",
+                                textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -1.0,
+                                  color: Colors.white,
+                                ),
+                                speed: const Duration(milliseconds: 100),
                               ),
-                              speed: const Duration(milliseconds: 100),
-                            ),
-                          ],
-                          totalRepeatCount: 1,
+                            ],
+                            totalRepeatCount: 1,
+                          ),
                         ),
                       ),
-                    ),
-                    
-                    // Animated Search Bar
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOutBack, 
-                      width: _isSearchExpanded ? MediaQuery.of(context).size.width - 72 : 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05))
-                      ),
-                      child: _isSearchExpanded 
-                        ? Stack( 
-                            children: [
-                              Positioned(
-                                left: 16,
-                                right: 48,
-                                top: 0,
-                                bottom: 0,
-                                child: Center(
-                                  child: TextField(
-                                    controller: _searchController,
-                                    autofocus: true,
-                                    onChanged: (_) => setState(() {}),
-                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                                    decoration: InputDecoration(
-                                      hintText: "Search people...", 
-                                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)),
-                                      border: InputBorder.none,
-                                      focusedBorder : InputBorder.none,
-                                      enabledBorder : InputBorder.none,
-                                      filled : false,
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.zero,
+                      
+                      // Animated Search Bar
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeOutBack, 
+                        width: _isSearchExpanded ? MediaQuery.of(context).size.width - 72 : 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05))
+                        ),
+                        child: _isSearchExpanded 
+                          ? Stack( 
+                              children: [
+                                Positioned(
+                                  left: 16,
+                                  right: 48,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Center(
+                                    child: TextField(
+                                      controller: _searchController,
+                                      autofocus: true,
+                                      onChanged: (_) => setState(() {}),
+                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                      decoration: InputDecoration(
+                                        hintText: "Search people...", 
+                                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)),
+                                        border: InputBorder.none,
+                                        focusedBorder : InputBorder.none,
+                                        enabledBorder : InputBorder.none,
+                                        filled : false,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                child: TactileFeedback(
-                                  onTap: () {
-                                    setState(() {
-                                      _isSearchExpanded = false;
-                                      _searchController.clear();
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    width: 48, height: 48,
-                                  child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
+                                Positioned(
+                                  right: 0,
+                                  child: TactileFeedback(
+                                    onTap: () {
+                                      setState(() {
+                                        _isSearchExpanded = false;
+                                        _searchController.clear();
+                                      });
+                                    },
+                                    child: SizedBox(
+                                      width: 48, height: 48,
+                                    child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                          )
-                        : TactileFeedback(
-                            onTap: () {
-                              setState(() {
-                                _isSearchExpanded = true;
-                              });
-                            },
-                            child: Container(
-                              width: 48, height: 48,
-                              decoration: const BoxDecoration(color: Colors.transparent),
-                              child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
+                                )
+                              ],
+                            )
+                          : TactileFeedback(
+                              onTap: () {
+                                setState(() {
+                                  _isSearchExpanded = true;
+                                });
+                              },
+                              child: Container(
+                                width: 48, height: 48,
+                                decoration: const BoxDecoration(color: Colors.transparent),
+                                child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 22),
+                              ),
                             ),
-                          ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
+                ),
               ),
             ),
           ),
@@ -226,7 +234,7 @@ class _ExploreViewState extends State<ExploreView> {
                   crossAxisCount: 2, 
                   mainAxisSpacing: 16, 
                   crossAxisSpacing: 16, 
-                  childAspectRatio: MediaQuery.of(context).size.width < 380 ? 0.7 : 0.75,
+                  childAspectRatio: 0.65,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => const SkeletonShimmer(
@@ -261,7 +269,7 @@ class _ExploreViewState extends State<ExploreView> {
                   crossAxisCount: 2, 
                   mainAxisSpacing: 16, 
                   crossAxisSpacing: 16, 
-                  childAspectRatio: MediaQuery.of(context).size.width < 380 ? 0.7 : 0.75,
+                  childAspectRatio: 0.65,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {

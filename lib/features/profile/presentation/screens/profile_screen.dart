@@ -4,16 +4,19 @@ import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_about.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_expertise.dart';
-import 'package:nexlinks/features/profile/presentation/widgets/profile_header.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_info_section.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_stats.dart';
 import 'package:flutter/material.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_event.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_sliver_header.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:nexlinks/router/route_names.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
-import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
-import 'package:nexlinks/features/auth/logic/auth_event.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/features/home/presentation/widgets/profile_connect_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel? user;
@@ -50,48 +53,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return AppBaseView(
           isLoading: snapshot.connectionState == ConnectionState.waiting && displayUser == null,
           error: snapshot.hasError ? snapshot.error : null,
-          showGlows: false, // Disabled for cleaner look
+          showGlows: false,
           child: Scaffold(
-            backgroundColor: Colors.transparent, // Let AppBaseView handle the background
-            body: SafeArea(
-              child: Column(
-                children: [
-                  _buildAppBar(context),
-                  const SizedBox(height: 10),
-                  if (displayUser != null)
-                    Expanded(
-                      child: SingleChildScrollView(
+            backgroundColor: Colors.transparent,
+            body: Stack(
+              children: [
+                if (displayUser != null)
+                  CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      // 1. Animated Slivers Header
+                      SliverPersistentHeader(
+                        delegate: ProfileSliverHeader(
+                          user: displayUser,
+                          expandedHeight: 280,
+                          topPadding: MediaQuery.of(context).padding.top,
+                        ),
+                        pinned: true,
+                      ),
+                      
+                      // 2. Action buttons removed from scroll (now fixed at bottom)
+
+                      // 3. Information Sections
+                      SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            ProfileHeader(
-                              displayUser: displayUser,
-                              isMe: widget.isMe,
-                              currentUserId: currentUser?.uid,
-                            ),
-                            const SizedBox(height: 32),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
                             ProfileStats(
                               sessions: displayUser.projectsCount,
                               successRate: displayUser.successRate,
                               experienceYears: displayUser.experienceYears,
                             ),
-                            const SizedBox(height: 32),
-                            ProfileAbout(bio: displayUser.bio),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
                             ProfileInfoSection(
                               username: displayUser.username,
                               role: displayUser.role,
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
+                            ProfileAbout(bio: displayUser.bio),
+                            const SizedBox(height: 24),
                             ProfileExpertise(expertise: displayUser.expertise),
-                            const SizedBox(height: 40),
-                          ],
+                            const SizedBox(height: 120), // Increased for fixed button
+                          ]),
                         ),
                       ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                
+                // 4. Overlaid Buttons (Back and Logout)
+                _buildFloatingAppBar(context, currentUser),
+
+                // 5. Fixed Action Button at Bottom
+                if (displayUser != null)
+                  _buildFixedBottomSection(context, displayUser, currentUser?.uid),
+              ],
             ),
           ),
         );
@@ -99,9 +114,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+  Widget _buildFixedBottomSection(BuildContext context, UserModel displayUser, String? currentUserId) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).padding.bottom + 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.0),
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ),
+        ),
+        child: _buildActionButtons(context, displayUser, currentUserId),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, UserModel displayUser, String? currentUserId) {
+    if (widget.isMe) {
+      return FadeInUp(
+        duration: const Duration(milliseconds: 300),
+        child: AppButton(
+          text: "Edit Profile",
+          onPressed: () => context.push(AppRoutes.editProfile, extra: displayUser),
+          style: AppButtonStyle.primary,
+          height: 52,
+          borderRadius: 20,
+        ),
+      );
+    } else if (currentUserId != null) {
+      return ProfileConnectButton(
+        currentUserId: currentUserId,
+        viewedUserId: displayUser.id,
+        viewedUser: displayUser,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildFloatingAppBar(BuildContext context, dynamic currentUser) {
+    return Positioned(
+      top: MediaQuery.of(context).padding.top + 10,
+      left: 20,
+      right: 20,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -115,19 +178,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             )
           else
-            const SizedBox(width: 40), // Spacer to keep title centered
-          
-          AnimatedTextKit(
-            animatedTexts: [
-              TyperAnimatedText(
-                "Profile",
-                textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
-                speed: const Duration(milliseconds: 100),
-              ),
-            ],
-            totalRepeatCount: 1,
-          ),
-          
+            const SizedBox(width: 44),
+            
           if (widget.isMe)
             _buildIconBtn(
               icon: Icons.logout_rounded,
@@ -135,9 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                  context.read<AuthBloc>().add(AuthLogoutRequested());
               },
-            )
-          else
-            const SizedBox(width: 40), // Spacer to keep title centered
+            ),
         ],
       ),
     );

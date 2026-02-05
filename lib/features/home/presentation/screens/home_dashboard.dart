@@ -30,11 +30,11 @@ class HomeScreen extends StatelessWidget {
           final selectedIndex = context.select((HomeNavigationCubit cubit) => cubit.state);
           
           return Scaffold(
-              extendBody: true, // Allows body to scroll behind Nav Bar
+              extendBody: false, // Prevents body from scrolling behind Nav Bar
               backgroundColor: const Color(0xFF000000), 
               body: Stack(
                 children: [
-                  // 1. Background (glows disabled for cleaner look)
+                  // 1. Background
                   Container(
                     decoration: const BoxDecoration(
                       color: Color(0xFF050505),
@@ -44,24 +44,21 @@ class HomeScreen extends StatelessWidget {
                   // 2. Main Content
                   SafeArea(
                     bottom: false,
-                    child: Padding(
-                       padding: const EdgeInsets.only(bottom: 0), // Removed bottom padding so it goes behind nav
-                       child: AnimatedSwitcher(
-                         duration: const Duration(milliseconds: 300), 
-                         switchInCurve: Curves.easeOut,
-                         switchOutCurve: Curves.easeIn,
-                         transitionBuilder: (Widget child, Animation<double> animation) {
-                           return FadeTransition(
-                             opacity: animation,
-                             child: child, 
-                           );
-                         },
-                         child: KeyedSubtree(
-                           key: ValueKey<int>(selectedIndex),
-                           child: _pages[selectedIndex],
-                         ),
-                       ),
-                    )
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300), 
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      transitionBuilder: (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child, 
+                        );
+                      },
+                      child: KeyedSubtree(
+                        key: ValueKey<int>(selectedIndex),
+                        child: _pages[selectedIndex],
+                      ),
+                    ),
                   ),
                 ],
               ),

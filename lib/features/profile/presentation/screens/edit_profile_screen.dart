@@ -146,105 +146,102 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             children: [
               const EditProfileHeader(),
-              
-               Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                       const SizedBox(height: 20),
-                       
-                       // Industry Polish: Onboarding Hint for new users
-                        if (widget.user.fullName == null || widget.user.fullName!.isEmpty || (widget.user.bio ?? "").isEmpty)
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 600),
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 24),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF22D3EE).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFF22D3EE).withValues(alpha: 0.3)),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.rocket_launch_rounded, color: Color(0xFF22D3EE)),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Complete your profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
-                                        Text("Adding a photo and bio helps people get to know you better.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
-                                      ],
-                                    ),
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: Stack(
+                    children: [
+                      SingleChildScrollView(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(24, 0, 24, MediaQuery.of(context).padding.bottom + 200),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            
+                            // Industry Polish: Onboarding Hint for new users
+                            if (widget.user.fullName == null || widget.user.fullName!.isEmpty || (widget.user.bio ?? "").isEmpty)
+                              FadeInDown(
+                                duration: const Duration(milliseconds: 600),
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 24),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF22D3EE).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: const Color(0xFF22D3EE).withValues(alpha: 0.3)),
                                   ),
-                                ],
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.rocket_launch_rounded, color: Color(0xFF22D3EE)),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text("Complete your profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                                            Text("Adding a photo and bio helps people get to know you better.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                            // Avatar
+                            TactileFeedback(
+                              onTap: _selectAvatar,
+                              child: EditProfileAvatar(
+                                user: widget.user,
+                                selectedAvatarUrl: _selectedAvatarUrl,
                               ),
                             ),
-                          ),
 
-                       // Avatar
-                       TactileFeedback(
-                         onTap: _selectAvatar,
-                         child: EditProfileAvatar(
-                           user: widget.user,
-                           selectedAvatarUrl: _selectedAvatarUrl,
-                         ),
-                       ),
+                            const SizedBox(height: 16),
+                            Text(
+                              widget.user.fullName?.isNotEmpty == true ? widget.user.fullName! : widget.user.username, 
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.user.role.isNotEmpty ? widget.user.role : "Flutter Enthusiast", 
+                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w700)
+                            ),
+                            
+                            const SizedBox(height: 32),
 
-                       const SizedBox(height: 16),
-                       Text(
-                         widget.user.fullName?.isNotEmpty == true ? widget.user.fullName! : widget.user.username, 
-                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                           fontWeight: FontWeight.w900,
-                           letterSpacing: -1.0,
-                         ),
-                       ),
-                       const SizedBox(height: 4),
-                       Text(
-                         widget.user.role.isNotEmpty ? widget.user.role : "Flutter Enthusiast", 
-                         style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w700)
-                       ),
-                       
-                       const SizedBox(height: 32),
+                            // 1. Identity Section
+                            _buildSectionHeader("Identity"),
+                            _buildIdentitySection(),
 
-                       // 1. Identity Section
-                       _buildSectionHeader("Identity"),
-                       _buildIdentitySection(),
+                            const SizedBox(height: 32),
 
-                       const SizedBox(height: 32),
-
-                       // 2. "About" Section
-                       _buildSectionHeader("About"),
-                       _buildAboutSection(),
+                            // 2. "About" Section
+                            _buildSectionHeader("About"),
+                            _buildAboutSection(),
 
 
-                       const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                       // 3. "Professional Stats" Section
-                       _buildSectionHeader("Professional Stats"),
-                       _buildProfessionalStatsSection(),
+                            // 3. "Professional Stats" Section
+                            _buildSectionHeader("Professional Stats"),
+                            _buildProfessionalStatsSection(),
 
-                       const SizedBox(height: 40),
-                       
-                       // Save Button
-                       AppButton(
-                         text: "Save Changes",
-                         onPressed: _isLoading ? null : _saveProfile,
-                         isLoading: _isLoading,
-                         style: AppButtonStyle.primary,
-                       ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                            const SizedBox(height: 48), // Bottom spacer
+                          ],
+                        ),
+                      ),
+
+                      // Sticky Save Button
+                      _buildStickySaveButton(),
+                    ],
                   ),
                 ),
-               ),
+              ),
             ],
           ),
         ),
@@ -252,6 +249,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+
+  Widget _buildStickySaveButton() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).padding.bottom + 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.0),
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ),
+        ),
+        child: AppButton(
+          text: "Save Changes",
+          onPressed: _isLoading ? null : _saveProfile,
+          isLoading: _isLoading,
+          style: AppButtonStyle.primary,
+        ),
+      ),
+    );
+  }
 
   Widget _buildIdentitySection() {
     return EditProfileForm(
@@ -293,7 +319,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           MyTextFormField(
             controller: _projectsController,
-            hintText: "Number of projects completed",
+            labelText: "Total Projects",
+            hintText: "Enter number (eg: 12)",
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) return null;
@@ -307,7 +334,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 16),
           MyTextFormField(
             controller: _successRateController,
-            hintText: "Success rate percentage (0-100)",
+            labelText: "Success Rate (%)",
+            hintText: "Enter percentage (eg: 95)",
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) return null;

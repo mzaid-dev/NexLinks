@@ -15,37 +15,64 @@ class ProfileStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatItem(context, "PROJECTS", sessions == 0 ? "—" : "$sessions+"),
-          Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
-          _buildStatItem(context, "SUCCESS", successRate == 0 ? "—" : "$successRate%"),
-           Container(height: 40, width: 1, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
-          _buildStatItem(context, "EXPERIENCE", experienceYears == 0 ? "—" : "$experienceYears Years"),
-        ],
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatPanel(
+            context, 
+            "PROJECTS", 
+            sessions == 0 ? "—" : "$sessions+",
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatPanel(
+            context, 
+            "SUCCESS", 
+            successRate == 0 ? "—" : "$successRate%",
+            valueColor: const Color(0xFF00FF94),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatPanel(
+            context, 
+            "EXP.", 
+            experienceYears == 0 ? "—" : "$experienceYears Yrs",
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value) {
-    return Column(
-      children: [
-        Text(label,
+  Widget _buildStatPanel(BuildContext context, String label, String value, {Color? valueColor}) {
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+      borderRadius: 20,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                fontSize: 10,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w600)),
-        const SizedBox(height: 6),
-        Text(value,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 18,
-                fontWeight: FontWeight.bold)),
-      ],
+              color: valueColor ?? Theme.of(context).colorScheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -1.0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

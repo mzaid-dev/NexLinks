@@ -20,18 +20,16 @@ class CustomBottomNavBar extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 380;
 
-    return SafeArea(
-      bottom: true,
-      child: Container(
-        margin: EdgeInsets.only(
-          bottom: isSmallScreen ? 10 : 16, // Adjusted for SafeArea
-          left: isSmallScreen ? 12 : 16, 
-          right: isSmallScreen ? 12 : 16
-        ),
-        height: isSmallScreen ? 70 : 80,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-        ),
+    return Container(
+      margin: EdgeInsets.only(
+        bottom: isSmallScreen ? 12 : 20, 
+        left: isSmallScreen ? 12 : 16, 
+        right: isSmallScreen ? 12 : 16
+      ),
+      height: isSmallScreen ? 72 : 82,
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(52),
         child: BackdropFilter(
@@ -90,9 +88,8 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class _NavItem extends StatelessWidget {

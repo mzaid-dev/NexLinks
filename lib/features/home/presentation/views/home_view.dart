@@ -34,88 +34,107 @@ class HomeView extends StatelessWidget {
         final user = userSnapshot.data;
         
         return AppBaseView(
-          child: SingleChildScrollView(
+          child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Header
-                if (user != null)
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            slivers: [
+              // 1. YouTube-style Floating Header
+              if (user != null)
+                SliverAppBar(
+                  floating: true,
+                  snap: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  automaticallyImplyLeading: false,
+                  toolbarHeight: 110,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                      child: Column(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ShaderMask(
-                                shaderCallback: (bounds) => const LinearGradient(
-                                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds),
-                                child: Text(
-                                  "Good Morning,", 
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.9), 
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ShaderMask(
+                                    shaderCallback: (bounds) => const LinearGradient(
+                                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ).createShader(bounds),
+                                    child: Text(
+                                      "Good Morning,", 
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.9), 
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              AnimatedTextKit(
-                                animatedTexts: [
-                                  TyperAnimatedText(
-                                    user.username,
-                                    textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold),
-                                    speed: const Duration(milliseconds: 100),
+                                  const SizedBox(height: 4),
+                                  AnimatedTextKit(
+                                    animatedTexts: [
+                                      TyperAnimatedText(
+                                        user.username,
+                                        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold),
+                                        speed: const Duration(milliseconds: 100),
+                                      ),
+                                    ],
+                                    totalRepeatCount: 1,
                                   ),
                                 ],
-                                totalRepeatCount: 1,
                               ),
+                              GlassCard(
+                                borderRadius: 50,
+                                padding: const EdgeInsets.all(10),
+                                onTap: () {
+                                  context.push(AppRoutes.network);
+                                },
+                                child: Stack(
+                                  children: [
+                                    Icon(Icons.notifications_none_rounded, color: Theme.of(context).colorScheme.onSurface),
+                                    StreamBuilder<QuerySnapshot>(
+                                      stream: context.read<FirestoreService>().getIncomingRequestsStream(currentUser.uid),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                                           return Positioned(
+                                             right: 2, top: 2,
+                                             child: Container(
+                                               width: 8, height: 8,
+                                               decoration: const BoxDecoration(
+                                                 color: Color(0xFF00FF94),
+                                                 shape: BoxShape.circle,
+                                               ),
+                                             ),
+                                           );
+                                        }
+                                        return const SizedBox.shrink();
+                                      }
+                                    )
+                                  ],
+                                ),
+                              )
                             ],
                           ),
-                          GlassCard(
-                            borderRadius: 50,
-                            padding: const EdgeInsets.all(10),
-                            onTap: () {
-                              context.push(AppRoutes.network);
-                            },
-                            child: Stack(
-                              children: [
-                                Icon(Icons.notifications_none_rounded, color: Theme.of(context).colorScheme.onSurface),
-                                StreamBuilder<QuerySnapshot>(
-                                  stream: context.read<FirestoreService>().getIncomingRequestsStream(currentUser.uid),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                                       return Positioned(
-                                         right: 2, top: 2,
-                                         child: Container(
-                                           width: 8, height: 8,
-                                           decoration: const BoxDecoration(
-                                             color: Color(0xFF00FF94),
-                                             shape: BoxShape.circle,
-                                           ),
-                                         ),
-                                       );
-                                    }
-                                    return const SizedBox.shrink();
-                                  }
-                                )
-                              ],
-                            ),
-                          )
                         ],
                       ),
-                      
+                    ),
+                  ),
+                ),
+
+              // 2. Main Content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
                       // Industry Polish: Onboarding Hint for new users
-                      if (user.fullName == null || user.fullName!.isEmpty || (user.bio ?? "").isEmpty)
+                      if (user != null && (user.fullName == null || user.fullName!.isEmpty || (user.bio ?? "").isEmpty))
                         FadeInDown(
                           duration: const Duration(milliseconds: 600),
                           child: Container(
-                            margin: const EdgeInsets.only(top: 24),
+                            margin: const EdgeInsets.only(bottom: 24),
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -162,100 +181,101 @@ class HomeView extends StatelessWidget {
                             ),
                           ),
                         ),
-                    ],
-                  ),
 
-                const SizedBox(height: 32),
-                
-                // 3D People Gallery Section
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AnimatedTextKit(
-                    animatedTexts: [
-                      TyperAnimatedText(
-                        "Discover People",
-                        textStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      const SizedBox(height: 8),
+                      
+                      // 3D People Gallery Section
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: AnimatedTextKit(
+                          animatedTexts: [
+                            TyperAnimatedText(
+                              "Discover People",
+                              textStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              speed: const Duration(milliseconds: 100),
+                            ),
+                          ],
+                          totalRepeatCount: 1,
                         ),
-                        speed: const Duration(milliseconds: 100),
                       ),
+                      const SizedBox(height: 16),
+                      
+                      // 3D Gallery in Glass Container
+                      if (user != null)
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 600),
+                          child: GlassCard(
+                            child: StreamBuilder<List<UserModel>>(
+                              stream: context.read<FirestoreService>().getAllUsers(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const SizedBox(
+                                    height: 200,
+                                    child: Center(
+                                      child: AppLoadingIndicator(isFullScreen: false, size: 30),
+                                    ),
+                                  );
+                                }
+        
+                                final myFriends = user.friends;
+                                // Get users who are NOT me AND NOT in my friends list
+                                final allUsers = snapshot.data!
+                                    .where((u) => u.id != currentUser.uid && !myFriends.contains(u.id))
+                                    .toList();
+                                allUsers.shuffle();
+                                final randomUsers = allUsers.take(10).toList();
+        
+                                if (randomUsers.isEmpty) {
+                                  return const SizedBox(
+                                    height: 200,
+                                    child: Center(
+                                      child: Text(
+                                        "No new people to discover",
+                                        style: TextStyle(color: Colors.white54),
+                                      ),
+                                    ),
+                                  );
+                                }
+        
+                                return Center(
+                                  child: PeopleGallery3D(users: randomUsers),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      
+                      const SizedBox(height: 32),
+                      // Header for recommended users
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: AnimatedTextKit(
+                          animatedTexts: [
+                            TyperAnimatedText(
+                              "People you may know",
+                              textStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              speed: const Duration(milliseconds: 100),
+                            ),
+                          ],
+                          totalRepeatCount: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const UserListSection(onlyFriends: true),
+                      const SizedBox(height: 100), // Bottom Padding for Nav
                     ],
-                    totalRepeatCount: 1,
                   ),
                 ),
-                const SizedBox(height: 16),
-                
-                // 3D Gallery in Glass Container
-                if (user != null)
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 600),
-                    child: GlassCard(
-                      child: StreamBuilder<List<UserModel>>(
-                        stream: context.read<FirestoreService>().getAllUsers(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const SizedBox(
-                              height: 200,
-                              child: Center(
-                                child: AppLoadingIndicator(isFullScreen: false, size: 30),
-                              ),
-                            );
-                          }
-  
-                          final myFriends = user.friends;
-                          // Get users who are NOT me AND NOT in my friends list
-                          final allUsers = snapshot.data!
-                              .where((u) => u.id != currentUser.uid && !myFriends.contains(u.id))
-                              .toList();
-                          allUsers.shuffle();
-                          final randomUsers = allUsers.take(10).toList();
-  
-                          if (randomUsers.isEmpty) {
-                            return const SizedBox(
-                              height: 200,
-                              child: Center(
-                                child: Text(
-                                  "No new people to discover",
-                                  style: TextStyle(color: Colors.white54),
-                                ),
-                              ),
-                            );
-                          }
-  
-                          return Center(
-                            child: PeopleGallery3D(users: randomUsers),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                
-                const SizedBox(height: 32),
-                // Header for recommended users
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AnimatedTextKit(
-                    animatedTexts: [
-                      TyperAnimatedText(
-                        "People you may know",
-                        textStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        speed: const Duration(milliseconds: 100),
-                      ),
-                    ],
-                    totalRepeatCount: 1,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const UserListSection(onlyFriends: true),
-                const SizedBox(height: 100), // Bottom Padding for Nav
-              ],
-            ),
+              ),
+            ],
           ),
         );
       }

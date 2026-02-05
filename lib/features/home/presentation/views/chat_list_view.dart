@@ -24,40 +24,49 @@ class ChatListView extends StatelessWidget {
     final currentUserId = context.read<AuthService>().currentUserId;
     if (currentUserId == null) return const SizedBox.shrink();
 
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return AppBaseView(
       showGlows: false, // Disabled for cleaner look
-      child: SizedBox(
-        height: screenHeight,
-        width: double.infinity,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FadeInDown(
-                duration: const Duration(milliseconds: 600),
-                child: AnimatedTextKit(
-                  animatedTexts: [
-                    TyperAnimatedText(
-                      "Messages",
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // 1. YouTube-style Floating Header
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            toolbarHeight: 80,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: FadeInDown(
+                  duration: const Duration(milliseconds: 600),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        "Messages",
+                        textStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                        speed: const Duration(milliseconds: 100),
                       ),
-                      speed: const Duration(milliseconds: 100),
-                    ),
-                  ],
-                  totalRepeatCount: 1,
+                    ],
+                    totalRepeatCount: 1,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              
-              StreamBuilder<UserModel>(
+            ),
+          ),
+
+          // 2. Chat List Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: StreamBuilder<UserModel>(
                 stream: firestoreService.getUserStream(currentUserId),
                 builder: (context, meSnapshot) {
                   return StreamBuilder<List<UserModel>>(
@@ -137,10 +146,10 @@ class ChatListView extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 100),
-            ],
+            ),
           ),
-        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
       ),
     );
   }
