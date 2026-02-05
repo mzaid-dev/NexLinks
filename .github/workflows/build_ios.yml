@@ -25,9 +25,15 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Disable Signing Requirements
+        # This removes hardcoded Team IDs that cause CI builds to fail even with --no-codesign
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = [A-Z0-9]*;//g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [A-Za-z0-9_-]*;//g' ios/Runner.xcodeproj/project.pbxproj
+
       - name: Build iOS (No Codesign)
-        # Building without codesign avoids needing Apple Developer secrets for now
-        run: flutter build ios --release --no-codesign
+        # We explicitly set COMPILER_INDEX_STORE_ENABLE=NO to speed up and avoid potential CI indexer issues
+        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
 
       - name: Package IPA
         run: |

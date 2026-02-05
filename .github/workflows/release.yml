@@ -1,0 +1,154 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g., v1.0.0)
+  workflow_dispatch: # Enable manual trigger button in Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release (Android, Linux, Web)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      - name: Install Linux Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      # --- ANDROID ---
+      - name: Build Android APK
+        run: flutter build apk --release --build-number=${{ github.run_number }}
+      
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk NexLinks.apk
+
+      # --- LINUX ---
+      - name: Build Linux
+        run: flutter build linux --release --build-number=${{ github.run_number }}
+
+      - name: Compress Linux
+        run: tar -czvf NexLinks.tar.gz -C build/linux/x64/release/bundle .
+
+      # --- WEB ---
+      - name: Build Web
+        run: flutter build web --release --build-number=${{ github.run_number }}
+
+      - name: Compress Web
+        run: tar -czvf NexLinks_Web.tar.gz -C build/web .
+
+      # --- PUBLISH RELEASE ---
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.apk,NexLinks.tar.gz,NexLinks_Web.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          makeLatest: true
+          name: "Release ${{ github.ref_name }}"
+          body: "Automated release for version ${{ github.ref_name }}."
+          tag: ${{ github.ref_name }}
+
+  # Windows needs a separate job because it runs on windows-latest
+  release-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Create MSIX Installer
+        run: dart run msix:create
+
+      - name: Find and Rename MSIX
+        shell: pwsh
+        run: |
+          $msix = Get-ChildItem -Path build -Filter *.msix -Recurse | Select-Object -First 1
+          if ($msix) {
+            Move-Item -Path $msix.FullName -Destination "NexLinks.msix"
+            Write-Host "Renamed $($msix.Name) to NexLinks.msix"
+          } else {
+            Write-Error "MSIX file not found!"
+            exit 1
+          }
+
+      - name: Upload Windows Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.msix"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          tag: ${{ github.ref_name }}
+          omitPrereleaseDuringUpdate: true
+
+  # macOS also needs a separate job
+  release-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Disable Signing Requirements
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = [A-Z0-9]*;//g' macos/Runner.xcodeproj/project.pbxproj
+
+      - name: Build macOS
+        run: flutter build macos --release --no-codesign --build-number=${{ github.run_number }}
+
+      - name: Create macOS DMG
+        run: |
+          hdiutil create -volname "NexLinks" -srcfolder build/macos/Build/Products/Release/nexlinks.app -ov -format UDZO NexLinks.dmg
+
+      - name: Upload macOS Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.dmg"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          tag: ${{ github.ref_name }}
+          omitPrereleaseDuringUpdate: true
