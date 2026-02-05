@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthDeleteAccountRequested>(_onAuthDeleteAccountRequested);
     on<AuthGoogleLoginRequested>(_onAuthGoogleLoginRequested);
     on<AuthFacebookLoginRequested>(_onAuthFacebookLoginRequested);
+    on<AuthAppleLoginRequested>(_onAuthAppleLoginRequested);
     on<_AuthUserChanged>(_onAuthUserChanged);
   }
 
@@ -130,6 +131,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await _authRepository.signInWithFacebook();
       if (user != null) {
         emit(AuthState.authenticated(user as UserModel));
+      }
+    } catch (e) {
+      emit(AuthState.failure(ErrorHandler.getMessage(e)));
+    }
+  }
+
+  Future<void> _onAuthAppleLoginRequested(
+    AuthAppleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    try {
+      final user = await _authRepository.signInWithApple();
+      if (user != null) {
+        emit(AuthState.authenticated(user as UserModel));
+      } else {
+        emit(const AuthState.unauthenticated());
       }
     } catch (e) {
       emit(AuthState.failure(ErrorHandler.getMessage(e)));

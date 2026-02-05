@@ -30,13 +30,14 @@ jobs:
         # users will need to right-click open it due to Gatekeeper.
         run: flutter build macos --release
 
-      - name: Compress macOS App
-        run: tar -czvf NexLinks_macOS.tar.gz -C build/macos/Build/Products/Release nexlinks.app
+      - name: Create macOS DMG
+        run: |
+          hdiutil create -volname "NexLinks" -srcfolder build/macos/Build/Products/Release/nexlinks.app -ov -format UDZO NexLinks_macOS.dmg
 
       - name: Upload macOS Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_macOS.tar.gz"
+          artifacts: "NexLinks_macOS.dmg"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}

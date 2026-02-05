@@ -193,13 +193,16 @@ class _LoginViewState extends State<LoginView> {
                                 ),
                               ),
                               const SizedBox(height: 32),
-                              SocialLoginButtons(
+                                SocialLoginButtons(
                                 onGooglePressed: () => context
                                     .read<AuthBloc>()
                                     .add(AuthGoogleLoginRequested()),
                                 onFacebookPressed: () => context
                                     .read<AuthBloc>()
                                     .add(AuthFacebookLoginRequested()),
+                                onApplePressed: () => context
+                                    .read<AuthBloc>()
+                                    .add(AuthAppleLoginRequested()),
                               ),
                               const SizedBox(height: 32),
                               FadeInUp(

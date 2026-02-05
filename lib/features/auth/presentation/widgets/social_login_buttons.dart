@@ -6,11 +6,13 @@ import 'package:flutter/foundation.dart';
 class SocialLoginButtons extends StatelessWidget {
   final VoidCallback onGooglePressed;
   final VoidCallback onFacebookPressed;
+  final VoidCallback? onApplePressed;
 
   const SocialLoginButtons({
     super.key,
     required this.onGooglePressed,
     required this.onFacebookPressed,
+    this.onApplePressed,
   });
 
   @override
@@ -38,6 +40,20 @@ class SocialLoginButtons extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        if (defaultTargetPlatform == TargetPlatform.iOS)
+          FadeInUp(
+            duration: const Duration(milliseconds: 800),
+            delay: const Duration(milliseconds: 800),
+            child: AppButton(
+              text: "Continue with Apple",
+              icon: Icons.apple,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              onPressed: onApplePressed ?? () {},
+              style: AppButtonStyle.filled,
+              height: 56,
+            ),
+          ),
       ],
     );
   }

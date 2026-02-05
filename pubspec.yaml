@@ -61,7 +61,7 @@ dependencies:
   flutter_pw_validator: ^1.6.0
   cached_network_image: ^3.4.1
   flutter_chat_reactions: ^0.2.7
-  flutter_gallery_3d: ^1.1.1
+  sign_in_with_apple: ^7.0.1
 
 dev_dependencies:
   flutter_test:

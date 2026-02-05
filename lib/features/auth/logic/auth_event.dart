@@ -43,3 +43,5 @@ class AuthDeleteAccountRequested extends AuthEvent {}
 class AuthGoogleLoginRequested extends AuthEvent {}
 
 class AuthFacebookLoginRequested extends AuthEvent {}
+
+class AuthAppleLoginRequested extends AuthEvent {}

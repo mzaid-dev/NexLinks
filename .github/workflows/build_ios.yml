@@ -29,13 +29,17 @@ jobs:
         # Building without codesign avoids needing Apple Developer secrets for now
         run: flutter build ios --release --no-codesign
 
-      - name: Compress iOS App
-        run: tar -czvf NexLinks_iOS.tar.gz -C build/ios/iphoneos Runner.app
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r NexLinks_iOS.ipa Payload
+          rm -rf Payload
 
       - name: Upload iOS Asset
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "NexLinks_iOS.tar.gz"
+          artifacts: "NexLinks_iOS.ipa"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
