@@ -1,0 +1,43 @@
+name: Build Windows
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Create MSIX Installer
+        # FIX: --install-certificate false prevents interactive prompt crash
+        run: dart run msix:create --install-certificate false
+
+      - name: Rename MSIX
+        run: Rename-Item -Path build/windows/runner/Release/NexLinks_Installer.msix -NewName NexLinks_Windows.msix
+
+      - name: Upload Windows Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/windows/runner/Release/NexLinks_Windows.msix"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          omitPrereleaseDuringUpdate: true
