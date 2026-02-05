@@ -58,7 +58,7 @@ class AppValidators {
 
   static String? validateRole(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Professional role is required';
+      return null; // Optional
     }
     if (value.length < 2) {
       return 'Please enter a valid role';
@@ -68,7 +68,7 @@ class AppValidators {
 
   static String? validateExperience(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Experience is required';
+      return null; // Optional
     }
     final years = int.tryParse(value);
     if (years == null) {

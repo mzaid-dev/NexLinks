@@ -6,9 +6,12 @@ class FirestoreService{
 
   Future<void> updateUser(UserModel user) async {
     try {
+      if (user.id.trim().isEmpty) {
+        throw ArgumentError("User ID is missing. Cannot perform update.");
+      }
       await _firestore.collection('users').doc(user.id).set(user.toMap(), SetOptions(merge: true));
     } catch (e) {
-      throw Exception("Failed to update user: $e");
+      throw Exception("Update failed: $e");
     }
   }
 

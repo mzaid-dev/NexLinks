@@ -134,7 +134,7 @@ class ChatMessageBubble extends StatelessWidget {
                             size: 12,
                             // Read: bright cyan, Sent: white
                             color: message.isRead 
-                                ? const Color(0xFF22D3EE) // Bright cyan for read (matches gradient)
+                                ? const Color(0xFFFFFFFF) // Bright cyan for read (matches gradient)
                                 : Colors.white.withValues(alpha: 0.8),
                           ),
                         ],

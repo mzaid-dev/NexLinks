@@ -66,13 +66,13 @@ class PeopleGridCard extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     gradient: const LinearGradient(
-                                      colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF2563EB).withValues(alpha: 0.6),
+                                        color: const Color(0xFF2979FF).withValues(alpha: 0.6),
                                         blurRadius: 20,
                                         spreadRadius: 1
                                       )
@@ -116,7 +116,7 @@ class PeopleGridCard extends StatelessWidget {
                           child: Material(
                             color: Colors.transparent,
                             child: AppGradientText(
-                              user.username, 
+                              user.fullName?.isNotEmpty == true ? user.fullName! : user.username, 
                               style: TextStyle(
                                 fontWeight: FontWeight.w800, 
                                 fontSize: nameFontSize.clamp(12.0, 18.0),
@@ -161,13 +161,14 @@ class PeopleGridCard extends StatelessWidget {
                     "View Profile",
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(width: 4),
                   Icon(
-                    Icons.arrow_forward_ios_rounded,
+                    Icons.arrow_forward_rounded,
                     size: 10,
                     color: Theme.of(context).colorScheme.primary,
                   ),

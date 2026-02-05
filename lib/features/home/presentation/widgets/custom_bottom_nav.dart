@@ -20,16 +20,18 @@ class CustomBottomNavBar extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 380;
 
-    return Container(
-      margin: EdgeInsets.only(
-        bottom: isSmallScreen ? 16 : 24, 
-        left: isSmallScreen ? 12 : 16, 
-        right: isSmallScreen ? 12 : 16
-      ),
-      height: isSmallScreen ? 70 : 80,
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+    return SafeArea(
+      bottom: true,
+      child: Container(
+        margin: EdgeInsets.only(
+          bottom: isSmallScreen ? 10 : 16, // Adjusted for SafeArea
+          left: isSmallScreen ? 12 : 16, 
+          right: isSmallScreen ? 12 : 16
+        ),
+        height: isSmallScreen ? 70 : 80,
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+        ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(52),
         child: BackdropFilter(
@@ -88,8 +90,9 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _NavItem extends StatelessWidget {
@@ -120,9 +123,9 @@ class _NavItem extends StatelessWidget {
         ),
         decoration: isSelected
             ? BoxDecoration(
-                color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                color: const Color(0xFF2979FF).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.2))
+                border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.2))
               )
             : const BoxDecoration(
                 color: Colors.transparent,
@@ -135,7 +138,7 @@ class _NavItem extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  color: isSelected ? const Color(0xFF2563EB) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                  color: isSelected ? const Color(0xFF2979FF) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                   size: 24,
                 ),
                 if (badgeCount > 0)
@@ -164,7 +167,7 @@ class _NavItem extends StatelessWidget {
                     child: Text(
                       label,
                       style: const TextStyle(
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFF2979FF),
                         fontWeight: FontWeight.w900,
                         letterSpacing: -0.2,
                         fontSize: 14,

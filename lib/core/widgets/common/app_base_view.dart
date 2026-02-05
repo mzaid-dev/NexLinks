@@ -70,20 +70,4 @@ class AppBaseView extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildGlow({double? top, double? right, double? bottom, double? left, required Color color}) {
-    return Positioned(
-      top: top, right: right, bottom: bottom, left: left,
-      child: Container(
-        width: 350,
-        height: 350,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, Colors.transparent],
-          ),
-        ),
-      ),
-    );
-  }
 }

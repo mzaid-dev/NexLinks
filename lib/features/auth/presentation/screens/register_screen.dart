@@ -200,7 +200,7 @@ class _RegisterViewState extends State<RegisterView> {
                 delay: const Duration(milliseconds: 100),
                 child: MyTextFormField(
                   controller: _fullNameController,
-                  hintText: 'Enter your full name',
+                  hintText: 'Muhammad Zaid',
                   keyboardType: TextInputType.name,
                   prefixIcon: const Icon(Icons.person_outline),
                   validator: AppValidators.validateFullName,
@@ -213,7 +213,7 @@ class _RegisterViewState extends State<RegisterView> {
                 delay: const Duration(milliseconds: 200),
                 child: MyTextFormField(
                   controller: _usernameController,
-                  hintText: 'Enter your unique username',
+                  hintText: '@mzaid',
                   keyboardType: TextInputType.text,
                   prefixIcon: const Icon(Icons.alternate_email),
                   validator: AppValidators.validateUsername,

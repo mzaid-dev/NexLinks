@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -171,53 +172,33 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                user.photoURL != null && user.photoURL!.isNotEmpty
-                ? Container(
-                  padding: const EdgeInsets.all(1.5),
-                  decoration: BoxDecoration(
+                // Avatar with Premium Gradient Ring
+                Container(
+                  padding: const EdgeInsets.all(2), // Ring thickness
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF2979FF).withValues(alpha: 0.3),
-                        blurRadius: 6,
-                        spreadRadius: 1,
-                      )
-                    ]
                   ),
-                  child: Hero(
-                    tag: 'avatar_${user.id}',
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                      backgroundImage: NetworkImage(user.photoURL!),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).scaffoldBackgroundColor, // Inner gap
                     ),
-                  ),
-                )
-                : Hero(
-                    tag: 'avatar_${user.id}',
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        user.username.isNotEmpty ? user.username[0].toUpperCase() : '?', 
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                    padding: const EdgeInsets.all(1.5),
+                    child: Hero(
+                      tag: 'avatar_${user.id}',
+                      child: AppAvatar(
+                        imageUrl: user.photoURL,
+                        customSize: 32, // Fits inside header
+                        initials: user.username.isNotEmpty ? user.username[0] : '?',
                       ),
                     ),
                   ),
+                ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -166,10 +166,29 @@ class ChatUserTile extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                AppAvatar(
-                  imageUrl: user.photoURL,
-                  customSize: 48,
-                  initials: user.username.isNotEmpty ? user.username[0] : '?',
+                // Avatar with Premium Gradient Ring
+                Container(
+                  padding: const EdgeInsets.all(2), // Ring thickness
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).scaffoldBackgroundColor, // Inner gap
+                    ),
+                    padding: const EdgeInsets.all(1.5),
+                    child: AppAvatar(
+                      imageUrl: user.photoURL,
+                      customSize: 44, // Slightly smaller to fit inside ring
+                      initials: user.username.isNotEmpty ? user.username[0] : '?',
+                    ),
+                  ),
                 ),
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),

@@ -39,12 +39,12 @@ class AppButton extends StatelessWidget {
 
     switch (style) {
       case AppButtonStyle.primary:
-        buttonColor = const Color(0xFF2563EB); // Royal Blue
-        shadowColor = const Color(0xFF1E40AF);
+        buttonColor = const Color(0xFF2979FF); // Brand Blue
+        shadowColor = const Color(0xFF1C54B2);
         break;
       case AppButtonStyle.secondary:
-        buttonColor = const Color(0xFF22D3EE); // Cyan
-        shadowColor = const Color(0xFF0891B2);
+        buttonColor = const Color(0xFF00FF94); // Brand Green
+        shadowColor = const Color(0xFF00C774);
         break;
       case AppButtonStyle.outlined:
         buttonColor = Colors.white;
@@ -92,13 +92,13 @@ class AppButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, color: textColor, size: 20),
+                    Icon(icon, color: contentColor, size: 20),
                     const SizedBox(width: 8),
                   ],
                   Text(
                     text,
                     style: TextStyle(
-                      color: textColor,
+                      color: contentColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,

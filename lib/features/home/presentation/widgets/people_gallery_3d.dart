@@ -107,13 +107,13 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                          colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF2563EB).withValues(alpha: 0.6),
+                            color: const Color(0xFF2979FF).withValues(alpha: 0.6),
                             blurRadius: 20,
                             spreadRadius: 1,
                           ),
@@ -204,13 +204,14 @@ class _PeopleGallery3DState extends State<PeopleGallery3D> {
                       "View Profile",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Icon(
-                      Icons.arrow_forward_ios_rounded,
+                      Icons.arrow_forward_rounded,
                       size: 10,
                       color: Theme.of(context).colorScheme.primary,
                     ),

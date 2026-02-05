@@ -49,7 +49,21 @@ class HomeView extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Good Morning,", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16)),
+                              ShaderMask(
+                                shaderCallback: (bounds) => const LinearGradient(
+                                  colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(bounds),
+                                child: Text(
+                                  "Good Morning,", 
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.9), 
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               AnimatedTextKit(
                                 animatedTexts: [
@@ -156,26 +170,19 @@ class HomeView extends StatelessWidget {
                 // 3D People Gallery Section
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ).createShader(bounds),
-                    child: AnimatedTextKit(
-                      animatedTexts: [
-                        TyperAnimatedText(
-                          "Discover People",
-                          textStyle: const TextStyle(
-                            color: Colors.white, // Required for ShaderMask
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          speed: const Duration(milliseconds: 100),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        "Discover People",
+                        textStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                      totalRepeatCount: 1,
-                    ),
+                        speed: const Duration(milliseconds: 100),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -229,26 +236,19 @@ class HomeView extends StatelessWidget {
                 // Header for recommended users
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ).createShader(bounds),
-                    child: AnimatedTextKit(
-                      animatedTexts: [
-                        TyperAnimatedText(
-                          "People you may know",
-                          textStyle: const TextStyle(
-                            color: Colors.white, // Required for ShaderMask
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          speed: const Duration(milliseconds: 100),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        "People you may know",
+                        textStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                      totalRepeatCount: 1,
-                    ),
+                        speed: const Duration(milliseconds: 100),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -61,7 +61,7 @@ class AppAvatar extends StatelessWidget {
                 width: borderWidth,
               )
             : null,
-        gradient: hasImage ? null : LinearGradient(
+        gradient: (hasImage || (initials != null && initials!.isNotEmpty)) ? null : LinearGradient(
           colors: gradientColors ?? defaultGradients,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -126,16 +126,8 @@ class AppAvatar extends StatelessWidget {
   Widget _buildFallback(BuildContext context, double rawSize, {bool isError = false}) {
     if (initials != null && initials!.isNotEmpty) {
       return Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF0D0D0D), // Premium dark background inside the ring
-          gradient: RadialGradient(
-            colors: [
-              const Color(0xFF2563EB).withValues(alpha: 0.15),
-              Colors.transparent,
-            ],
-            center: Alignment.center,
-            radius: 0.8,
-          ),
+        decoration: const BoxDecoration(
+          color: Colors.transparent, 
         ),
         child: Center(
           child: Material(

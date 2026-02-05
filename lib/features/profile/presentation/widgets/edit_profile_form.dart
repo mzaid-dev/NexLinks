@@ -78,21 +78,21 @@ class _EditProfileFormState extends State<EditProfileForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildRegularTextField(
-                  "Full Name", "Alex Rivet", widget.fullNameController,
+                  "Full Name", "Muhammad Zaid", widget.fullNameController,
                   validator: AppValidators.validateFullName),
               const SizedBox(height: 16),
               
-              _buildRegularTextField("Username", "@alexrivet", widget.usernameController,
+              _buildRegularTextField("Username", "@mzaid", widget.usernameController,
                   validator: AppValidators.validateUsername),
               const SizedBox(height: 16),
               
               _buildRegularTextField(
-                  "Current Role", "e.g. Flutter Developer", widget.roleController,
+                  "Current Role", "Flutter Developer", widget.roleController,
                   validator: AppValidators.validateRole),
               const SizedBox(height: 16),
 
               _buildRegularTextField(
-                 "Experience (Years)", "8", widget.experienceController,
+                 "Experience (Years)", "eg: 1", widget.experienceController,
                  keyboardType: TextInputType.number,
                  validator: AppValidators.validateExperience,
               ),

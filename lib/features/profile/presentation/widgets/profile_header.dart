@@ -38,7 +38,7 @@ class ProfileHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                        colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                        colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter),
                     boxShadow: [
@@ -86,19 +86,7 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
         ),
-        if (displayUser.role.isNotEmpty && displayUser.role.toLowerCase() != 'user') ...[
-          const SizedBox(height: 4),
-          Text(displayUser.role,
-              style: const TextStyle(
-                  color: Color(0xFF2979FF),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600)),
-        ],
-
         const SizedBox(height: 12),
-        
-        const SizedBox(height: 12),
-        
         const SizedBox(height: 20),
 
         // Edit Profile Button (Only if isMe)

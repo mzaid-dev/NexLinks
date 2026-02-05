@@ -5,6 +5,7 @@ import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_about.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_expertise.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_header.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_info_section.dart';
 import 'package:nexlinks/features/profile/presentation/widgets/profile_stats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,6 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 32),
                             ProfileAbout(bio: displayUser.bio),
+                            const SizedBox(height: 32),
+                            ProfileInfoSection(
+                              username: displayUser.username,
+                              role: displayUser.role,
+                            ),
                             const SizedBox(height: 32),
                             ProfileExpertise(expertise: displayUser.expertise),
                             const SizedBox(height: 40),

@@ -29,7 +29,7 @@ class EditProfileAvatar extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

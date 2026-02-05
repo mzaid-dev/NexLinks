@@ -23,7 +23,7 @@ class UserModel extends AuthUser {
     required this.lastSeen,
     required this.createdAt,
     this.friends = const [],
-    this.role = 'user',
+    this.role = '',
     this.bio,
     this.projectsCount = 0,
     this.successRate = 0,

@@ -37,6 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isLoading = false;
   String? _selectedAvatarUrl;
   final _formKey = GlobalKey<FormState>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _fullNameController = TextEditingController(text: widget.user.fullName ?? "");
     _usernameController = TextEditingController(text: widget.user.username);
     _bioController = TextEditingController(text: widget.user.bio);
-    _experienceController = TextEditingController(text: widget.user.experienceYears.toString());
+    _experienceController = TextEditingController(text: widget.user.experienceYears == 0 ? "" : widget.user.experienceYears.toString());
     _roleController = TextEditingController(text: widget.user.role);
     _projectsController = TextEditingController(text: widget.user.projectsCount == 0 ? "" : widget.user.projectsCount.toString());
     _successRateController = TextEditingController(text: widget.user.successRate == 0 ? "" : widget.user.successRate.toString());
@@ -61,6 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _roleController.dispose();
     _projectsController.dispose();
     _successRateController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -84,10 +86,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (!_formKey.currentState!.validate()) {
       setState(() => _isLoading = false);
+      // Scroll to top so user can see what's missing (Name/Username are at the top)
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
       return;
     }
 
     try {
+      // Robustness check: Ensure user ID is present
+      if (widget.user.id.trim().isEmpty) {
+        throw "Your session profile is invalid. Please log out and back in.";
+      }
+
       final updatedUser = widget.user.copyWith(
         fullName: _fullNameController.text.trim(),
         username: _usernameController.text.trim(),
@@ -103,14 +116,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await context.read<FirestoreService>().updateUser(updatedUser);
 
       if (mounted) {
-        MySnackBar.show(context: context, message: "Profile updated!", isError: false);
-        Future.delayed(const Duration(milliseconds: 1200), () {
+        MySnackBar.show(context: context, title: "Success", message: "Profile updated successfully!", isError: false);
+        Future.delayed(const Duration(milliseconds: 1000), () {
           if (mounted) context.pop();
         });
       }
     } catch (e) {
       if (mounted) {
-        MySnackBar.show(context: context, message: "Error: $e", isError: true);
+        String errorMessage = e.toString();
+        if (errorMessage.contains("ArgumentError")) {
+          errorMessage = "App Error: User ID is missing. Try restarting the app.";
+        }
+        MySnackBar.show(context: context, title: "Update Failed", message: errorMessage, isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -134,6 +151,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
+                      controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
