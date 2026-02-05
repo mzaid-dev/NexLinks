@@ -35,12 +35,12 @@
 
 **Get the latest version for your platform:**
 
-[![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
-[![Windows](https://img.shields.io/badge/Windows-MSIX-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
-[![Linux](https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/mzaid-dev/NexLinks/actions)
-[![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/actions)
+[![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Android.apk)
+[![Windows](https://img.shields.io/badge/Windows-MSIX-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Windows.msix)
+[![Linux](https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Linux.tar.gz)
+[![Web](https://img.shields.io/badge/Web-Browser-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/mzaid-dev/NexLinks/releases/latest/download/NexLinks_Web.tar.gz)
 
-> *Builds are automatically generated via GitHub Actions.*
+> *Links always point to the latest version.*
 >
 > **👉 [Click here for Step-by-Step Installation Guide](INSTALLATION.md)**
 
