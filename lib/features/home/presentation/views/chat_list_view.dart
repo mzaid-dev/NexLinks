@@ -13,6 +13,7 @@ import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
+import 'package:nexlinks/core/widgets/common/pulsing_status.dart';
 
 
 class ChatListView extends StatelessWidget {
@@ -202,6 +203,12 @@ class ChatUserTile extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (user.isOnline)
+                  const Positioned(
+                    bottom: 2,
+                    right: 2,
+                    child: PulsingStatus(size: 10),
+                  ),
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
                   builder: (context, snapshot) {
@@ -239,10 +246,35 @@ class ChatUserTile extends StatelessWidget {
                 StreamBuilder<int>(
                   stream: chatService.getUnreadCountFromChatStream(chatId, currentUserId),
                   builder: (context, unreadSnapshot) {
-                    if (unreadSnapshot.hasData && unreadSnapshot.data! > 0) {
-                      return Text("${unreadSnapshot.data} new messages", style: const TextStyle(color: Color(0xFFFF3B30), fontSize: 12, fontWeight: FontWeight.bold));
-                    }
-                    return Text(user.isOnline ? "Online Now" : "Offline", style: TextStyle(color: user.isOnline ? const Color(0xFF00FF94) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12));
+                    return StreamBuilder<Map<String, dynamic>?>(
+                      stream: chatService.getLastMessageStream(chatId),
+                      builder: (context, lastMsgSnapshot) {
+                        bool hasUnread = unreadSnapshot.hasData && unreadSnapshot.data! > 0;
+                        String? lastMsgText = lastMsgSnapshot.data?['lastMessage'];
+                        
+                        if (hasUnread) {
+                          return Text(
+                            "${unreadSnapshot.data} new messages", 
+                            style: const TextStyle(color: Color(0xFFFF3B30), fontSize: 13, fontWeight: FontWeight.bold)
+                          );
+                        } else if (lastMsgText != null && lastMsgText.isNotEmpty) {
+                          return Text(
+                            lastMsgText,
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        }
+                        
+                        return Text(
+                          user.isOnline ? "Online Now" : "Offline", 
+                          style: TextStyle(
+                            color: user.isOnline ? const Color(0xFF00FF94) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3), 
+                            fontSize: 12
+                          )
+                        );
+                      }
+                    );
                   },
                 ),
               ],

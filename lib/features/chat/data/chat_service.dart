@@ -207,4 +207,7 @@ class ChatService {
           return 0;
         });
   }
+  Stream<Map<String, dynamic>?> getLastMessageStream(String chatId) {
+    return _firestore.collection('chats').doc(chatId).snapshots().map((doc) => doc.data());
+  }
 }

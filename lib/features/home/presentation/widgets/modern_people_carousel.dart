@@ -6,6 +6,7 @@ import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:nexlinks/features/home/presentation/widgets/glass_card.dart';
+import 'package:nexlinks/core/widgets/common/pulsing_status.dart';
 import 'package:nexlinks/router/route_names.dart';
 
 class ModernPeopleCarousel extends StatefulWidget {
@@ -170,13 +171,23 @@ class _ModernPeopleCarouselState extends State<ModernPeopleCarousel> {
                       shape: BoxShape.circle,
                       color: Theme.of(context).scaffoldBackgroundColor,
                     ),
-                    child: Hero(
-                      tag: 'carousel_avatar_${user.id}', // Unique tag to avoid conflicts if needed, or keep same
-                      child: AppAvatar(
-                        imageUrl: user.photoURL,
-                        customSize: 86,
-                        initials: user.username.isNotEmpty ? user.username[0] : '?',
-                      ),
+                    child: Stack(
+                      children: [
+                        Hero(
+                          tag: 'carousel_avatar_${user.id}', // Unique tag to avoid conflicts if needed, or keep same
+                          child: AppAvatar(
+                            imageUrl: user.photoURL,
+                            customSize: 86,
+                            initials: user.username.isNotEmpty ? user.username[0] : '?',
+                          ),
+                        ),
+                        if (user.isOnline)
+                          const Positioned(
+                            bottom: 2,
+                            right: 2,
+                            child: PulsingStatus(size: 14),
+                          ),
+                      ],
                     ),
                   ),
                 ),
