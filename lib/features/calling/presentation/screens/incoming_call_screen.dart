@@ -188,7 +188,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                    child: AppGlassContainer(
+                    child: GlassContainer(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                       borderRadius: 30,
                       child: Row(

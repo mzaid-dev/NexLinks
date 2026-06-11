@@ -344,7 +344,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             top: _showControls ? 50 : -80,
             left: 20,
             right: 20,
-            child: AppGlassContainer(
+            child: GlassContainer(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               borderRadius: 20,
               child: Row(
@@ -526,7 +526,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
   }
 
   Widget _buildBottomControlBar(CallActiveState state) {
-    return AppGlassContainer(
+    return GlassContainer(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       borderRadius: 30,
       child: Row(
