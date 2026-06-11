@@ -1,9 +1,9 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:chat_app/features/calling/domain/repositories/call_repository.dart';
-import 'package:chat_app/features/calling/logic/call_event.dart';
-import 'package:chat_app/features/calling/logic/call_state.dart';
+import 'package:nexlinks/features/calling/domain/repositories/call_repository.dart';
+import 'package:nexlinks/features/calling/logic/call_event.dart';
+import 'package:nexlinks/features/calling/logic/call_state.dart';
 
 class CallBloc extends Bloc<CallEvent, CallState> {
   final CallRepository _callRepository;

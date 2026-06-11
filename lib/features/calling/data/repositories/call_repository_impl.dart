@@ -1,5 +1,5 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:chat_app/features/calling/domain/repositories/call_repository.dart';
+import 'package:nexlinks/features/calling/domain/repositories/call_repository.dart';
 
 class CallRepositoryImpl implements CallRepository {
   RtcEngine? _engine;

@@ -2,16 +2,16 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/theme/app_theme.dart';
-import 'package:chat_app/core/widgets/common/glass_container.dart';
-import 'package:chat_app/core/widgets/common/app_avatar.dart';
-import 'package:chat_app/core/widgets/common/tactile_feedback.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
-import 'package:chat_app/features/calling/domain/repositories/call_repository.dart';
-import 'package:chat_app/features/calling/data/repositories/call_repository_impl.dart';
-import 'package:chat_app/features/calling/logic/call_bloc.dart';
-import 'package:chat_app/features/calling/logic/call_event.dart';
-import 'package:chat_app/features/calling/logic/call_state.dart';
+import 'package:nexlinks/core/theme/app_theme.dart';
+import 'package:nexlinks/core/widgets/common/glass_container.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
+import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
+import 'package:nexlinks/features/calling/domain/repositories/call_repository.dart';
+import 'package:nexlinks/features/calling/data/repositories/call_repository_impl.dart';
+import 'package:nexlinks/features/calling/logic/call_bloc.dart';
+import 'package:nexlinks/features/calling/logic/call_event.dart';
+import 'package:nexlinks/features/calling/logic/call_state.dart';
 
 // Placeholder App ID. Replace with your actual Agora App ID in production.
 const String _agoraAppId = '00ac1a5624af4c70b44aaa96ba3a706e';

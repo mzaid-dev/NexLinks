@@ -14,6 +14,7 @@ import 'package:nexlinks/core/services/firestoreservice.dart';
 import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
+import 'package:nexlinks/features/calling/presentation/screens/call_screen.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -267,6 +268,69 @@ class _ChatViewState extends State<ChatView> {
                   ],
                 ),
                 const Spacer(),
+                
+                // Voice Call Button
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CallScreen(
+                          channelId: 'call_${_currentUserId}_${user.id}',
+                          enableVideo: false,
+                          remoteUsername: user.username,
+                          remoteAvatarUrl: user.photoURL,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.phone_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                // Video Call Button
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CallScreen(
+                          channelId: 'call_${_currentUserId}_${user.id}',
+                          enableVideo: true,
+                          remoteUsername: user.username,
+                          remoteAvatarUrl: user.photoURL,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.videocam_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
