@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # 1. Install Flutter
       - name: Install Flutter
@@ -26,9 +26,11 @@ jobs:
         run: flutter pub get
 
       # 3. Build the Website
-      # This creates the 'build/web' folder
+      # This creates the 'build/web' folder and copies vercel configuration
       - name: Build Web App
-        run: flutter build web --release
+        run: |
+          flutter build web --release
+          cp vercel.json build/web/
 
       # 4. Push to Vercel
       - name: Deploy to Vercel
