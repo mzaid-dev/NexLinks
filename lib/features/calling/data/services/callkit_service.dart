@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
@@ -7,6 +8,8 @@ import 'package:nexlinks/features/calling/data/models/call_session_model.dart';
 
 class CallKitService {
   static Future<void> showIncomingCall(CallSession session) async {
+    if (kIsWeb) return;
+
     final params = CallKitParams(
       id: session.id,
       nameCaller: session.callerName,
@@ -37,6 +40,8 @@ class CallKitService {
     required Function(String channelId) onAccept,
     required Function(String channelId) onDecline,
   }) {
+    if (kIsWeb) return;
+
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
       if (event == null) return;
       switch (event.event) {
@@ -59,6 +64,8 @@ class CallKitService {
   }
 
   static Future<void> endNativeCall(String channelId) async {
+    if (kIsWeb) return;
+
     await FlutterCallkitIncoming.endCall(channelId);
   }
 }

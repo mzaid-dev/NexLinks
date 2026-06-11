@@ -8,12 +8,10 @@ abstract class CallLifecycleState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// resting state
 class CallIdleState extends CallLifecycleState {
   const CallIdleState();
 }
 
-/// Outgoing call is ringing on the receiver's end
 class CallOutgoingRingingState extends CallLifecycleState {
   final String channelId;
   final String receiverId;
@@ -33,7 +31,6 @@ class CallOutgoingRingingState extends CallLifecycleState {
   List<Object?> get props => [channelId, receiverId, receiverName, receiverAvatarUrl, type];
 }
 
-/// Incoming call is ringing on our end
 class CallIncomingRingingState extends CallLifecycleState {
   final CallSession session;
 
@@ -43,7 +40,6 @@ class CallIncomingRingingState extends CallLifecycleState {
   List<Object?> get props => [session];
 }
 
-/// Both users have joined and call stream is active
 class CallActiveState extends CallLifecycleState {
   final String channelId;
   final String remoteUsername;
@@ -100,7 +96,6 @@ class CallActiveState extends CallLifecycleState {
       ];
 }
 
-/// The call has concluded
 class CallEndedState extends CallLifecycleState {
   final String reason;
 

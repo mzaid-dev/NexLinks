@@ -34,14 +34,13 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
   Future<void> _playRingtone() async {
     try {
-      // Loop the ringtone audio source
+
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-      
-      // WhatsApp style default ringtone URL (a clean public royalty-free ringtone)
+
       await _audioPlayer.play(UrlSource(
         'https://assets.mixkit.co/active_storage/sfx/1359/1359-84.wav',
       ));
-      
+
       if (mounted) {
         setState(() {
           _isPlaying = true;
@@ -75,7 +74,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
           Navigator.of(context).pop();
         } else if (state is CallActiveState) {
           _stopRingtone();
-          // Navigate to full screen CallScreen when accepted
+
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => CallScreen(
@@ -91,7 +90,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       child: Scaffold(
         body: Stack(
           children: [
-            // Background visual (blurred user avatar)
+
             Container(
               decoration: BoxDecoration(
                 image: widget.session.callerAvatarUrl.isNotEmpty
@@ -114,8 +113,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 60),
-                  
-                  // NexLinks Logo or App Indicator
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -136,10 +134,9 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const Spacer(),
 
-                  // Caller Avatar & Profile
                   Hero(
                     tag: 'caller_avatar',
                     child: Container(
@@ -165,9 +162,9 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   Text(
                     widget.session.callerName,
                     style: const TextStyle(
@@ -176,9 +173,9 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     'Incoming ${widget.session.type == CallType.video ? "Video" : "Voice"} Call...',
                     style: TextStyle(
@@ -189,7 +186,6 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
                   const Spacer(flex: 2),
 
-                  // Accept & Decline buttons inside a Glassmorphic block
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                     child: AppGlassContainer(
@@ -198,7 +194,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          // Decline Button
+
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -234,7 +230,6 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
                           const SizedBox(width: 40),
 
-                          // Accept Button
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [

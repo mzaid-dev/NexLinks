@@ -8,7 +8,6 @@ abstract class CallLifecycleEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Dispatched by the Caller to start a new call
 class StartCallEvent extends CallLifecycleEvent {
   final String receiverId;
   final String receiverName;
@@ -26,7 +25,6 @@ class StartCallEvent extends CallLifecycleEvent {
   List<Object?> get props => [receiverId, receiverName, receiverAvatarUrl, type];
 }
 
-/// Dispatched by FCM / Background signaling when an incoming call is received
 class IncomingCallReceivedEvent extends CallLifecycleEvent {
   final CallSession session;
 
@@ -36,57 +34,46 @@ class IncomingCallReceivedEvent extends CallLifecycleEvent {
   List<Object?> get props => [session];
 }
 
-/// Dispatched when receiver clicks 'Accept'
 class AcceptCallEvent extends CallLifecycleEvent {
   const AcceptCallEvent();
 }
 
-/// Dispatched when receiver clicks 'Decline'
 class DeclineCallEvent extends CallLifecycleEvent {
   const DeclineCallEvent();
 }
 
-/// Dispatched when caller detects receiver has accepted via Firestore subscription
 class RemoteAnsweredEvent extends CallLifecycleEvent {
   const RemoteAnsweredEvent();
 }
 
-/// Dispatched when caller detects receiver has declined via Firestore subscription
 class RemoteDeclinedEvent extends CallLifecycleEvent {
   const RemoteDeclinedEvent();
 }
 
-/// Dispatched when any participant hangs up
 class EndCallEvent extends CallLifecycleEvent {
   const EndCallEvent();
 }
 
-/// Dispatched when ringing exceeds timeout duration
 class CallTimeoutEvent extends CallLifecycleEvent {
   const CallTimeoutEvent();
 }
 
-/// Toggles microphone mute during active call
 class ToggleMicEvent extends CallLifecycleEvent {
   const ToggleMicEvent();
 }
 
-/// Toggles camera active during active call
 class ToggleCameraEvent extends CallLifecycleEvent {
   const ToggleCameraEvent();
 }
 
-/// Switches front/back camera during active video call
 class SwitchCameraEvent extends CallLifecycleEvent {
   const SwitchCameraEvent();
 }
 
-/// Resets the BLoC back to idle state
 class ResetBlocEvent extends CallLifecycleEvent {
   const ResetBlocEvent();
 }
 
-/// Dispatched when a remote user joins the Agora channel
 class RemoteUserJoinedEvent extends CallLifecycleEvent {
   final int uid;
   const RemoteUserJoinedEvent(this.uid);
@@ -95,7 +82,6 @@ class RemoteUserJoinedEvent extends CallLifecycleEvent {
   List<Object?> get props => [uid];
 }
 
-/// Dispatched when a remote user leaves the Agora channel
 class RemoteUserLeftEvent extends CallLifecycleEvent {
   final int uid;
   const RemoteUserLeftEvent(this.uid);

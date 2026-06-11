@@ -41,7 +41,6 @@ class CallRepositoryImpl implements CallRepository {
       await rtcEngine.enableAudio();
     }
 
-    // Set channel options and join
     await rtcEngine.joinChannel(
       token: token,
       channelId: channelId,

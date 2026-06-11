@@ -41,19 +41,17 @@ class _CallManagerState extends State<CallManager> {
     _callLifecycleBloc = CallLifecycleBloc(
       callRepository: _callRepository,
       signalingService: _signalingService,
-      appId: '00ac1a5624af4c70b44aaa96ba3a706e', // Agora App ID
+      appId: '00ac1a5624af4c70b44aaa96ba3a706e', 
       currentUserId: userId,
       currentUserName: username,
       currentUserAvatarUrl: avatarUrl,
     );
 
-    // Start listening to incoming call signaling document in Firestore
     _incomingCallsSubscription = _signalingService.listenToIncomingCalls(userId).listen((sessions) {
       if (sessions.isNotEmpty && _callLifecycleBloc?.state is CallIdleState) {
         final session = sessions.first;
         _callLifecycleBloc!.add(IncomingCallReceivedEvent(session));
-        
-        // Show Incoming Call Screen Overlay
+
         rootNavigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (context) => IncomingCallScreen(session: session),

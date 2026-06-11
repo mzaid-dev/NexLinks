@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -49,7 +50,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     on<RemoteUserLeftEvent>(_onRemoteUserLeftEvent);
   }
 
-  /// Dispatched when the caller initiates a call
   Future<void> _onStartCall(StartCallEvent event, Emitter<CallLifecycleState> emit) async {
     final channelId = 'call_${_currentUserId}_${event.receiverId}';
 
@@ -62,7 +62,7 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     ));
 
     try {
-      // 1. Create a Call Session in Firestore (creates ringing document and triggers FCM)
+
       await _signalingService.createCallSession(
         channelId: channelId,
         callerId: _currentUserId,
@@ -72,10 +72,8 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
         type: event.type,
       );
 
-      // 2. Start a 30-second timeout timer (ringing timeout)
       _startTimeoutTimer();
 
-      // 3. Listen to the Call Session updates to see when B accepts/declines
       _sessionSubscription?.cancel();
       _sessionSubscription = _signalingService.listenToCallSession(channelId).listen((session) {
         if (session == null) return;
@@ -93,13 +91,11 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Dispatched when receiver gets background/FCM call signaling
   void _onIncomingCallReceived(IncomingCallReceivedEvent event, Emitter<CallLifecycleState> emit) {
     emit(CallIncomingRingingState(event.session));
 
     _startTimeoutTimer();
 
-    // Listen to call session status in case caller cancels call (status becomes 'ended' or 'declined')
     _sessionSubscription?.cancel();
     _sessionSubscription = _signalingService.listenToCallSession(event.session.id).listen((session) {
       if (session == null) return;
@@ -110,7 +106,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     });
   }
 
-  /// Dispatched when receiver clicks 'Accept'
   Future<void> _onAcceptCall(AcceptCallEvent event, Emitter<CallLifecycleState> emit) async {
     final currentState = state;
     if (currentState is! CallIncomingRingingState) return;
@@ -119,17 +114,15 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     final session = currentState.session;
 
     try {
-      // 1. Update Firestore call session status to accepted
+
       await _signalingService.acceptCall(session.id);
 
-      // 2. Request microphone and camera permissions
       final hasPermissions = await _requestPermissions(session.type == CallType.video);
       if (!hasPermissions) {
         emit(const CallEndedState('Permission Denied'));
         return;
       }
 
-      // 3. Initialize Agora and Join Channel
       await _callRepository.initialize(appId: _appId);
 
       _callRepository.engine.registerEventHandler(
@@ -145,7 +138,7 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
 
       await _callRepository.joinChannel(
         channelId: session.id,
-        token: '', // using token-less / temp token mode
+        token: '', 
         uid: 0,
         enableVideo: session.type == CallType.video,
       );
@@ -162,7 +155,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Dispatched when caller receives notice that the receiver accepted
   Future<void> _onRemoteAnswered(RemoteAnsweredEvent event, Emitter<CallLifecycleState> emit) async {
     final currentState = state;
     if (currentState is! CallOutgoingRingingState) return;
@@ -170,14 +162,13 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     _stopTimeoutTimer();
 
     try {
-      // 1. Request microphone and camera permissions
+
       final hasPermissions = await _requestPermissions(currentState.type == CallType.video);
       if (!hasPermissions) {
         emit(const CallEndedState('Permission Denied'));
         return;
       }
 
-      // 2. Initialize Agora and Join Channel
       await _callRepository.initialize(appId: _appId);
 
       _callRepository.engine.registerEventHandler(
@@ -210,7 +201,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Dispatched when receiver declines call
   Future<void> _onDeclineCall(DeclineCallEvent event, Emitter<CallLifecycleState> emit) async {
     _stopTimeoutTimer();
     final currentState = state;
@@ -220,13 +210,11 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     emit(const CallEndedState('declined'));
   }
 
-  /// Dispatched when caller detects receiver declined call
   void _onRemoteDeclined(RemoteDeclinedEvent event, Emitter<CallLifecycleState> emit) {
     _stopTimeoutTimer();
     emit(const CallEndedState('declined'));
   }
 
-  /// Dispatched when any participant hangs up
   Future<void> _onEndCall(EndCallEvent event, Emitter<CallLifecycleState> emit) async {
     _stopTimeoutTimer();
     final currentState = state;
@@ -252,7 +240,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     emit(const CallEndedState('ended'));
   }
 
-  /// Dispatched when call ringing times out (no answer)
   Future<void> _onCallTimeout(CallTimeoutEvent event, Emitter<CallLifecycleState> emit) async {
     _stopTimeoutTimer();
     final currentState = state;
@@ -271,7 +258,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     emit(const CallEndedState('no_answer'));
   }
 
-  /// Toggles mic mute state
   Future<void> _onToggleMic(ToggleMicEvent event, Emitter<CallLifecycleState> emit) async {
     final currentState = state;
     if (currentState is CallActiveState) {
@@ -281,7 +267,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Toggles camera mute state
   Future<void> _onToggleCamera(ToggleCameraEvent event, Emitter<CallLifecycleState> emit) async {
     final currentState = state;
     if (currentState is CallActiveState && currentState.isVideoEnabled) {
@@ -291,7 +276,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Switches front/rear camera
   Future<void> _onSwitchCamera(SwitchCameraEvent event, Emitter<CallLifecycleState> emit) async {
     final currentState = state;
     if (currentState is CallActiveState && currentState.isVideoEnabled && !currentState.isCameraMuted) {
@@ -299,7 +283,6 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     }
   }
 
-  /// Resets bloc state
   void _onResetBloc(ResetBlocEvent event, Emitter<CallLifecycleState> emit) {
     _sessionSubscription?.cancel();
     _stopTimeoutTimer();
@@ -322,7 +305,7 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     if (currentState is CallActiveState) {
       final updatedUids = List<int>.from(currentState.remoteUids)..remove(event.uid);
       if (updatedUids.isEmpty) {
-        // If all remote users leave, end the call
+
         add(const EndCallEvent());
       } else {
         emit(currentState.copyWith(remoteUids: updatedUids));
@@ -343,6 +326,7 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
   }
 
   Future<bool> _requestPermissions(bool includeVideo) async {
+    if (kIsWeb) return true;
     final micStatus = await Permission.microphone.request();
     if (includeVideo) {
       final cameraStatus = await Permission.camera.request();

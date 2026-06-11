@@ -84,7 +84,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     try {
       _isOutgoingRinging = true;
       await _ringtonePlayer.setReleaseMode(ReleaseMode.loop);
-      // Telephone ringback tone
+
       await _ringtonePlayer.play(UrlSource(
         'https://assets.mixkit.co/active_storage/sfx/1359/1359-84.wav',
       ));

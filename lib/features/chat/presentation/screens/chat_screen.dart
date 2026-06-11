@@ -271,8 +271,7 @@ class _ChatViewState extends State<ChatView> {
                   ],
                 ),
                 const Spacer(),
-                
-                // Voice Call Button
+
                 GestureDetector(
                   onTap: () {
                     context.read<CallLifecycleBloc>().add(
@@ -312,7 +311,6 @@ class _ChatViewState extends State<ChatView> {
                 ),
                 const SizedBox(width: 10),
 
-                // Video Call Button
                 GestureDetector(
                   onTap: () {
                     context.read<CallLifecycleBloc>().add(

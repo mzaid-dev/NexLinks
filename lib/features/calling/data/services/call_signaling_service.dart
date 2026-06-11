@@ -6,10 +6,8 @@ import 'package:nexlinks/features/calling/data/models/call_session_model.dart';
 class CallSignalingService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Collection reference
   CollectionReference get _calls => _firestore.collection('call_sessions');
 
-  /// Creates a new call session document in Firestore
   Future<CallSession> createCallSession({
     required String channelId,
     required String callerId,
@@ -30,14 +28,12 @@ class CallSignalingService {
     );
 
     await _calls.doc(channelId).set(session.toMap());
-    
-    // Trigger the FCM notification for the receiver
+
     await sendCallFcm(session);
 
     return session;
   }
 
-  /// Listens to a specific call session status changes
   Stream<CallSession?> listenToCallSession(String channelId) {
     return _calls.doc(channelId).snapshots().map((snapshot) {
       if (!snapshot.exists || snapshot.data() == null) return null;
@@ -45,7 +41,6 @@ class CallSignalingService {
     });
   }
 
-  /// Listens to incoming call sessions for the current user
   Stream<List<CallSession>> listenToIncomingCalls(String userId) {
     return _calls
         .where('receiverId', isEqualTo: userId)
@@ -58,7 +53,6 @@ class CallSignalingService {
     });
   }
 
-  /// Accept call: sets status to 'accepted' and adds answered timestamp
   Future<void> acceptCall(String channelId) async {
     await _calls.doc(channelId).update({
       'status': CallStatus.accepted.name,
@@ -66,7 +60,6 @@ class CallSignalingService {
     });
   }
 
-  /// Decline call: sets status to 'declined'
   Future<void> declineCall(String channelId) async {
     await _calls.doc(channelId).update({
       'status': CallStatus.declined.name,
@@ -74,7 +67,6 @@ class CallSignalingService {
     });
   }
 
-  /// End call: sets status to 'ended'
   Future<void> endCall(String channelId) async {
     await _calls.doc(channelId).update({
       'status': CallStatus.ended.name,
@@ -82,7 +74,6 @@ class CallSignalingService {
     });
   }
 
-  /// Timeout call: sets status to 'timeout'
   Future<void> timeoutCall(String channelId) async {
     await _calls.doc(channelId).update({
       'status': CallStatus.timeout.name,
@@ -90,19 +81,15 @@ class CallSignalingService {
     });
   }
 
-  /// Sends FCM notification payload to User B.
-  /// Typically this should be executed via a Cloud Function, but we implement
-  /// the client-side REST call here for completeness and stand-alone capability.
   Future<void> sendCallFcm(CallSession session) async {
     try {
-      // 1. Get the receiver's FCM token from Firestore
+
       final receiverDoc = await _firestore.collection('users').doc(session.receiverId).get();
       if (!receiverDoc.exists) return;
 
       final fcmToken = receiverDoc.data()?['fcmToken'] as String?;
       if (fcmToken == null || fcmToken.isEmpty) return;
 
-      // 2. Prepare payload representing signaling event
       final payload = {
         'to': fcmToken,
         'priority': 'high',
@@ -124,18 +111,16 @@ class CallSignalingService {
         }
       };
 
-      // Note: In modern production projects, you use Firebase Admin SDK (V1 API)
-      // or Cloud Functions. The client code below illustrates direct payload trigger.
       await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'key=YOUR_FCM_SERVER_KEY', // Replaced with Cloud Trigger in production
+          'Authorization': 'key=YOUR_FCM_SERVER_KEY', 
         },
         body: jsonEncode(payload),
       );
     } catch (_) {
-      // Suppress network errors on background/offline calls
+
     }
   }
 }

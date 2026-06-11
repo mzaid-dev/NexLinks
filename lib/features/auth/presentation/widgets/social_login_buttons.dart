@@ -14,8 +14,7 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Show Google login on all platforms except perhaps some specific niche ones
-    // We want it visible on Android, iOS, Web, macOS, Windows, Linux
+
     return Column(
       children: [
         FadeInUp(
