@@ -59,6 +59,8 @@ dependencies:
   logger: ^2.6.2
   animated_text_kit: ^4.3.0
   chiclet: ^1.2.0
+  agora_rtc_engine: ^6.5.4
+  permission_handler: ^12.0.3
 #  glass_kit: ^4.0.2
 
 dev_dependencies:

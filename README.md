@@ -29,6 +29,7 @@
 This project demonstrates **Production-Grade Flutter Development**:
 * **🔐 Secure Auth:** Robust Email/Password authentication flow with "Forgot Password" capability.
 * **💬 Real-time Chat:** Instant messaging powered by Cloud Firestore.
+* **📞 1-to-1 Calling:** Real-time voice and video calling powered by Agora RTC Engine with a glassmorphic floating control bar.
 * **🔔 Smart Notifications:** Unread message indicators and friend request badges.
 * **✨ Modern UI:** Slippery animations, glass cards, and a sleek dark mode.
 * **🏗️ Clean Architecture:** Scalable codebase using Feature-First structure and BLoC for state management.
@@ -49,6 +50,8 @@ This project demonstrates **Production-Grade Flutter Development**:
 * `go_router`: Declarative routing.
 * `cloud_firestore`: Real-time database.
 * `firebase_auth`: User authentication.
+* `agora_rtc_engine`: Ultra-low latency voice & video call streams.
+* `permission_handler`: Granular runtime permissions for audio and video feeds.
 * `animate_do`: Beautiful entrance animations.
 * `another_flushbar`: Elegant in-app notifications.
 
@@ -94,6 +97,7 @@ flutter run
 | **Friend System** | Send, Accept, and Reject connection requests. |
 | **Notifications** | Red dot indicators on avatars and bottom nav for unread messages. |
 | **Profile** | customizable profile with avatar, bio, and expertise tags. |
+| **Voice & Video Calling** | 1-to-1 low-latency audio/video communication with camera switching, mic/video toggles, active timers, and Picture-in-Picture feeds. |
 | **Dark Mode** | Default sleek dark theme with neon accents. |
 
 ## 📂 Project Structure
@@ -103,6 +107,7 @@ lib/
 ├── core/                  # Core utilities, services, and shared widgets
 ├── features/              # Feature-based modules
 │   ├── auth/              # Login, Register, Forgot Password
+│   ├── calling/           # Real-time Voice & Video calling (Agora + BLoC)
 │   ├── chat/              # Chat Logic, UI, and Service
 │   ├── home/              # Dashboard, Explore, Navigation
 │   └── profile/           # User Profile & Settings
