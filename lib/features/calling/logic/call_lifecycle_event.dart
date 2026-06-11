@@ -85,3 +85,21 @@ class SwitchCameraEvent extends CallLifecycleEvent {
 class ResetBlocEvent extends CallLifecycleEvent {
   const ResetBlocEvent();
 }
+
+/// Dispatched when a remote user joins the Agora channel
+class RemoteUserJoinedEvent extends CallLifecycleEvent {
+  final int uid;
+  const RemoteUserJoinedEvent(this.uid);
+
+  @override
+  List<Object?> get props => [uid];
+}
+
+/// Dispatched when a remote user leaves the Agora channel
+class RemoteUserLeftEvent extends CallLifecycleEvent {
+  final int uid;
+  const RemoteUserLeftEvent(this.uid);
+
+  @override
+  List<Object?> get props => [uid];
+}

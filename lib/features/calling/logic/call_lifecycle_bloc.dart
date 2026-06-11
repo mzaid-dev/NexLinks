@@ -45,6 +45,8 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     on<ToggleCameraEvent>(_onToggleCamera);
     on<SwitchCameraEvent>(_onSwitchCamera);
     on<ResetBlocEvent>(_onResetBloc);
+    on<RemoteUserJoinedEvent>(_onRemoteUserJoinedEvent);
+    on<RemoteUserLeftEvent>(_onRemoteUserLeftEvent);
   }
 
   /// Dispatched when the caller initiates a call
@@ -133,10 +135,10 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
       _callRepository.engine.registerEventHandler(
         RtcEngineEventHandler(
           onUserJoined: (connection, remoteUid, elapsed) {
-            _onRemoteUserJoined(remoteUid);
+            add(RemoteUserJoinedEvent(remoteUid));
           },
           onUserOffline: (connection, remoteUid, reason) {
-            _onRemoteUserLeft(remoteUid);
+            add(RemoteUserLeftEvent(remoteUid));
           },
         ),
       );
@@ -181,10 +183,10 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
       _callRepository.engine.registerEventHandler(
         RtcEngineEventHandler(
           onUserJoined: (connection, remoteUid, elapsed) {
-            _onRemoteUserJoined(remoteUid);
+            add(RemoteUserJoinedEvent(remoteUid));
           },
           onUserOffline: (connection, remoteUid, reason) {
-            _onRemoteUserLeft(remoteUid);
+            add(RemoteUserLeftEvent(remoteUid));
           },
         ),
       );
@@ -304,21 +306,21 @@ class CallLifecycleBloc extends Bloc<CallLifecycleEvent, CallLifecycleState> {
     emit(const CallIdleState());
   }
 
-  void _onRemoteUserJoined(int remoteUid) {
+  void _onRemoteUserJoinedEvent(RemoteUserJoinedEvent event, Emitter<CallLifecycleState> emit) {
     final currentState = state;
     if (currentState is CallActiveState) {
       final updatedUids = List<int>.from(currentState.remoteUids);
-      if (!updatedUids.contains(remoteUid)) {
-        updatedUids.add(remoteUid);
+      if (!updatedUids.contains(event.uid)) {
+        updatedUids.add(event.uid);
       }
       emit(currentState.copyWith(remoteUids: updatedUids));
     }
   }
 
-  void _onRemoteUserLeft(int remoteUid) {
+  void _onRemoteUserLeftEvent(RemoteUserLeftEvent event, Emitter<CallLifecycleState> emit) {
     final currentState = state;
     if (currentState is CallActiveState) {
-      final updatedUids = List<int>.from(currentState.remoteUids)..remove(remoteUid);
+      final updatedUids = List<int>.from(currentState.remoteUids)..remove(event.uid);
       if (updatedUids.isEmpty) {
         // If all remote users leave, end the call
         add(const EndCallEvent());
