@@ -127,10 +127,11 @@ class _AppViewState extends State<AppView> {
         Widget wrappedChild = CallManager(
           child: StatusManager(
             child: ConnectivityOverlay(
-            child: GestureDetector(
-              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              behavior: HitTestBehavior.opaque,
-              child: child!,
+              child: GestureDetector(
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                behavior: HitTestBehavior.opaque,
+                child: child!,
+              ),
             ),
           ),
         );

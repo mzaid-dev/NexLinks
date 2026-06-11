@@ -190,7 +190,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                     child: GlassContainer(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                      borderRadius: 30,
+                      borderRadius: BorderRadius.circular(30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -198,7 +198,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AppTactileFeedback(
+                              TactileFeedback(
                                 onTap: () {
                                   context.read<CallLifecycleBloc>().add(const DeclineCallEvent());
                                 },
@@ -233,7 +233,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AppTactileFeedback(
+                              TactileFeedback(
                                 onTap: () {
                                   context.read<CallLifecycleBloc>().add(const AcceptCallEvent());
                                 },

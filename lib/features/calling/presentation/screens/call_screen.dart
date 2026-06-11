@@ -346,7 +346,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             right: 20,
             child: GlassContainer(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              borderRadius: 20,
+              borderRadius: BorderRadius.circular(20),
               child: Row(
                 children: [
                   const Icon(
@@ -528,7 +528,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
   Widget _buildBottomControlBar(CallActiveState state) {
     return GlassContainer(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      borderRadius: 30,
+      borderRadius: BorderRadius.circular(30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
