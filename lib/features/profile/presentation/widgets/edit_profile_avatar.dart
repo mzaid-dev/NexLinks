@@ -1,5 +1,5 @@
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/core/widgets/common/app_avatar.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileAvatar extends StatelessWidget {
@@ -7,29 +7,29 @@ class EditProfileAvatar extends StatelessWidget {
   final String? selectedAvatarUrl;
 
   const EditProfileAvatar({
-    super.key, 
-    required this.user, 
+    super.key,
+    required this.user,
     this.selectedAvatarUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty) 
-        ? selectedAvatarUrl 
+    final avatarUrl =
+        (selectedAvatarUrl != null && selectedAvatarUrl!.isNotEmpty)
+        ? selectedAvatarUrl
         : user.photoURL;
 
     return Center(
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Premium Profile Ring
           Container(
             width: 114,
             height: 114,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [Color(0xFF2563EB), Color(0xFF22D3EE)],
+                colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -42,7 +42,7 @@ class EditProfileAvatar extends StatelessWidget {
               ],
             ),
           ),
-          // Inner Spacer
+
           Container(
             width: 108,
             height: 108,
@@ -51,13 +51,16 @@ class EditProfileAvatar extends StatelessWidget {
               color: Theme.of(context).scaffoldBackgroundColor,
             ),
           ),
-          // App Avatar Image
-          AppAvatar(
-            imageUrl: avatarUrl,
-            customSize: 100,
-            initials: user.username.isNotEmpty ? user.username[0] : '?',
+
+          Hero(
+            tag: 'avatar_${user.id}',
+            child: AppAvatar(
+              imageUrl: avatarUrl,
+              customSize: 100,
+              initials: user.username.isNotEmpty ? user.username[0] : '?',
+            ),
           ),
-          // Edit Icon Overlay
+
           Positioned(
             bottom: 0,
             right: 0,
@@ -66,7 +69,10 @@ class EditProfileAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
                 shape: BoxShape.circle,
-                border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 3),
+                border: Border.all(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: 3,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),

@@ -11,6 +11,7 @@ class MyTextFormField extends StatefulWidget {
   final Widget? suffixIcon;
   final void Function()? onSuffixIconPressed;
   final int? maxLines;
+  final void Function(String)? onChanged;
 
   const MyTextFormField({
     super.key,
@@ -24,6 +25,7 @@ class MyTextFormField extends StatefulWidget {
     this.suffixIcon,
     this.onSuffixIconPressed,
     this.maxLines = 1,
+    this.onChanged,
   });
 
   @override
@@ -77,21 +79,26 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
                 child: IconButton(
                   onPressed: () => setState(() => _isObscured = !_isObscured),
                   icon: Icon(
-                    _isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _isObscured
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               )
             : (widget.suffixIcon != null
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: IconButton(
-                      icon: widget.suffixIcon!,
-                      onPressed: widget.onSuffixIconPressed,
-                    ),
-                  )
-                : null),
-        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: IconButton(
+                        icon: widget.suffixIcon!,
+                        onPressed: widget.onSuffixIconPressed,
+                      ),
+                    )
+                  : null),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 20,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
@@ -101,10 +108,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: colorScheme.primary,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -115,13 +119,11 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: colorScheme.error,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: colorScheme.error, width: 2),
         ),
       ),
       validator: widget.validator,
+      onChanged: widget.onChanged,
     );
   }
 }

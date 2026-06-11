@@ -1,28 +1,28 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_about.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_expertise.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_header.dart';
-import 'package:chat_app/features/profile/presentation/widgets/profile_stats.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_about.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_expertise.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_info_section.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_stats.dart';
 import 'package:flutter/material.dart';
+import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
+import 'package:nexlinks/features/auth/logic/auth_event.dart';
+import 'package:nexlinks/features/profile/presentation/widgets/profile_sliver_header.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:nexlinks/router/route_names.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/features/auth/logic/auth_bloc.dart';
-import 'package:chat_app/features/auth/logic/auth_event.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/features/home/presentation/widgets/profile_connect_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel? user;
   final bool isMe;
 
-  const ProfileScreen({
-    super.key,
-    this.user,
-    this.isMe = false,
-  });
+  const ProfileScreen({super.key, this.user, this.isMe = false});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -34,7 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authService = context.read<AuthService>();
     final firestoreService = context.read<FirestoreService>();
 
-    String? targetUserId = widget.isMe ? authService.currentUserId : widget.user?.id;
+    String? targetUserId = widget.isMe
+        ? authService.currentUserId
+        : widget.user?.id;
     if (targetUserId == null) {
       return const Scaffold(body: AppLoadingIndicator());
     }
@@ -47,45 +49,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final currentUser = authService.currentUser;
 
         return AppBaseView(
-          isLoading: snapshot.connectionState == ConnectionState.waiting && displayUser == null,
+          isLoading:
+              snapshot.connectionState == ConnectionState.waiting &&
+              displayUser == null,
           error: snapshot.hasError ? snapshot.error : null,
-          showGlows: true,
+          showGlows: false,
           child: Scaffold(
-            backgroundColor: Colors.transparent, // Let AppBaseView handle the background
-            body: SafeArea(
-              child: Column(
-                children: [
-                  _buildAppBar(context),
-                  const SizedBox(height: 10),
-                  if (displayUser != null)
-                    Expanded(
-                      child: SingleChildScrollView(
+            backgroundColor: Colors.transparent,
+            body: Stack(
+              children: [
+                if (displayUser != null)
+                  CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverPersistentHeader(
+                        delegate: ProfileSliverHeader(
+                          user: displayUser,
+                          expandedHeight: 280,
+                          topPadding: MediaQuery.of(context).padding.top,
+                        ),
+                        pinned: true,
+                      ),
+
+                      SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            ProfileHeader(
-                              displayUser: displayUser,
-                              isMe: widget.isMe,
-                              currentUserId: currentUser?.uid,
-                            ),
-                            const SizedBox(height: 32),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
                             ProfileStats(
-                              sessions: displayUser.sessionsCount,
+                              sessions: displayUser.projectsCount,
                               successRate: displayUser.successRate,
                               experienceYears: displayUser.experienceYears,
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
+                            ProfileInfoSection(
+                              username: displayUser.username,
+                              role: displayUser.role,
+                            ),
+                            const SizedBox(height: 24),
                             ProfileAbout(bio: displayUser.bio),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
                             ProfileExpertise(expertise: displayUser.expertise),
-                            const SizedBox(height: 40),
-                          ],
+                            const SizedBox(height: 140),
+                          ]),
                         ),
                       ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+
+                _buildFloatingAppBar(context, currentUser),
+
+                if (displayUser != null)
+                  _buildFixedBottomSection(
+                    context,
+                    displayUser,
+                    currentUser?.uid,
+                  ),
+              ],
             ),
           ),
         );
@@ -93,9 +112,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+  Widget _buildFixedBottomSection(
+    BuildContext context,
+    UserModel displayUser,
+    String? currentUserId,
+  ) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          MediaQuery.of(context).padding.bottom + 20,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.0),
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ),
+        ),
+        child: _buildActionButtons(context, displayUser, currentUserId),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(
+    BuildContext context,
+    UserModel displayUser,
+    String? currentUserId,
+  ) {
+    if (widget.isMe) {
+      return FadeInUp(
+        duration: const Duration(milliseconds: 300),
+        child: AppButton(
+          text: "Edit Profile",
+          onPressed: () =>
+              context.push(AppRoutes.editProfile, extra: displayUser),
+          style: AppButtonStyle.primary,
+          height: 52,
+          borderRadius: 20,
+        ),
+      );
+    } else if (currentUserId != null) {
+      return ProfileConnectButton(
+        currentUserId: currentUserId,
+        viewedUserId: displayUser.id,
+        viewedUser: displayUser,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildFloatingAppBar(BuildContext context, dynamic currentUser) {
+    return Positioned(
+      top: MediaQuery.of(context).padding.top + 10,
+      left: 20,
+      right: 20,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -109,45 +190,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             )
           else
-            const SizedBox(width: 40), // Spacer to keep title centered
-          
-          AnimatedTextKit(
-            animatedTexts: [
-              TyperAnimatedText(
-                "Profile",
-                textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
-                speed: const Duration(milliseconds: 100),
-              ),
-            ],
-            totalRepeatCount: 1,
-          ),
-          
-          _buildIconBtn(
-            icon: widget.isMe ? Icons.logout_rounded : Icons.more_vert_rounded,
-            iconColor: widget.isMe ? Colors.redAccent : null,
-            onTap: () {
-              if (widget.isMe) {
-                 context.read<AuthBloc>().add(AuthLogoutRequested());
-              }
-            },
-          ),
+            const SizedBox(width: 44),
+
+          if (widget.isMe)
+            _buildIconBtn(
+              icon: Icons.logout_rounded,
+              iconColor: Colors.redAccent,
+              onTap: () {
+                context.read<AuthBloc>().add(AuthLogoutRequested());
+              },
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap, Color? iconColor}) {
+  Widget _buildIconBtn({
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? iconColor,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.1),
+          ),
         ),
-        child: Icon(icon, color: iconColor ?? Theme.of(context).colorScheme.onSurface, size: 20),
+        child: Icon(
+          icon,
+          color: iconColor ?? Theme.of(context).colorScheme.onSurface,
+          size: 20,
+        ),
       ),
     );
   }

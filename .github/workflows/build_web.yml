@@ -1,0 +1,45 @@
+name: Build Web Artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-web:
+    name: Build Web Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Compress Web
+        run: tar -czvf NexLinks.tar.gz -C build/web .
+
+      - name: Upload Web Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
+          omitBody: true
+          omitName: false
+          omitPrereleaseDuringUpdate: true

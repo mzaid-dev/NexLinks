@@ -1,0 +1,89 @@
+Analyzing chat_app...                                           
+
+  error • The named parameter 'user' isn't defined • lib/features/home/presentation/views/chat_list_view.dart:131:27 • undefined_named_parameter
+  error • The named parameter 'currentUserId' isn't defined • lib/features/home/presentation/views/chat_list_view.dart:132:27 • undefined_named_parameter
+   info • Constructors for public widgets should have a named 'key' parameter • lib/features/home/presentation/views/chat_list_view.dart:148:7 • use_key_in_widget_constructors
+warning • This class (or a class that this class inherits from) is marked as '@immutable', but one or more of its instance fields aren't final: ChatUserTile.import, ChatUserTile.import, ChatUserTile.import • lib/features/home/presentation/views/chat_list_view.dart:148:7 • must_be_immutable
+  error • Missing concrete implementation of 'abstract class StatelessWidget extends Widget.build' • lib/features/home/presentation/views/chat_list_view.dart:148:7 • non_abstract_class_inherits_abstract_member
+  error • The final variable 'user' must be initialized • lib/features/home/presentation/views/chat_list_view.dart:149:19 • final_not_initialized
+  error • The final variable 'currentUserId' must be initialized • lib/features/home/presentation/views/chat_list_view.dart:150:16 • final_not_initialized
+   info • An uninitialized field should have an explicit type annotation • lib/features/home/presentation/views/chat_list_view.dart:151:1 • prefer_typing_uninitialized_variables
+  error • Expected to find ';' • lib/features/home/presentation/views/chat_list_view.dart:151:1 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/home/presentation/views/chat_list_view.dart:151:1 • missing_const_final_var_or_type
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:151:8 • expected_class_member
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:151:38 • expected_class_member
+   info • An uninitialized field should have an explicit type annotation • lib/features/home/presentation/views/chat_list_view.dart:152:1 • prefer_typing_uninitialized_variables
+  error • Expected to find ';' • lib/features/home/presentation/views/chat_list_view.dart:152:1 • expected_token
+  error • The name 'import' is already defined • lib/features/home/presentation/views/chat_list_view.dart:152:1 • duplicate_definition
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/home/presentation/views/chat_list_view.dart:152:1 • missing_const_final_var_or_type
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:152:8 • expected_class_member
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:152:62 • expected_class_member
+   info • An uninitialized field should have an explicit type annotation • lib/features/home/presentation/views/chat_list_view.dart:153:1 • prefer_typing_uninitialized_variables
+  error • Expected to find ';' • lib/features/home/presentation/views/chat_list_view.dart:153:1 • expected_token
+  error • The name 'import' is already defined • lib/features/home/presentation/views/chat_list_view.dart:153:1 • duplicate_definition
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/home/presentation/views/chat_list_view.dart:153:1 • missing_const_final_var_or_type
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:153:8 • expected_class_member
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:153:62 • expected_class_member
+  error • Classes can't be declared inside other classes • lib/features/home/presentation/views/chat_list_view.dart:155:1 • class_in_class
+  error • Expected a class member • lib/features/home/presentation/views/chat_list_view.dart:155:20 • expected_class_member
+   info • The variable name 'StatelessWidget' isn't a lowerCamelCase identifier • lib/features/home/presentation/views/chat_list_view.dart:155:28 • non_constant_identifier_names
+  error • Methods must have an explicit list of parameters • lib/features/home/presentation/views/chat_list_view.dart:155:28 • missing_method_parameters
+  error • The constructor being called isn't a const constructor • lib/features/home/presentation/views/chat_list_view.dart:158:3 • const_with_non_const
+  error • Too many positional arguments: 0 expected, but 1 found • lib/features/home/presentation/views/chat_list_view.dart:158:22 • extra_positional_arguments
+   info • 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required • lib/features/home/presentation/views/chat_list_view.dart:158:34 • deprecated_member_use
+  error • Expected to find ',' • lib/features/home/presentation/views/chat_list_view.dart:158:43 • expected_token
+   info • 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required • lib/features/home/presentation/views/chat_list_view.dart:158:54 • deprecated_member_use
+  error • Expected to find ',' • lib/features/home/presentation/views/chat_list_view.dart:158:63 • expected_token
+warning • The declaration 'build' isn't referenced • lib/features/home/presentation/views/chat_list_view.dart:161:10 • unused_element
+  error • The final variable 'currentUserId' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:163:46 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:163:61 • read_potentially_unassigned_final
+  error • The method 'ChicletAnimatedButton' isn't defined for the type 'ChatUserTile' • lib/features/home/presentation/views/chat_list_view.dart:167:14 • undefined_method
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:168:62 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:180:31 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:182:31 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:182:58 • read_potentially_unassigned_final
+  error • The final variable 'currentUserId' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:185:76 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:210:22 • read_potentially_unassigned_final
+  error • The final variable 'currentUserId' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:213:76 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:218:33 • read_potentially_unassigned_final
+  error • The final variable 'user' can't be read because it's potentially unassigned at this point • lib/features/home/presentation/views/chat_list_view.dart:218:99 • read_potentially_unassigned_final
+  error • Expected to find ')' • lib/features/home/presentation/views/chat_list_view.dart:232:6 • expected_token
+  error • Expected to find '}' • lib/features/home/presentation/views/chat_list_view.dart:235:1 • expected_token
+warning • Unused import: 'package:chat_app/core/widgets/common/tactile_feedback.dart' • lib/features/home/presentation/views/explore_view.dart:15:8 • unused_import
+  error • Undefined name 'import' • lib/features/home/presentation/views/home_view.dart:59:1 • undefined_identifier
+  error • Expected to find ',' • lib/features/home/presentation/views/home_view.dart:59:8 • expected_token
+  error • The element type 'String' can't be assigned to the list type 'Widget' • lib/features/home/presentation/views/home_view.dart:59:8 • list_element_type_not_assignable
+  error • Expected to find ']' • lib/features/home/presentation/views/home_view.dart:59:38 • expected_token
+  error • Directives must appear before any declarations • lib/features/home/presentation/views/home_view.dart:251:1 • directive_after_declaration
+  error • Directives must appear before any declarations • lib/features/home/presentation/views/home_view.dart:252:1 • directive_after_declaration
+  error • Target of URI doesn't exist: 'package:chat_app/core/widgets/common/glass_card.dart' • lib/features/home/presentation/views/home_view.dart:252:8 • uri_does_not_exist
+  error • Directives must appear before any declarations • lib/features/home/presentation/views/home_view.dart:253:1 • directive_after_declaration
+  error • Expected to find ';' • lib/features/home/presentation/widgets/custom_bottom_nav.dart:112:1 • expected_token
+  error • Undefined name 'import' • lib/features/home/presentation/widgets/custom_bottom_nav.dart:112:1 • undefined_identifier
+  error • The method 'ChicletAnimatedButton' isn't defined for the type '_NavItem' • lib/features/home/presentation/widgets/custom_bottom_nav.dart:115:12 • undefined_method
+  error • Undefined name 'import' • lib/features/home/presentation/widgets/notification_panel.dart:131:1 • undefined_identifier
+  error • Expected to find ',' • lib/features/home/presentation/widgets/notification_panel.dart:131:8 • expected_token
+  error • The element type 'String' can't be assigned to the list type 'Widget' • lib/features/home/presentation/widgets/notification_panel.dart:131:8 • list_element_type_not_assignable
+  error • Expected to find ']' • lib/features/home/presentation/widgets/notification_panel.dart:131:38 • expected_token
+warning • The value of the field '_isLoading' isn't used • lib/features/profile/presentation/screens/edit_profile_screen.dart:34:8 • unused_field
+warning • The declaration '_selectAvatar' isn't referenced • lib/features/profile/presentation/screens/edit_profile_screen.dart:60:16 • unused_element
+warning • The declaration '_saveProfile' isn't referenced • lib/features/profile/presentation/screens/edit_profile_screen.dart:75:16 • unused_element
+  error • Undefined name 'import' • lib/features/profile/presentation/screens/edit_profile_screen.dart:164:1 • undefined_identifier
+  error • Expected to find ',' • lib/features/profile/presentation/screens/edit_profile_screen.dart:164:8 • expected_token
+  error • The element type 'String' can't be assigned to the list type 'Widget' • lib/features/profile/presentation/screens/edit_profile_screen.dart:164:8 • list_element_type_not_assignable
+  error • Expected to find ']' • lib/features/profile/presentation/screens/edit_profile_screen.dart:164:38 • expected_token
+warning • The declaration '_buildIdentitySection' isn't referenced • lib/features/profile/presentation/screens/edit_profile_screen.dart:230:10 • unused_element
+warning • The declaration '_buildAboutSection' isn't referenced • lib/features/profile/presentation/screens/edit_profile_screen.dart:241:10 • unused_element
+warning • The declaration '_buildSectionHeader' isn't referenced • lib/features/profile/presentation/screens/edit_profile_screen.dart:257:10 • unused_element
+  error • Expected to find ';' • lib/features/profile/presentation/widgets/avatar_selector_sheet.dart:94:1 • expected_token
+  error • Undefined name 'import' • lib/features/profile/presentation/widgets/avatar_selector_sheet.dart:94:1 • undefined_identifier
+  error • The method 'ChicletAnimatedButton' isn't defined for the type 'AvatarSelectorSheet' • lib/features/profile/presentation/widgets/avatar_selector_sheet.dart:98:30 • undefined_method
+  error • Undefined name 'import' • lib/features/profile/presentation/widgets/edit_profile_header.dart:14:1 • undefined_identifier
+  error • Expected to find ',' • lib/features/profile/presentation/widgets/edit_profile_header.dart:14:8 • expected_token
+  error • The element type 'String' can't be assigned to the list type 'Widget' • lib/features/profile/presentation/widgets/edit_profile_header.dart:14:8 • list_element_type_not_assignable
+  error • Expected to find ']' • lib/features/profile/presentation/widgets/edit_profile_header.dart:14:38 • expected_token
+  error • Undefined name 'import' • lib/features/profile/presentation/widgets/profile_header.dart:99:1 • undefined_identifier
+  error • Expected to find ',' • lib/features/profile/presentation/widgets/profile_header.dart:99:8 • expected_token
+  error • The element type 'String' can't be assigned to the list type 'Widget' • lib/features/profile/presentation/widgets/profile_header.dart:99:8 • list_element_type_not_assignable
+  error • Expected to find ']' • lib/features/profile/presentation/widgets/profile_header.dart:99:38 • expected_token
+

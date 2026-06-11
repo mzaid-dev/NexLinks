@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF2563EB); // NexLink Blue
-  static const Color secondaryColor = Color(0xFF22D3EE); // NexLink Cyan
+  static const Color primaryColor = Color(0xFF2563EB);
+  static const Color secondaryColor = Color(0xFF22D3EE);
   static const Color accentColor = Color(0xFF22D3EE);
-  static const Color darkBgColor = Color(0xFF000000); // Pure Black
-  static const Color surfaceColor = Color(0xFF0D0D0D); // Premium surface
+  static const Color darkBgColor = Color(0xFF000000);
+  static const Color surfaceColor = Color(0xFF0D0D0D);
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color errorColor = Color(0xFFE17055);
 
@@ -23,35 +23,36 @@ class AppTheme {
       primary: primaryColor,
       secondary: secondaryColor,
       surface: surfaceColor,
-      onPrimary: Colors.white,          
+      onPrimary: Colors.white,
       onSecondary: Colors.white,
       error: errorColor,
       onSurface: textPrimary,
     ),
 
-    textTheme: GoogleFonts.interTextTheme().copyWith(
-      headlineLarge: GoogleFonts.inter(
-        fontWeight: FontWeight.w900,
-        letterSpacing: -1.2,
-        color: textPrimary,
-      ),
-      headlineMedium: GoogleFonts.inter(
-        fontWeight: FontWeight.w800,
-        letterSpacing: -1.0,
-        color: textPrimary,
-      ),
-      titleLarge: GoogleFonts.inter(
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.5,
-        color: textPrimary,
-      ),
-    ).apply(
-       bodyColor: textPrimary,
-       displayColor: textPrimary,
-    ),
+    textTheme: GoogleFonts.interTextTheme()
+        .copyWith(
+          headlineLarge: GoogleFonts.inter(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -1.2,
+            color: textPrimary,
+          ),
+          headlineMedium: GoogleFonts.inter(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -1.0,
+            color: textPrimary,
+          ),
+          titleLarge: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+            color: textPrimary,
+          ),
+        )
+        .apply(bodyColor: textPrimary, displayColor: textPrimary),
 
     appBarTheme: const AppBarTheme(
       backgroundColor: darkBgColor,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
@@ -70,10 +71,7 @@ class AppTheme {
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(32)),
         ),
-        textStyle: GoogleFonts.inter(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
+        textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16),
       ),
     ),
     cardTheme: CardThemeData(

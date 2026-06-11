@@ -1,0 +1,51 @@
+name: Build Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk NexLinks.apk
+
+      - name: Upload Android Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
+          omitBody: true
+          omitName: false
+          omitPrereleaseDuringUpdate: true

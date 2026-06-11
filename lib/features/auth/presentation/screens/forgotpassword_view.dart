@@ -1,12 +1,12 @@
-import 'package:chat_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:chat_app/core/widgets/common/my_textformfield.dart';
-import 'package:chat_app/core/widgets/common/mysnakebar.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:nexlinks/core/utils/app_validators.dart';
+import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
+import 'package:nexlinks/core/widgets/common/my_textformfield.dart';
+import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -30,15 +30,27 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        await context.read<AuthRepository>().sendPasswordResetEmail(_emailController.text.trim());
-        if(!mounted) return;
-        MySnackBar.show(context: context, title: "Email Sent", message: "Check your email to reset your password.", isError: false);
+        await context.read<AuthRepository>().sendPasswordResetEmail(
+          _emailController.text.trim(),
+        );
+        if (!mounted) return;
+        MySnackBar.show(
+          context: context,
+          title: "Email Sent",
+          message: "Check your email to reset your password.",
+          isError: false,
+        );
         Navigator.pop(context);
       } catch (e) {
-        if(!mounted) return;
-        MySnackBar.show(context: context, title: "Error", message: e.toString(), isError: true);
+        if (!mounted) return;
+        MySnackBar.show(
+          context: context,
+          title: "Error",
+          message: e.toString(),
+          isError: true,
+        );
       } finally {
-        if(mounted) setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -65,14 +77,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 children: [
                   FadeInUp(
                     duration: const Duration(milliseconds: 800),
-                    child: Text("Reset Password", style: Theme.of(context).textTheme.headlineMedium),
+                    child: Text(
+                      "Reset Password",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   FadeInUp(
                     duration: const Duration(milliseconds: 800),
                     child: Text(
                       "Enter your email to receive a password reset link.",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -85,11 +104,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       hintText: 'Enter your email',
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: const Icon(Icons.email_outlined),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) return 'Please enter your email';
-                        if (!EmailValidator.validate(value!)) return 'Please enter a valid email';
-                        return null;
-                      },
+                      validator: AppValidators.validateEmail,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -120,7 +135,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         child: Text(
           text,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
             fontSize: 15,
             letterSpacing: 0.2,

@@ -1,16 +1,19 @@
-import 'package:chat_app/core/widgets/common/app_loading_indicator.dart';
+import 'package:nexlinks/core/widgets/common/app_loading_indicator.dart';
 import 'dart:async';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
-import 'package:chat_app/features/chat/data/chat_service.dart';
-import 'package:chat_app/features/chat/data/models/chat_message.dart';
-import 'package:chat_app/features/chat/logic/chat_cubit.dart';
-import 'package:chat_app/features/chat/presentation/widgets/chat_input_area.dart';
-import 'package:chat_app/features/chat/presentation/widgets/chat_message_bubble.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/chat/data/chat_service.dart';
+import 'package:nexlinks/features/chat/data/models/chat_message.dart';
+import 'package:nexlinks/features/chat/logic/chat_cubit.dart';
+import 'package:nexlinks/features/chat/presentation/widgets/chat_input_area.dart';
+import 'package:nexlinks/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chat_app/core/widgets/common/app_base_view.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/widgets/common/app_base_view.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/widgets/common/gradient_text.dart';
+import 'package:nexlinks/core/widgets/common/app_avatar.dart';
+import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -39,6 +42,7 @@ class _ChatViewState extends State<ChatView> {
   final _messageController = TextEditingController();
   final _chatService = ChatService();
   final ScrollController _scrollController = ScrollController();
+  late final ReactionsController _reactionsController;
   late String _chatId;
   late String _currentUserId;
   StreamSubscription? _messageSubscription;
@@ -47,12 +51,11 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthService>().currentUserId!;
+    _reactionsController = ReactionsController(currentUserId: _currentUserId);
     _chatId = _chatService.getChatRoomId(_currentUserId, widget.targetUser.id);
-    
-    // Initial mark as read
+
     context.read<ChatCubit>().markMessagesAsRead(_chatId, _currentUserId);
 
-    // Listen to messages and mark as read in real-time
     _messageSubscription = _chatService.getMessages(_chatId).listen((messages) {
       if (mounted) {
         context.read<ChatCubit>().markMessagesAsRead(_chatId, _currentUserId);
@@ -69,7 +72,7 @@ class _ChatViewState extends State<ChatView> {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -84,7 +87,12 @@ class _ChatViewState extends State<ChatView> {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
 
-    context.read<ChatCubit>().sendMessage(_chatId, text, _currentUserId, widget.targetUser.id);
+    context.read<ChatCubit>().sendMessage(
+      _chatId,
+      text,
+      _currentUserId,
+      widget.targetUser.id,
+    );
     _messageController.clear();
     _scrollToBottom();
   }
@@ -92,21 +100,28 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return AppBaseView(
-      showGlows: true,
+      showGlows: false,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            // Custom Header
             _buildChatHeader(context),
 
-            // Messages
             Expanded(
               child: StreamBuilder<List<ChatMessage>>(
                 stream: _chatService.getMessages(_chatId),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
-                  if (snapshot.connectionState == ConnectionState.waiting) return const AppLoadingIndicator();
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error: ${snapshot.error}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const AppLoadingIndicator();
+                  }
 
                   final messages = snapshot.data ?? [];
 
@@ -114,23 +129,28 @@ class _ChatViewState extends State<ChatView> {
                     controller: _scrollController,
                     reverse: true,
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
                       final isMe = message.senderId == _currentUserId;
-                      return ChatMessageBubble(message: message, isMe: isMe);
+                      return ChatMessageBubble(
+                        message: message,
+                        isMe: isMe,
+                        chatId: _chatId,
+                        currentUserId: _currentUserId,
+                        reactionsController: _reactionsController,
+                      );
                     },
                   );
                 },
               ),
             ),
 
-            // Input Area
-            ChatInputArea(
-              controller: _messageController,
-              onSend: _sendMessage,
-            ),
+            ChatInputArea(controller: _messageController, onSend: _sendMessage),
           ],
         ),
       ),
@@ -139,7 +159,9 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _buildChatHeader(BuildContext context) {
     return StreamBuilder<UserModel>(
-      stream: context.read<FirestoreService>().getUserStream(widget.targetUser.id),
+      stream: context.read<FirestoreService>().getUserStream(
+        widget.targetUser.id,
+      ),
       builder: (context, snapshot) {
         final user = snapshot.data ?? widget.targetUser;
         return SafeArea(
@@ -153,81 +175,93 @@ class _ChatViewState extends State<ChatView> {
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.05),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.1),
+                      ),
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                user.photoURL != null && user.photoURL!.isNotEmpty
-                ? Container(
-                  padding: const EdgeInsets.all(1.5),
-                  decoration: BoxDecoration(
+
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF2979FF).withValues(alpha: 0.3),
-                        blurRadius: 6,
-                        spreadRadius: 1,
-                      )
-                    ]
                   ),
-                  child: Hero(
-                    tag: 'avatar_${user.id}',
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                      backgroundImage: NetworkImage(user.photoURL!),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
-                  ),
-                )
-                : Hero(
-                    tag: 'avatar_${user.id}',
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF2979FF), Color(0xFF00FF94)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        user.username.isNotEmpty ? user.username[0].toUpperCase() : '?', 
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                    padding: const EdgeInsets.all(1.5),
+                    child: Hero(
+                      tag: 'avatar_${user.id}',
+                      child: AppAvatar(
+                        imageUrl: user.photoURL,
+                        customSize: 32,
+                        initials: user.username.isNotEmpty
+                            ? user.username[0]
+                            : '?',
                       ),
                     ),
                   ),
+                ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      user.username,
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    Hero(
+                      tag: 'name_hero_${user.id}',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: AppGradientText(
+                          user.username,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Row(
                       children: [
                         Container(
-                          width: 6, height: 6,
+                          width: 6,
+                          height: 6,
                           decoration: BoxDecoration(
-                            color: user.isOnline ? const Color(0xFF00F0FF) : Colors.grey,
+                            color: user.isOnline
+                                ? const Color(0xFF00F0FF)
+                                : Colors.grey,
                             shape: BoxShape.circle,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(user.isOnline ? "Online" : "Offline", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11)),
+                        Text(
+                          user.isOnline ? "Online" : "Offline",
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -237,7 +271,7 @@ class _ChatViewState extends State<ChatView> {
             ),
           ),
         );
-      }
+      },
     );
   }
 }

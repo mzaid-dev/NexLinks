@@ -1,0 +1,56 @@
+name: Build iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Disable Signing Requirements
+        # This removes hardcoded Team IDs that cause CI builds to fail even with --no-codesign
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = [A-Z0-9]*;//g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [A-Za-z0-9_-]*;//g' ios/Runner.xcodeproj/project.pbxproj
+
+      - name: Build iOS (No Codesign)
+        # We explicitly set COMPILER_INDEX_STORE_ENABLE=NO to speed up and avoid potential CI indexer issues
+        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
+
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r NexLinks.ipa Payload
+          rm -rf Payload
+
+      - name: Upload iOS Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.ipa"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
+          omitBody: true
+          omitName: false
+          omitPrereleaseDuringUpdate: true

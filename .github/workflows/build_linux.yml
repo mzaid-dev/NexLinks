@@ -1,0 +1,50 @@
+name: Build Linux
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Linux Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev libjsoncpp-dev
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Linux
+        run: flutter build linux --release
+
+      - name: Compress Linux Build
+        run: tar -czvf NexLinks.tar.gz -C build/linux/x64/release/bundle .
+
+      - name: Upload Linux Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
+          omitBody: true
+          omitName: false
+          omitPrereleaseDuringUpdate: true

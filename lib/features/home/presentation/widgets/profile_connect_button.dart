@@ -1,27 +1,26 @@
-import 'package:chat_app/core/widgets/common/app_button.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/core/widgets/common/app_button.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chat_app/router/route_names.dart';
+import 'package:nexlinks/router/route_names.dart';
 
 class ProfileConnectButton extends StatelessWidget {
   final String currentUserId;
   final String viewedUserId;
-  final UserModel? viewedUser; // Optional: passed to navigate to chat if needed immediately
+  final UserModel? viewedUser;
 
   const ProfileConnectButton({
-    super.key, 
-    required this.currentUserId, 
+    super.key,
+    required this.currentUserId,
     required this.viewedUserId,
-    this.viewedUser
+    this.viewedUser,
   });
 
   @override
   Widget build(BuildContext context) {
-    // If viewing own profile, hide button or show Edit (but user specifically asked for relationship logic)
     if (currentUserId == viewedUserId) return const SizedBox.shrink();
 
     final firestoreService = context.read<FirestoreService>();
@@ -32,8 +31,7 @@ class ProfileConnectButton extends StatelessWidget {
         if (!userSnapshot.hasData) return const SizedBox.shrink();
 
         final currentUser = userSnapshot.data!;
-        
-        // 1. Check if Already Friends
+
         if (currentUser.friends.contains(viewedUserId)) {
           return _buildButton(
             context: context,
@@ -47,17 +45,33 @@ class ProfileConnectButton extends StatelessWidget {
           );
         }
 
-        // 2. Check Friend Requests
         return StreamBuilder<DocumentSnapshot>(
-          stream: firestoreService.getFriendRequestStream(currentUserId, viewedUserId),
+          stream: firestoreService.getFriendRequestStream(
+            currentUserId,
+            viewedUserId,
+          ),
           builder: (context, requestSnapshot) {
-            bool isLoading = requestSnapshot.connectionState == ConnectionState.waiting;
+            bool isLoading =
+                requestSnapshot.connectionState == ConnectionState.waiting;
             if (isLoading && !requestSnapshot.hasData) {
-               return Container(
-                 height: 48, width: 48,
-                 decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                 child: const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))),
-               );
+              return Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              );
             }
 
             if (requestSnapshot.hasData && requestSnapshot.data!.exists) {
@@ -68,35 +82,39 @@ class ProfileConnectButton extends StatelessWidget {
 
               if (status == 'pending') {
                 if (fromId == currentUserId) {
-                  // State 2: Request Sent (Pending)
                   return _buildButton(
                     context: context,
                     label: "Pending",
                     icon: Icons.hourglass_empty_rounded,
                     isOutlined: true,
-                    onTap: () {}, // No action
+                    onTap: () {},
                   );
                 } else {
-                  // State 3: Request Received (Accept)
                   return _buildButton(
                     context: context,
                     label: "Accept Request",
                     icon: Icons.check_rounded,
                     onTap: () async {
-                      await firestoreService.acceptFriendRequest(requestDoc.id, currentUserId, viewedUserId);
+                      await firestoreService.acceptFriendRequest(
+                        requestDoc.id,
+                        currentUserId,
+                        viewedUserId,
+                      );
                     },
                   );
                 }
               }
             }
 
-            // State 1: Not Connected
             return _buildButton(
               context: context,
               label: "Connect",
               icon: Icons.person_add_rounded,
               onTap: () async {
-                await firestoreService.sendFriendRequest(currentUserId, viewedUserId);
+                await firestoreService.sendFriendRequest(
+                  currentUserId,
+                  viewedUserId,
+                );
               },
             );
           },
@@ -115,7 +133,11 @@ class ProfileConnectButton extends StatelessWidget {
     return AppButton(
       text: label,
       onPressed: onTap,
-      style: isOutlined ? AppButtonStyle.outlined : (label == "Accept Request" ? AppButtonStyle.secondary : AppButtonStyle.primary),
+      style: isOutlined
+          ? AppButtonStyle.outlined
+          : (label == "Accept Request"
+                ? AppButtonStyle.secondary
+                : AppButtonStyle.primary),
       icon: icon,
       width: 160,
       height: 48,

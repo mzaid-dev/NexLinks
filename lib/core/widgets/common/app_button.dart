@@ -12,6 +12,8 @@ class AppButton extends StatelessWidget {
   final double borderRadius;
   final bool isLoading;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   const AppButton({
     super.key,
@@ -23,6 +25,8 @@ class AppButton extends StatelessWidget {
     this.borderRadius = 16,
     this.isLoading = false,
     this.icon,
+    this.backgroundColor,
+    this.textColor,
   });
 
   @override
@@ -31,26 +35,40 @@ class AppButton extends StatelessWidget {
 
     Color buttonColor;
     Color? shadowColor;
-    Color textColor = Colors.white;
+    Color contentColor = Colors.white;
 
     switch (style) {
       case AppButtonStyle.primary:
-        buttonColor = const Color(0xFF2563EB); // Royal Blue
-        shadowColor = const Color(0xFF1E40AF);
+        buttonColor = const Color(0xFF2979FF);
+        shadowColor = const Color(0xFF1C54B2);
         break;
       case AppButtonStyle.secondary:
-        buttonColor = const Color(0xFF22D3EE); // Cyan
-        shadowColor = const Color(0xFF0891B2);
+        buttonColor = const Color(0xFF00FF94);
+        shadowColor = const Color(0xFF00C774);
         break;
       case AppButtonStyle.outlined:
         buttonColor = Colors.white;
         shadowColor = Colors.grey[300];
-        textColor = colorScheme.primary;
+        contentColor = colorScheme.primary;
         break;
       case AppButtonStyle.danger:
         buttonColor = Colors.redAccent;
         shadowColor = Colors.red[900];
         break;
+    }
+
+    if (backgroundColor != null) {
+      buttonColor = backgroundColor!;
+
+      shadowColor = HSLColor.fromColor(buttonColor)
+          .withLightness(
+            (HSLColor.fromColor(buttonColor).lightness - 0.15).clamp(0.0, 1.0),
+          )
+          .toColor();
+    }
+
+    if (textColor != null) {
+      contentColor = textColor!;
     }
 
     if (onPressed == null || isLoading) {
@@ -78,13 +96,13 @@ class AppButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, color: textColor, size: 20),
+                    Icon(icon, color: contentColor, size: 20),
                     const SizedBox(width: 8),
                   ],
                   Text(
                     text,
                     style: TextStyle(
-                      color: textColor,
+                      color: contentColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,

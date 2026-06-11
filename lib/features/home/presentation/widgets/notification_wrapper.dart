@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:chat_app/core/services/auth_service.dart';
-import 'package:chat_app/core/services/firestoreservice.dart';
-import 'package:chat_app/core/services/notification_service.dart';
+import 'package:nexlinks/core/services/auth_service.dart';
+import 'package:nexlinks/core/services/firestoreservice.dart';
+import 'package:nexlinks/core/services/notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +14,8 @@ class NotificationWrapper extends StatefulWidget {
   State<NotificationWrapper> createState() => _NotificationWrapperState();
 }
 
-class _NotificationWrapperState extends State<NotificationWrapper> with WidgetsBindingObserver {
+class _NotificationWrapperState extends State<NotificationWrapper>
+    with WidgetsBindingObserver {
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
   final NotificationService _notificationService = NotificationService();
   StreamSubscription<QuerySnapshot>? _messageSubscription;
@@ -47,61 +48,62 @@ class _NotificationWrapperState extends State<NotificationWrapper> with WidgetsB
   void _listenForMessages() {
     final currentUserId = context.read<AuthService>().currentUserId;
     if (currentUserId == null) return;
-    
-    // Use collectionGroup to listen to messages across ALL chats
-    // Requires 'receiverId' to be present on messages.
+
     _messageSubscription = FirebaseFirestore.instance
         .collectionGroup('messages')
         .where('receiverId', isEqualTo: currentUserId)
-        .where('isRead', isEqualTo: false) // Efficient: Only listen to unread
+        .where('isRead', isEqualTo: false)
         .snapshots()
-        .listen((snapshot) {
-      for (var change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.added) {
-          final data = change.doc.data() as Map<String, dynamic>;
-          final timestamp = data['timestamp'] as Timestamp?;
-          
-          if (timestamp != null && timestamp.compareTo(_startTime) > 0) {
-             // Only show notification if App is NOT in foreground
-             if (_appLifecycleState != AppLifecycleState.resumed) {
-                _notificationService.showNotification(
-                  id: change.doc.hashCode,
-                  title: "New Message",
-                  body: data['text'] ?? "You have a new message",
-                );
-             }
-          }
-        }
-      }
-    }, onError: (error) {
-       debugPrint("NotificationWrapper Error (Messages): $error");
-    });
+        .listen(
+          (snapshot) {
+            for (var change in snapshot.docChanges) {
+              if (change.type == DocumentChangeType.added) {
+                final data = change.doc.data() as Map<String, dynamic>;
+                final timestamp = data['timestamp'] as Timestamp?;
+
+                if (timestamp != null && timestamp.compareTo(_startTime) > 0) {
+                  if (_appLifecycleState != AppLifecycleState.resumed) {
+                    _notificationService.showNotification(
+                      id: change.doc.hashCode,
+                      title: "New Message",
+                      body: data['text'] ?? "You have a new message",
+                    );
+                  }
+                }
+              }
+            }
+          },
+          onError: (error) {
+            debugPrint("NotificationWrapper Error (Messages): $error");
+          },
+        );
   }
 
   void _listenForFriendRequests() {
     final currentUserId = context.read<AuthService>().currentUserId;
     if (currentUserId == null) return;
-    
-    _requestSubscription = context.read<FirestoreService>()
+
+    _requestSubscription = context
+        .read<FirestoreService>()
         .getIncomingRequestsStream(currentUserId)
         .listen((snapshot) {
-      for (var change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.added) {
-          final data = change.doc.data() as Map<String, dynamic>;
-          final timestamp = data['timestamp'] as Timestamp?;
-          
-          if (timestamp != null && timestamp.compareTo(_startTime) > 0) {
-             if (_appLifecycleState != AppLifecycleState.resumed) {
-                _notificationService.showNotification(
-                  id: change.doc.hashCode,
-                  title: "New Connection Request",
-                  body: "Someone wants to connect with you!",
-                );
-             }
+          for (var change in snapshot.docChanges) {
+            if (change.type == DocumentChangeType.added) {
+              final data = change.doc.data() as Map<String, dynamic>;
+              final timestamp = data['timestamp'] as Timestamp?;
+
+              if (timestamp != null && timestamp.compareTo(_startTime) > 0) {
+                if (_appLifecycleState != AppLifecycleState.resumed) {
+                  _notificationService.showNotification(
+                    id: change.doc.hashCode,
+                    title: "New Connection Request",
+                    body: "Someone wants to connect with you!",
+                  );
+                }
+              }
+            }
           }
-        }
-      }
-    });
+        });
   }
 
   @override

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:chat_app/core/widgets/common/slide_animation.dart';
-import 'package:chat_app/core/widgets/common/app_status_wrapper.dart';
-import 'package:chat_app/core/services/connectivity_service.dart';
-import 'package:chat_app/core/widgets/common/no_internet_banner.dart';
+import 'package:nexlinks/core/widgets/common/slide_animation.dart';
+import 'package:nexlinks/core/widgets/common/app_status_wrapper.dart';
+import 'package:nexlinks/core/services/connectivity_service.dart';
+import 'package:nexlinks/core/widgets/common/no_internet_banner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppBaseView extends StatelessWidget {
@@ -29,55 +29,33 @@ class AppBaseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
-    return SlideAnimation(
-      child: Container(
-        color: bgColor,
-        child: Stack(
-          children: [
-            if (showGlows) ...[
-              _buildGlow(
-                top: -100, right: -100, 
-                color: const Color(0xFF2563EB).withValues(alpha: 0.12)
+    final bgColor =
+        backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    return Material(
+      color: Colors.transparent,
+      child: SlideAnimation(
+        child: Container(
+          color: bgColor,
+          child: Stack(
+            children: [
+              AppStatusWrapper(
+                isLoading: isLoading,
+                error: error,
+                isEmpty: isEmpty,
+                onRetry: onRetry,
+                emptyMessage: emptyMessage,
+                child: child,
               ),
-              _buildGlow(
-                bottom: -100, left: -100, 
-                color: const Color(0xFF22D3EE).withValues(alpha: 0.08)
+              StreamBuilder<ConnectivityStatus>(
+                stream: context.read<ConnectivityService>().statusStream,
+                builder: (context, snapshot) {
+                  if (snapshot.data == ConnectivityStatus.offline) {
+                    return const NoInternetBanner();
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ],
-            AppStatusWrapper(
-              isLoading: isLoading,
-              error: error,
-              isEmpty: isEmpty,
-              onRetry: onRetry,
-              emptyMessage: emptyMessage,
-              child: child,
-            ),
-            StreamBuilder<ConnectivityStatus>(
-              stream: context.read<ConnectivityService>().statusStream,
-              builder: (context, snapshot) {
-                if (snapshot.data == ConnectivityStatus.offline) {
-                  return const NoInternetBanner();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlow({double? top, double? right, double? bottom, double? left, required Color color}) {
-    return Positioned(
-      top: top, right: right, bottom: bottom, left: left,
-      child: Container(
-        width: 350,
-        height: 350,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, Colors.transparent],
           ),
         ),
       ),

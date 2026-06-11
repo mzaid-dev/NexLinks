@@ -19,9 +19,10 @@ class MySnackBar {
       isDismissible: true,
       message: message,
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 30,right: 30,top: 20,bottom: 20),
+      padding: const EdgeInsets.only(left: 30, right: 30, top: 20, bottom: 20),
       borderRadius: BorderRadius.circular(18),
-      backgroundColor: backgroundColor ??
+      backgroundColor:
+          backgroundColor ??
           (isError ? Colors.red.shade700 : Colors.green.shade700),
       duration: duration,
       flushbarPosition: position,
@@ -34,7 +35,6 @@ class MySnackBar {
 
         size: 42,
         fontWeight: FontWeight.w500,
-
       ),
       messageColor: textColor ?? Colors.white,
       titleColor: textColor ?? Colors.white,

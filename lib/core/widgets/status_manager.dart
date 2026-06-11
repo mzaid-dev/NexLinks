@@ -11,7 +11,8 @@ class StatusManager extends StatefulWidget {
   State<StatusManager> createState() => _StatusManagerState();
 }
 
-class _StatusManagerState extends State<StatusManager> with WidgetsBindingObserver {
+class _StatusManagerState extends State<StatusManager>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -31,9 +32,9 @@ class _StatusManagerState extends State<StatusManager> with WidgetsBindingObserv
     debugPrint("App Lifecycle State: $state");
     if (state == AppLifecycleState.resumed) {
       _updateStatus(true);
-    } else if (state == AppLifecycleState.paused || 
-               state == AppLifecycleState.detached || 
-               state == AppLifecycleState.inactive) {
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
       _updateStatus(false);
     }
   }
@@ -42,12 +43,10 @@ class _StatusManagerState extends State<StatusManager> with WidgetsBindingObserv
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // Using a direct update here to ensure we satisfy the requirement for FieldValue.serverTimestamp()
-        // and to avoid issues if the service method uses Timestamp.now()
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'isOnline': isOnline,
           'lastSeen': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
       } catch (e) {
         debugPrint("Error updating status: $e");
       }

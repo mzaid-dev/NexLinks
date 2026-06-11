@@ -1,9 +1,8 @@
-import 'package:chat_app/features/auth/data/models/user_model.dart';
+import 'package:nexlinks/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'firestoreservice.dart' show FirestoreService;
-
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -28,7 +27,7 @@ class AuthService {
       );
       User? user = result.user;
       if (user != null) {
-        await _storage.write(key: 'uid', value: user.uid); // Store UID
+        await _storage.write(key: 'uid', value: user.uid);
         await _firestoreService.updateUserOnlineStatus(user.uid, true);
         return await _firestoreService.getUser(user.uid);
       }
@@ -39,10 +38,10 @@ class AuthService {
   }
 
   Future<UserModel?> registerWithEmailAndPassword(
-      String email,
-      String password,
-      String username,
-      ) async {
+    String email,
+    String password,
+    String username,
+  ) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -50,14 +49,14 @@ class AuthService {
       );
       User? user = result.user;
       if (user != null) {
-        await _storage.write(key: 'uid', value: user.uid); // Store UID
-        await _firestoreService.updateDisplayName(username); 
+        await _storage.write(key: 'uid', value: user.uid);
+        await _firestoreService.updateDisplayName(username);
 
         final userModel = UserModel(
           id: user.uid,
           email: email,
           username: username,
-          lastSeen: Timestamp.now(), 
+          lastSeen: Timestamp.now(),
           isOnline: true,
           photoURL: '',
           createdAt: Timestamp.now(),
@@ -76,35 +75,35 @@ class AuthService {
     return await _firestoreService.checkUsernameUnique(username);
   }
 
-  Future<void> sendPasswordResetEmail(String email) async{
-    try{
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
       await _auth.sendPasswordResetEmail(email: email);
-    }catch(e){
+    } catch (e) {
       throw Exception("Failed to Send Password Reset Email ${e.toString()}");
     }
   }
 
-  Future<void> signOut() async{
-    try{
-      if(currentUser != null){
-        await _firestoreService.updateUserOnlineStatus(currentUserId!,false);
+  Future<void> signOut() async {
+    try {
+      if (currentUser != null) {
+        await _firestoreService.updateUserOnlineStatus(currentUserId!, false);
       }
-      await _storage.delete(key: 'uid'); // Delete UID
+      await _storage.delete(key: 'uid');
       _auth.signOut();
-    }catch(e){
+    } catch (e) {
       throw Exception("Failed to Sign Out ${e.toString()}");
     }
   }
 
-  Future<void> deleteAccount() async{
-    try{
+  Future<void> deleteAccount() async {
+    try {
       User? user = _auth.currentUser;
-      if(user != null){
+      if (user != null) {
         await _firestoreService.deleteUser(user.uid);
-        await _storage.delete(key: 'uid'); // Delete UID
+        await _storage.delete(key: 'uid');
         await user.delete();
       }
-    }catch(e){
+    } catch (e) {
       throw Exception("Failed to Delete Account ${e.toString()}");
     }
   }
@@ -117,6 +116,3 @@ class AuthService {
     return await _storage.read(key: 'uid');
   }
 }
-
-
-

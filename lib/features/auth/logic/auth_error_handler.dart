@@ -21,20 +21,19 @@ class AuthErrorHandler {
         case 'invalid-credential':
           return 'Invalid credentials. Please try again.';
         case 'network-request-failed':
-          return 'Network error. Please check your internet connection.'; 
+          return 'Network error. Please check your internet connection.';
         default:
           return 'Authentication failed: ${error.message ?? "Unknown error"}';
       }
     } else if (error is String) {
-      return error; // Already a string message
+      return error;
     } else {
-      // General exceptions or others
       final String msg = error.toString();
       if (msg.contains("check username")) {
         return "Unable to verify username availability. Please check your connection.";
       }
       if (msg.contains("network") || msg.contains("connection")) {
-         return "Network error. Please check your internet connection.";
+        return "Network error. Please check your internet connection.";
       }
       return "Something went wrong. Please try again.";
     }

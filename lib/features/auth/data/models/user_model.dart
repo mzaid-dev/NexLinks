@@ -1,5 +1,5 @@
-import 'package:chat_app/core/utils/date_parser.dart';
-import 'package:chat_app/features/auth/domain/entities/auth_user.dart';
+import 'package:nexlinks/core/utils/date_parser.dart';
+import 'package:nexlinks/features/auth/domain/entities/auth_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel extends AuthUser {
@@ -8,6 +8,8 @@ class UserModel extends AuthUser {
   final List<String> friends;
   final String role;
   final String? bio;
+  final int projectsCount;
+  final int successRate;
 
   const UserModel({
     required super.id,
@@ -21,12 +23,11 @@ class UserModel extends AuthUser {
     required this.lastSeen,
     required this.createdAt,
     this.friends = const [],
-    this.role = 'user',
+    this.role = '',
     this.bio,
+    this.projectsCount = 0,
+    this.successRate = 0,
   });
-
-  int get sessionsCount => friends.length * 3; // Mock logic or based on data
-  int get successRate => 85 + (friends.length % 15); // Mock logic or based on data
 
   Map<String, dynamic> toMap() {
     return {
@@ -43,6 +44,8 @@ class UserModel extends AuthUser {
       'friends': friends,
       'experienceYears': experienceYears,
       'expertise': expertise,
+      'projectsCount': projectsCount,
+      'successRate': successRate,
     };
   }
 
@@ -61,6 +64,8 @@ class UserModel extends AuthUser {
       friends: List<String>.from(map['friends'] ?? []),
       experienceYears: map['experienceYears'] ?? 0,
       expertise: List<String>.from(map['expertise'] ?? []),
+      projectsCount: map['projectsCount'] ?? 0,
+      successRate: map['successRate'] ?? 0,
     );
   }
 
@@ -78,6 +83,8 @@ class UserModel extends AuthUser {
     String? bio,
     int? experienceYears,
     List<String>? expertise,
+    int? projectsCount,
+    int? successRate,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -93,6 +100,8 @@ class UserModel extends AuthUser {
       bio: bio ?? this.bio,
       experienceYears: experienceYears ?? this.experienceYears,
       expertise: expertise ?? this.expertise,
+      projectsCount: projectsCount ?? this.projectsCount,
+      successRate: successRate ?? this.successRate,
     );
   }
 }

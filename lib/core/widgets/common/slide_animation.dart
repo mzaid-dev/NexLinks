@@ -17,11 +17,6 @@ class SlideAnimation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: duration,
-      delay: delay,
-      from: from,
-      child: child,
-    );
+    return FadeInUp(duration: duration, delay: delay, from: from, child: child);
   }
 }

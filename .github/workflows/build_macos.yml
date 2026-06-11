@@ -1,0 +1,48 @@
+name: Build macOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        # Note: This builds an unsigned .app. For distribution outside App Store,
+        # users will need to right-click open it due to Gatekeeper.
+        run: flutter build macos --release
+
+      - name: Create macOS DMG
+        run: |
+          hdiutil create -volname "NexLinks" -srcfolder build/macos/Build/Products/Release/nexlinks.app -ov -format UDZO NexLinks.dmg
+
+      - name: Upload macOS Asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "NexLinks.dmg"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'continuous' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Continuous Build' }}
+          body: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Automated continuous build from main branch.' }}
+          omitBody: true
+          omitName: false
+          omitPrereleaseDuringUpdate: true
