@@ -15,6 +15,9 @@ import 'package:nexlinks/core/widgets/common/gradient_text.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
 import 'package:nexlinks/features/calling/presentation/screens/call_screen.dart';
+import 'package:nexlinks/features/calling/logic/call_lifecycle_bloc.dart';
+import 'package:nexlinks/features/calling/logic/call_lifecycle_event.dart';
+import 'package:nexlinks/features/calling/data/models/call_session_model.dart';
 
 class ChatScreen extends StatelessWidget {
   final UserModel targetUser;
@@ -272,6 +275,14 @@ class _ChatViewState extends State<ChatView> {
                 // Voice Call Button
                 GestureDetector(
                   onTap: () {
+                    context.read<CallLifecycleBloc>().add(
+                      StartCallEvent(
+                        receiverId: user.id,
+                        receiverName: user.username,
+                        receiverAvatarUrl: user.photoURL ?? '',
+                        type: CallType.voice,
+                      ),
+                    );
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => CallScreen(
@@ -304,6 +315,14 @@ class _ChatViewState extends State<ChatView> {
                 // Video Call Button
                 GestureDetector(
                   onTap: () {
+                    context.read<CallLifecycleBloc>().add(
+                      StartCallEvent(
+                        receiverId: user.id,
+                        receiverName: user.username,
+                        receiverAvatarUrl: user.photoURL ?? '',
+                        type: CallType.video,
+                      ),
+                    );
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => CallScreen(

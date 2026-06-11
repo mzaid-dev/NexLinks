@@ -17,12 +17,15 @@ import 'package:nexlinks/features/home/presentation/screens/network_screen.dart'
 import '../features/auth/presentation/screens/register_screen.dart';
 import 'route_names.dart';
 
+import 'package:nexlinks/router/navigator_key.dart';
+
 class AppRouter {
   final AuthBloc authBloc;
 
   AppRouter(this.authBloc);
 
   late final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
     routes: [

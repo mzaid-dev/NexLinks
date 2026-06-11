@@ -20,6 +20,7 @@ import 'package:nexlinks/features/auth/data/repositories/auth_repository_impl.da
 import 'package:nexlinks/features/auth/domain/repositories/auth_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'package:flutter/services.dart';
+import 'package:nexlinks/features/calling/presentation/widgets/call_manager.dart';
 
 Future<void> main() async {
   try {
@@ -123,8 +124,9 @@ class _AppViewState extends State<AppView> {
       themeMode: ThemeMode.dark,
       routerConfig: _appRouter.router,
       builder: (context, child) {
-        Widget wrappedChild = StatusManager(
-          child: ConnectivityOverlay(
+        Widget wrappedChild = CallManager(
+          child: StatusManager(
+            child: ConnectivityOverlay(
             child: GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
               behavior: HitTestBehavior.opaque,

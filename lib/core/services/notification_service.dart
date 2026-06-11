@@ -3,11 +3,34 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nexlinks/features/calling/data/models/call_session_model.dart';
+import 'package:nexlinks/features/calling/data/services/callkit_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint("Handling a background message: ${message.messageId}");
+
+  if (message.data['type'] == 'call') {
+    final String channelId = message.data['channelId'] ?? '';
+    final String callerId = message.data['callerId'] ?? '';
+    final String callerName = message.data['callerName'] ?? 'Unknown Caller';
+    final String callerAvatarUrl = message.data['callerAvatarUrl'] ?? '';
+    final String callTypeStr = message.data['callType'] ?? 'voice';
+
+    final session = CallSession(
+      id: channelId,
+      callerId: callerId,
+      callerName: callerName,
+      callerAvatarUrl: callerAvatarUrl,
+      receiverId: '',
+      status: CallStatus.ringing,
+      type: callTypeStr == 'video' ? CallType.video : CallType.voice,
+      createdAt: DateTime.now(),
+    );
+
+    await CallKitService.showIncomingCall(session);
+  }
 }
 
 class NotificationService {

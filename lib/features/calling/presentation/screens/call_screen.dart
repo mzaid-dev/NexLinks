@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/theme/app_theme.dart';
@@ -8,18 +9,12 @@ import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/core/widgets/common/tactile_feedback.dart';
 import 'package:nexlinks/core/widgets/common/mysnakebar.dart';
 import 'package:nexlinks/features/calling/domain/repositories/call_repository.dart';
-import 'package:nexlinks/features/calling/data/repositories/call_repository_impl.dart';
-import 'package:nexlinks/features/calling/logic/call_bloc.dart';
-import 'package:nexlinks/features/calling/logic/call_event.dart';
-import 'package:nexlinks/features/calling/logic/call_state.dart';
-
-// Placeholder App ID. Replace with your actual Agora App ID in production.
-const String _agoraAppId = '00ac1a5624af4c70b44aaa96ba3a706e';
+import 'package:nexlinks/features/calling/logic/call_lifecycle_bloc.dart';
+import 'package:nexlinks/features/calling/logic/call_lifecycle_event.dart';
+import 'package:nexlinks/features/calling/logic/call_lifecycle_state.dart';
 
 class CallScreen extends StatelessWidget {
   final String channelId;
-  final String token;
-  final int uid;
   final bool enableVideo;
   final String remoteUsername;
   final String? remoteAvatarUrl;
@@ -27,32 +22,16 @@ class CallScreen extends StatelessWidget {
   const CallScreen({
     super.key,
     required this.channelId,
-    this.token = '',
-    this.uid = 0,
-    this.enableVideo = true,
-    this.remoteUsername = 'Participant',
+    required this.enableVideo,
+    required this.remoteUsername,
     this.remoteAvatarUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<CallRepository>(
-      create: (context) => CallRepositoryImpl(),
-      child: BlocProvider<CallBloc>(
-        create: (context) => CallBloc(
-          callRepository: context.read<CallRepository>(),
-          appId: _agoraAppId,
-        )..add(JoinCallEvent(
-            channelId: channelId,
-            token: token,
-            uid: uid,
-            enableVideo: enableVideo,
-          )),
-        child: CallView(
-          remoteUsername: remoteUsername,
-          remoteAvatarUrl: remoteAvatarUrl,
-        ),
-      ),
+    return CallView(
+      remoteUsername: remoteUsername,
+      remoteAvatarUrl: remoteAvatarUrl,
     );
   }
 }
@@ -77,6 +56,8 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
   bool _showControls = true;
   Timer? _controlsTimer;
   late AnimationController _pulseController;
+  late AudioPlayer _ringtonePlayer;
+  bool _isOutgoingRinging = false;
 
   @override
   void initState() {
@@ -85,6 +66,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+    _ringtonePlayer = AudioPlayer();
     _resetControlsTimer();
   }
 
@@ -93,7 +75,29 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     _timer?.cancel();
     _controlsTimer?.cancel();
     _pulseController.dispose();
+    _stopOutgoingRingtone();
     super.dispose();
+  }
+
+  Future<void> _playOutgoingRingtone() async {
+    if (_isOutgoingRinging) return;
+    try {
+      _isOutgoingRinging = true;
+      await _ringtonePlayer.setReleaseMode(ReleaseMode.loop);
+      // Telephone ringback tone
+      await _ringtonePlayer.play(UrlSource(
+        'https://assets.mixkit.co/active_storage/sfx/1359/1359-84.wav',
+      ));
+    } catch (_) {}
+  }
+
+  Future<void> _stopOutgoingRingtone() async {
+    if (!_isOutgoingRinging) return;
+    try {
+      await _ringtonePlayer.stop();
+      await _ringtonePlayer.dispose();
+      _isOutgoingRinging = false;
+    } catch (_) {}
   }
 
   void _startTimer() {
@@ -133,36 +137,35 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CallBloc, CallState>(
+    return BlocListener<CallLifecycleBloc, CallLifecycleState>(
       listener: (context, state) {
-        if (state is CallActive) {
+        if (state is CallActiveState) {
+          _stopOutgoingRingtone();
           _startTimer();
-        } else if (state is CallDisconnected) {
+        } else if (state is CallEndedState) {
           _timer?.cancel();
+          _stopOutgoingRingtone();
           MySnackBar.show(
             context: context,
-            message: 'Call ended successfully',
+            message: state.reason == 'declined'
+                ? 'Call declined by user'
+                : 'Call ended',
             icon: Icons.call_end_rounded,
             backgroundColor: AppTheme.primaryColor,
-          );
-          Navigator.of(context).pop();
-        } else if (state is CallError) {
-          MySnackBar.show(
-            context: context,
-            message: state.message,
-            isError: true,
           );
           Navigator.of(context).pop();
         }
       },
       child: Scaffold(
         backgroundColor: AppTheme.darkBgColor,
-        body: BlocBuilder<CallBloc, CallState>(
+        body: BlocBuilder<CallLifecycleBloc, CallLifecycleState>(
           builder: (context, state) {
-            if (state is CallInitial || state is CallConnecting) {
+            if (state is CallOutgoingRingingState) {
+              _playOutgoingRingtone();
               return _buildConnectingState();
-            } else if (state is CallActive) {
-              _startTimer(); // Ensure timer starts if state is loaded directly
+            } else if (state is CallActiveState) {
+              _stopOutgoingRingtone();
+              _startTimer();
               return _buildActiveState(state);
             } else {
               return const SizedBox.shrink();
@@ -177,7 +180,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Dark premium background with a subtle ambient color
         Positioned.fill(
           child: Container(
             decoration: BoxDecoration(
@@ -197,7 +199,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(height: 40),
-              // Avatar & Pulsing Effect
               Column(
                 children: [
                   AnimatedBuilder(
@@ -255,7 +256,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Connecting...',
+                        'Ringing...',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.white70,
                               letterSpacing: 0.5,
@@ -265,12 +266,11 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
                   ),
                 ],
               ),
-              // End Call/Cancel Button
               Padding(
                 padding: const EdgeInsets.only(bottom: 48.0),
                 child: TactileFeedback(
                   onTap: () {
-                    context.read<CallBloc>().add(const LeaveCallEvent());
+                    context.read<CallLifecycleBloc>().add(const EndCallEvent());
                   },
                   child: Container(
                     width: 72,
@@ -278,13 +278,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
                     decoration: const BoxDecoration(
                       color: AppTheme.errorColor,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
                     ),
                     child: const Icon(
                       Icons.call_end_rounded,
@@ -301,19 +294,16 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildActiveState(CallActive state) {
+  Widget _buildActiveState(CallActiveState state) {
     return GestureDetector(
       onTap: _toggleControlsVisibility,
       behavior: HitTestBehavior.translucent,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Background Video / Audio View
           Positioned.fill(
             child: _buildMainVideoOrPlaceholder(state),
           ),
-
-          // 2. Picture-in-Picture Local Video View (Video call, remote user joined)
           if (state.isVideoEnabled && state.remoteUids.isNotEmpty)
             Positioned(
               top: 50,
@@ -348,17 +338,15 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
                 ),
               ),
             ),
-
-          // 3. Top Call Bar Overlay
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             top: _showControls ? 50 : -80,
             left: 20,
             right: 20,
-            child: GlassContainer(
+            child: AppGlassContainer(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: 20,
               child: Row(
                 children: [
                   const Icon(
@@ -414,8 +402,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
               ),
             ),
           ),
-
-          // 4. Bottom Glassmorphic Control Bar
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
@@ -429,10 +415,9 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildMainVideoOrPlaceholder(CallActive state) {
+  Widget _buildMainVideoOrPlaceholder(CallActiveState state) {
     if (state.isVideoEnabled) {
       if (state.remoteUids.isEmpty) {
-        // Only local user in call, show full screen local preview
         return state.isCameraMuted
             ? _buildVoiceOnlyPlaceholder(state)
             : AgoraVideoView(
@@ -442,7 +427,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
                 ),
               );
       } else {
-        // Remote user has joined, show remote video full screen
         final remoteUid = state.remoteUids.first;
         return AgoraVideoView(
           controller: VideoViewController.remote(
@@ -453,18 +437,16 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
         );
       }
     } else {
-      // Voice call layout
       return _buildVoiceOnlyPlaceholder(state);
     }
   }
 
-  Widget _buildVoiceOnlyPlaceholder(CallActive state) {
+  Widget _buildVoiceOnlyPlaceholder(CallActiveState state) {
     return Container(
       color: AppTheme.darkBgColor,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Ambient back-glow
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -483,7 +465,6 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Pulsing ring around avatar
                 AnimatedBuilder(
                   animation: _pulseController,
                   builder: (context, child) {
@@ -544,14 +525,13 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildBottomControlBar(CallActive state) {
-    return GlassContainer(
+  Widget _buildBottomControlBar(CallActiveState state) {
+    return AppGlassContainer(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: 30,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // 1. Mute Mic Button
           _buildControlButton(
             icon: state.isMicMuted
                 ? Icons.mic_off_rounded
@@ -559,12 +539,10 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             color: state.isMicMuted ? AppTheme.errorColor : Colors.white24,
             iconColor: Colors.white,
             onPressed: () {
-              context.read<CallBloc>().add(const ToggleMuteMicEvent());
+              context.read<CallLifecycleBloc>().add(const ToggleMicEvent());
               _resetControlsTimer();
             },
           ),
-
-          // 2. Camera Toggle Button (Only show if video call)
           if (state.isVideoEnabled)
             _buildControlButton(
               icon: state.isCameraMuted
@@ -573,12 +551,10 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
               color: state.isCameraMuted ? AppTheme.errorColor : Colors.white24,
               iconColor: Colors.white,
               onPressed: () {
-                context.read<CallBloc>().add(const ToggleMuteCameraEvent());
+                context.read<CallLifecycleBloc>().add(const ToggleCameraEvent());
                 _resetControlsTimer();
               },
             ),
-
-          // 3. Switch Camera Button (Only show if video call and camera is active)
           if (state.isVideoEnabled)
             _buildControlButton(
               icon: Icons.flip_camera_ios_rounded,
@@ -587,12 +563,10 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
               onPressed: state.isCameraMuted
                   ? null
                   : () {
-                      context.read<CallBloc>().add(const SwitchCameraEvent());
+                      context.read<CallLifecycleBloc>().add(const SwitchCameraEvent());
                       _resetControlsTimer();
                     },
             ),
-
-          // 4. End Call Button (Red, prominent)
           _buildControlButton(
             icon: Icons.call_end_rounded,
             color: AppTheme.errorColor,
@@ -600,7 +574,7 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
             size: 58,
             iconSize: 28,
             onPressed: () {
-              context.read<CallBloc>().add(const LeaveCallEvent());
+              context.read<CallLifecycleBloc>().add(const EndCallEvent());
             },
           ),
         ],
