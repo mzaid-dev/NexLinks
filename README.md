@@ -234,14 +234,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 <br>
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-<br>
-
 ---
->>>>>>> 8539896111c48fb70a63247c7d687c19c1776623
 
 <div align="center">
 
