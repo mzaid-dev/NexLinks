@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexlinks/core/services/notification_service.dart';
 import 'package:nexlinks/core/theme/app_theme.dart';
 import 'package:nexlinks/core/widgets/common/app_avatar.dart';
 import 'package:nexlinks/core/widgets/common/glass_container.dart';
@@ -200,6 +201,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                             children: [
                               TactileFeedback(
                                 onTap: () {
+                                  NotificationService().cancelCallNotification();
                                   context.read<CallLifecycleBloc>().add(const DeclineCallEvent());
                                 },
                                 child: Container(
@@ -235,6 +237,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                             children: [
                               TactileFeedback(
                                 onTap: () {
+                                  NotificationService().cancelCallNotification();
                                   context.read<CallLifecycleBloc>().add(const AcceptCallEvent());
                                 },
                                 child: Container(

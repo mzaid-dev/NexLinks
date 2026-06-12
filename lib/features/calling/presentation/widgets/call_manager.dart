@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexlinks/core/services/notification_service.dart';
 import 'package:nexlinks/features/auth/logic/auth_bloc.dart';
 import 'package:nexlinks/features/auth/logic/auth_state.dart';
 import 'package:nexlinks/features/calling/data/services/call_signaling_service.dart';
@@ -10,7 +11,6 @@ import 'package:nexlinks/features/calling/logic/call_lifecycle_bloc.dart';
 import 'package:nexlinks/features/calling/logic/call_lifecycle_event.dart';
 import 'package:nexlinks/features/calling/logic/call_lifecycle_state.dart';
 import 'package:nexlinks/features/calling/presentation/screens/incoming_call_screen.dart';
-
 import 'package:nexlinks/router/navigator_key.dart';
 
 class CallManager extends StatefulWidget {
@@ -27,6 +27,23 @@ class _CallManagerState extends State<CallManager> {
   StreamSubscription? _incomingCallsSubscription;
   final CallSignalingService _signalingService = CallSignalingService();
   final CallRepository _callRepository = CallRepositoryImpl();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Handle cold-start: if already authenticated when CallManager mounts,
+    // BlocListener will never fire — so we check the current state directly.
+    if (_callLifecycleBloc == null) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState.status == AuthStatus.authenticated && authState.user != null) {
+        _setupCallBloc(
+          authState.user!.id,
+          authState.user!.username,
+          authState.user!.photoURL ?? '',
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -52,11 +69,23 @@ class _CallManagerState extends State<CallManager> {
         final session = sessions.first;
         _callLifecycleBloc!.add(IncomingCallReceivedEvent(session));
 
+        // Show in-app call notification banner (foreground heads-up)
+        NotificationService().showIncomingCallNotification(
+          callerName: session.callerName,
+          isVideo: session.type == CallType.video,
+        );
+
         rootNavigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (context) => IncomingCallScreen(session: session),
+            builder: (context) => BlocProvider<CallLifecycleBloc>.value(
+              value: _callLifecycleBloc!,
+              child: IncomingCallScreen(session: session),
+            ),
           ),
         );
+      } else if (sessions.isEmpty) {
+        // Call was ended/declined remotely — cancel the banner
+        NotificationService().cancelCallNotification();
       }
     });
   }

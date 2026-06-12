@@ -42,6 +42,9 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  static const String _chatChannelId = 'chat_channel_id';
+  static const String _callChannelId = 'call_channel_id';
+
   Future<void> init() async {
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
@@ -78,14 +81,25 @@ class NotificationService {
           (NotificationResponse response) async {},
     );
 
+    if (!kIsWeb) {
+      await _createNotificationChannels();
+    }
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Got a message whilst in the foreground!');
-      debugPrint('Message data: ${message.data}');
+      debugPrint('Got a foreground message: ${message.data}');
+
+      // Incoming call while app is open — show in-app call banner
+      if (message.data['type'] == 'call') {
+        final callerName = message.data['callerName'] ?? 'Unknown Caller';
+        final callTypeStr = message.data['callType'] ?? 'voice';
+        showIncomingCallNotification(
+          callerName: callerName,
+          isVideo: callTypeStr == 'video',
+        );
+        return;
+      }
 
       if (message.notification != null) {
-        debugPrint(
-          'Message also contained a notification: ${message.notification}',
-        );
         _showRemoteNotification(message);
       }
     });
@@ -96,6 +110,80 @@ class NotificationService {
     debugPrint("FCM Token: $token");
   }
 
+  Future<void> _createNotificationChannels() async {
+    final androidPlugin = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin == null) return;
+
+    await androidPlugin.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _chatChannelId,
+        'Chat Notifications',
+        description: 'Notifications for incoming messages',
+        importance: Importance.high,
+      ),
+    );
+
+    // Max-importance channel so Android shows heads-up banner for calls
+    await androidPlugin.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _callChannelId,
+        'Incoming Call Notifications',
+        description: 'Notifications for incoming voice and video calls',
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+        showBadge: true,
+      ),
+    );
+  }
+
+  /// Shows a heads-up / full-screen notification for an incoming call.
+  /// When the app is in the foreground, Android renders this as a
+  /// peek banner at the top of the screen.
+  Future<void> showIncomingCallNotification({
+    required String callerName,
+    bool isVideo = false,
+  }) async {
+    if (kIsWeb) return;
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      _callChannelId,
+      'Incoming Call Notifications',
+      channelDescription: 'Notifications for incoming voice and video calls',
+      importance: Importance.max,
+      priority: Priority.max,
+      ticker: 'Incoming Call',
+      fullScreenIntent: true,
+      category: AndroidNotificationCategory.call,
+      visibility: NotificationVisibility.public,
+      showWhen: false,
+      color: Color(0xFF00FF94),
+      ongoing: false,
+      autoCancel: true,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await _notificationsPlugin.show(
+      999,
+      '📞 Incoming ${isVideo ? "Video" : "Voice"} Call',
+      callerName,
+      notificationDetails,
+      payload: 'incoming_call',
+    );
+  }
+
+  /// Dismiss the call notification when the call is accepted or declined.
+  Future<void> cancelCallNotification() async {
+    if (kIsWeb) return;
+    await _notificationsPlugin.cancel(999);
+  }
+
   Future<void> _showRemoteNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
@@ -103,7 +191,7 @@ class NotificationService {
     if (notification != null && android != null) {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-            'chat_channel_id',
+            _chatChannelId,
             'Chat Notifications',
             channelDescription: 'Notifications for incoming messages',
             importance: Importance.max,
@@ -133,7 +221,7 @@ class NotificationService {
   }) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'chat_channel_id',
+          _chatChannelId,
           'Chat Notifications',
           channelDescription: 'Notifications for incoming messages',
           importance: Importance.max,

@@ -85,9 +85,6 @@ class CallRepositoryImpl implements CallRepository {
   Future<void> release() async {
     if (_engine != null) {
       try {
-        await _engine!.leaveChannel();
-      } catch (_) {}
-      try {
         await _engine!.release();
       } catch (_) {}
       _engine = null;

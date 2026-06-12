@@ -139,7 +139,9 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return BlocListener<CallLifecycleBloc, CallLifecycleState>(
       listener: (context, state) {
-        if (state is CallActiveState) {
+        if (state is CallOutgoingRingingState) {
+          _playOutgoingRingtone();
+        } else if (state is CallActiveState) {
           _stopOutgoingRingtone();
           _startTimer();
         } else if (state is CallEndedState) {
@@ -161,11 +163,8 @@ class _CallViewState extends State<CallView> with SingleTickerProviderStateMixin
         body: BlocBuilder<CallLifecycleBloc, CallLifecycleState>(
           builder: (context, state) {
             if (state is CallOutgoingRingingState) {
-              _playOutgoingRingtone();
               return _buildConnectingState();
             } else if (state is CallActiveState) {
-              _stopOutgoingRingtone();
-              _startTimer();
               return _buildActiveState(state);
             } else {
               return const SizedBox.shrink();

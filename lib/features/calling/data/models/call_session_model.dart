@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
 enum CallStatus { ringing, accepted, declined, ended, timeout }
 
 enum CallType { voice, video }
 
-class CallSession {
+class CallSession extends Equatable {
   final String id;
   final String callerId;
   final String callerName;
@@ -16,7 +17,7 @@ class CallSession {
   final DateTime? answeredAt;
   final DateTime? endedAt;
 
-  CallSession({
+  const CallSession({
     required this.id,
     required this.callerId,
     required this.callerName,
@@ -28,6 +29,9 @@ class CallSession {
     this.answeredAt,
     this.endedAt,
   });
+
+  @override
+  List<Object?> get props => [id, status, type, callerId, receiverId];
 
   Map<String, dynamic> toMap() {
     return {

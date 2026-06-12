@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:nexlinks/features/calling/data/models/call_session_model.dart';
 
 class CallSignalingService {
@@ -8,6 +6,9 @@ class CallSignalingService {
 
   CollectionReference get _calls => _firestore.collection('call_sessions');
 
+  // Creates the call session document in Firestore.
+  // FCM notification is triggered automatically by the Cloud Function
+  // (functions/index.js) that listens to onCreate on call_sessions.
   Future<CallSession> createCallSession({
     required String channelId,
     required String callerId,
@@ -28,8 +29,6 @@ class CallSignalingService {
     );
 
     await _calls.doc(channelId).set(session.toMap());
-
-    await sendCallFcm(session);
 
     return session;
   }
@@ -79,48 +78,5 @@ class CallSignalingService {
       'status': CallStatus.timeout.name,
       'endedAt': FieldValue.serverTimestamp(),
     });
-  }
-
-  Future<void> sendCallFcm(CallSession session) async {
-    try {
-
-      final receiverDoc = await _firestore.collection('users').doc(session.receiverId).get();
-      if (!receiverDoc.exists) return;
-
-      final fcmToken = receiverDoc.data()?['fcmToken'] as String?;
-      if (fcmToken == null || fcmToken.isEmpty) return;
-
-      final payload = {
-        'to': fcmToken,
-        'priority': 'high',
-        'data': {
-          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          'type': 'call',
-          'status': session.status.name,
-          'channelId': session.id,
-          'callerId': session.callerId,
-          'callerName': session.callerName,
-          'callerAvatarUrl': session.callerAvatarUrl,
-          'callType': session.type.name,
-        },
-        'notification': {
-          'title': 'Incoming ${session.type.name} call',
-          'body': '${session.callerName} is calling you...',
-          'sound': 'ringtone.mp3',
-          'android_channel_id': 'calls_channel',
-        }
-      };
-
-      await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'key=YOUR_FCM_SERVER_KEY', 
-        },
-        body: jsonEncode(payload),
-      );
-    } catch (_) {
-
-    }
   }
 }

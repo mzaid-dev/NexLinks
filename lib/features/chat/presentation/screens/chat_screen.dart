@@ -8,6 +8,7 @@ import 'package:nexlinks/features/chat/logic/chat_cubit.dart';
 import 'package:nexlinks/features/chat/presentation/widgets/chat_input_area.dart';
 import 'package:nexlinks/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexlinks/core/widgets/common/app_base_view.dart';
 import 'package:nexlinks/core/services/firestoreservice.dart';
@@ -272,82 +273,84 @@ class _ChatViewState extends State<ChatView> {
                 ),
                 const Spacer(),
 
-                GestureDetector(
-                  onTap: () {
-                    context.read<CallLifecycleBloc>().add(
-                      StartCallEvent(
-                        receiverId: user.id,
-                        receiverName: user.username,
-                        receiverAvatarUrl: user.photoURL ?? '',
-                        type: CallType.voice,
-                      ),
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CallScreen(
-                          channelId: 'call_${_currentUserId}_${user.id}',
-                          enableVideo: false,
-                          remoteUsername: user.username,
-                          remoteAvatarUrl: user.photoURL,
+                if (!kIsWeb) ...[
+                  GestureDetector(
+                    onTap: () {
+                      context.read<CallLifecycleBloc>().add(
+                        StartCallEvent(
+                          receiverId: user.id,
+                          receiverName: user.username,
+                          receiverAvatarUrl: user.photoURL ?? '',
+                          type: CallType.voice,
+                        ),
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CallScreen(
+                            channelId: 'call_${_currentUserId}_${user.id}',
+                            enableVideo: false,
+                            remoteUsername: user.username,
+                            remoteAvatarUrl: user.photoURL,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      child: const Icon(
+                        Icons.phone_rounded,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
-                    child: const Icon(
-                      Icons.phone_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
+                  const SizedBox(width: 10),
 
-                GestureDetector(
-                  onTap: () {
-                    context.read<CallLifecycleBloc>().add(
-                      StartCallEvent(
-                        receiverId: user.id,
-                        receiverName: user.username,
-                        receiverAvatarUrl: user.photoURL ?? '',
-                        type: CallType.video,
-                      ),
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CallScreen(
-                          channelId: 'call_${_currentUserId}_${user.id}',
-                          enableVideo: true,
-                          remoteUsername: user.username,
-                          remoteAvatarUrl: user.photoURL,
+                  GestureDetector(
+                    onTap: () {
+                      context.read<CallLifecycleBloc>().add(
+                        StartCallEvent(
+                          receiverId: user.id,
+                          receiverName: user.username,
+                          receiverAvatarUrl: user.photoURL ?? '',
+                          type: CallType.video,
+                        ),
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CallScreen(
+                            channelId: 'call_${_currentUserId}_${user.id}',
+                            enableVideo: true,
+                            remoteUsername: user.username,
+                            remoteAvatarUrl: user.photoURL,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      child: const Icon(
+                        Icons.videocam_rounded,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
-                    child: const Icon(
-                      Icons.videocam_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
